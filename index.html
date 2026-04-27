@@ -14,6 +14,24 @@
       --p1:#3b82f6;--p1-dim:rgba(59,130,246,.15);
       --p2:#ef4444;--p2-dim:rgba(239,68,68,.15);
       --fruit:#a78bfa;
+      --overlay:rgba(8,13,26,.82);--overlay-cta:rgba(8,13,26,.96);
+      --home-grad:radial-gradient(ellipse at 50% 40%,#0f1f3d 0%,#080d1a 65%);
+      --reveal-grad:radial-gradient(ellipse at 50% 30%,#0f1f3d 0%,#080d1a 65%);
+      --btn-primary-fg:#080d1a;
+      --scrollbar:var(--border);
+    }
+    body.light{
+      --bg:#f1f5f9;--bg-card:#ffffff;--bg-hover:#e8eef5;
+      --gold:#b45309;--gold-light:#d97706;--gold-dim:rgba(180,83,9,.1);
+      --muted:#64748b;--border:#cbd5e1;--text:#0f172a;
+      --p1:#2563eb;--p1-dim:rgba(37,99,235,.1);
+      --p2:#dc2626;--p2-dim:rgba(220,38,38,.1);
+      --fruit:#7c3aed;
+      --overlay:rgba(15,23,42,.72);--overlay-cta:rgba(241,245,249,.97);
+      --home-grad:radial-gradient(ellipse at 50% 40%,#dbeafe 0%,#f1f5f9 65%);
+      --reveal-grad:radial-gradient(ellipse at 50% 30%,#dbeafe 0%,#f1f5f9 65%);
+      --btn-primary-fg:#ffffff;
+      --scrollbar:#cbd5e1;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;min-height:100vh;overflow-x:hidden}
@@ -22,7 +40,7 @@
 
     /* ─── Buttons ────────────────────────────────────── */
     .btn{padding:.65rem 1.5rem;border:none;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .18s;font-family:inherit;letter-spacing:.02em}
-    .btn-primary{background:var(--gold);color:#080d1a}
+    .btn-primary{background:var(--gold);color:var(--btn-primary-fg)}
     .btn-primary:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,162,39,.35)}
     .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
     .btn-secondary{background:transparent;color:var(--gold);border:2px solid var(--gold)}
@@ -34,7 +52,7 @@
     .btn-danger:hover{background:rgba(239,68,68,.25)}
 
     /* ─── HOME ───────────────────────────────────────── */
-    #screen-home{justify-content:center;background:radial-gradient(ellipse at 50% 40%,#0f1f3d 0%,#080d1a 65%)}
+    #screen-home{justify-content:center;background:var(--home-grad)}
     .home-content{display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem;gap:.75rem;max-width:700px;width:100%}
     .skull{font-size:4.5rem;filter:drop-shadow(0 0 20px rgba(201,162,39,.4))}
     .title{font-family:'Cinzel',serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;color:var(--gold);line-height:1.05;letter-spacing:.05em;text-shadow:0 0 40px rgba(201,162,39,.25)}
@@ -62,9 +80,9 @@
     /* ─── SCENARIO ───────────────────────────────────── */
     #screen-scenario{background:var(--bg);height:100vh;overflow:hidden;align-items:stretch}
     .sc-page{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 0;width:100%}
-    .sc-cta{flex-shrink:0;background:rgba(8,13,26,.96);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1rem;width:100%}
+    .sc-cta{flex-shrink:0;background:var(--overlay-cta);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1rem;width:100%}
     /* ── Coin Toss Overlay ── */
-    #cointoss-overlay{position:fixed;inset:0;z-index:200;background:rgba(8,13,26,.82);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1rem}
+    #cointoss-overlay{position:fixed;inset:0;z-index:200;background:var(--overlay);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1rem}
     #cointoss-overlay.open{display:flex}
     .ct-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.6);padding:2.2rem 2rem;display:flex;flex-direction:column;align-items:center;gap:1rem;width:100%;max-width:420px;animation:ctDrop .25s cubic-bezier(.22,.61,.36,1)}
     @keyframes ctDrop{from{opacity:0;transform:translateY(-18px) scale(.97)}to{opacity:1;transform:none}}
@@ -324,7 +342,7 @@
     .stage-bonus-chip{font-size:.6rem;padding:.1rem .35rem;border-radius:3px;background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.25)}
 
     /* ─── REVEAL SCREEN ──────────────────────────────── */
-    #screen-reveal{background:radial-gradient(ellipse at 50% 30%,#0f1f3d 0%,var(--bg) 65%);justify-content:center}
+    #screen-reveal{background:var(--reveal-grad);justify-content:center}
     .reveal-page{display:flex;flex-direction:column;align-items:center;padding:2rem 1rem;gap:1.5rem;max-width:580px;width:100%;text-align:center}
     .reveal-eyebrow{font-size:.68rem;text-transform:uppercase;letter-spacing:.2em;color:var(--muted)}
     .reveal-title{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;color:var(--gold);text-shadow:0 0 30px rgba(201,162,39,.3);line-height:1.1}
@@ -411,7 +429,11 @@
     .glos-rec-stat-fill{height:100%;border-radius:2px}
     .glos-rec-stat-val{font-size:.58rem;color:var(--text);width:18px;text-align:right;flex-shrink:0;font-weight:600}
 
-    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
+
+    /* ─── THEME TOGGLE ───────────────────────────────── */
+    #theme-toggle{position:fixed;bottom:1rem;right:1rem;z-index:500;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg-card);color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+    #theme-toggle:hover{border-color:var(--gold);color:var(--gold)}
     @media(max-width:820px){
       .draft-grid{grid-template-columns:1fr}.side-panel{flex-direction:row;flex-wrap:wrap;border:none;border-bottom:1px solid var(--border)}
       .pick-slots{flex-direction:row;flex:1}.pick-slot{min-width:70px}
@@ -424,6 +446,9 @@
   </style>
 </head>
 <body>
+
+<!-- Theme toggle — persists across all screens -->
+<button id="theme-toggle" title="Toggle light/dark mode">🌙</button>
 
 <!-- ═══ HOME ══════════════════════════════════════════════════════════════════ -->
 <div id="screen-home" class="screen active">
@@ -2317,6 +2342,23 @@ function renderBGDetail(sc){
     </div>
   </div>`;
 }
+
+// ═══ THEME TOGGLE ════════════════════════════════════════════════════════════
+(function(){
+  const btn=document.getElementById('theme-toggle');
+  const apply=light=>{
+    document.body.classList.toggle('light',light);
+    btn.textContent=light?'🌑':'🌙';
+    btn.title=light?'Switch to dark mode':'Switch to light mode';
+  };
+  let isLight=localStorage.getItem('theme')==='light';
+  apply(isLight);
+  btn.addEventListener('click',()=>{
+    isLight=!isLight;
+    localStorage.setItem('theme',isLight?'light':'dark');
+    apply(isLight);
+  });
+})();
 
 document.getElementById('btn-glossary').addEventListener('click',openGlossary);
 document.getElementById('btn-glos-back').addEventListener('click',()=>showScreen('screen-home'));

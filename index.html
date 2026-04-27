@@ -937,7 +937,7 @@ function renderSynergies(pid,team,weights){
 // ═══ BOSSES — per-battleground antagonists (excluded from draft pool) ════════
 const BOSSES={
   wano:        ['Kaido'],
-  marineford:  ['Akainu','Kizaru','Aokiji','Garp','Sengoku'],
+  marineford:  ['Akainu','Kizaru','Sengoku'],
   enies_lobby: ['Lucci'],
   whole_cake:  ['Big Mom','Katakuri'],
   impel_down:  ['Magellan'],
@@ -947,28 +947,38 @@ const BOSSES={
   alabasta:    ['Crocodile'],
 };
 
+// For multi-boss battlegrounds, one boss is randomly chosen per session at draft start.
+// activeBossOverride stores the chosen name keyed by scenario id.
+const activeBossOverride={};
+function getActiveBossNames(sc){
+  const all=BOSSES[sc.id]||[];
+  if(all.length<=1)return all;
+  if(activeBossOverride[sc.id])return[activeBossOverride[sc.id]];
+  return all; // fallback (pre-draft displays show all)
+}
+
 // Thematic debuffs — each boss tests specific stats. Low team avg = heavy penalty.
 // tests: [{ stat, required (0-100 threshold), severity (0-1 weight of penalty) }]
 const BOSS_DEBUFFS={
   'Crocodile':{
     label:'Master Schemer',
-    desc:'Plans within plans — a crew without sharp strategy walks straight into his trap',
-    tests:[{stat:'strategy',required:70,severity:.55}],
+    desc:'Plans within plans — without sharp strategy and a leader who can read the room, your crew walks straight into his trap',
+    tests:[{stat:'strategy',required:70,severity:.55},{stat:'leadership',required:62,severity:.25}],
   },
   'Lucci':{
     label:"Assassin's Precision",
-    desc:'Rokushiki at its peak — only elite fighters with Haki have a chance',
-    tests:[{stat:'combat',required:68,severity:.40},{stat:'haki',required:58,severity:.28}],
+    desc:"Rokushiki at its peak — only disciplined fighters led by someone who keeps their head, with a crew ready to back them up, survive his assault",
+    tests:[{stat:'combat',required:68,severity:.40},{stat:'leadership',required:55,severity:.28},{stat:'support',required:52,severity:.20}],
   },
   'Enel':{
-    label:"God's Immunity",
-    desc:'Lightning cannot be stopped without Haki — crews relying on brute force are helpless',
-    tests:[{stat:'haki',required:72,severity:.58}],
+    label:"God's Omniscience",
+    desc:'Lightning is just the weapon — his true power is knowing your every move. Only sharp strategy, expert navigation across the sky islands, and enough raw force can challenge a self-proclaimed god',
+    tests:[{stat:'strategy',required:65,severity:.40},{stat:'navigation',required:62,severity:.35},{stat:'combat',required:55,severity:.18}],
   },
   'Magellan':{
     label:'Venom Hydra',
-    desc:'His poison overwhelms any crew without strong healing and support',
-    tests:[{stat:'support',required:62,severity:.50},{stat:'combat',required:60,severity:.22}],
+    desc:"His poison seals every corridor — without expert navigation to find a path through Impel Down's layers and strong support to keep the crew alive, there's no way out",
+    tests:[{stat:'support',required:62,severity:.50},{stat:'navigation',required:58,severity:.35}],
   },
   'Kaido':{
     label:'Strongest Creature Alive',
@@ -977,38 +987,28 @@ const BOSS_DEBUFFS={
   },
   'Doflamingo':{
     label:'Heavenly Yaksha',
-    desc:'Strings and schemes everywhere — poor strategists become his puppets',
-    tests:[{stat:'strategy',required:66,severity:.45},{stat:'leadership',required:60,severity:.22}],
+    desc:'Strings, schemes, and Conqueror\'s spirit everywhere — only a crew with sharp strategy, a leader who can break his control, reliable support, and the Haki to cut through his threads can end his reign',
+    tests:[{stat:'strategy',required:66,severity:.45},{stat:'leadership',required:60,severity:.22},{stat:'support',required:55,severity:.20},{stat:'haki',required:58,severity:.18}],
   },
   'Kizaru':{
     label:'Speed of Light',
-    desc:"You can't fight an Admiral head-on — only Navigation saves the crew from annihilation",
-    tests:[{stat:'navigation',required:68,severity:.52},{stat:'haki',required:65,severity:.25}],
+    desc:"You can't react to what you can't see — without expert navigation to stay ahead and strong support to patch up casualties, the Admiral leaves nothing standing",
+    tests:[{stat:'navigation',required:68,severity:.52},{stat:'support',required:58,severity:.28}],
   },
   'Big Mom':{
     label:"Yonko's Domain",
-    desc:'Her homies control every inch of sea — without Navigation you never escape',
-    tests:[{stat:'navigation',required:62,severity:.40},{stat:'combat',required:65,severity:.28}],
+    desc:'Her homies blanket every sea lane — without Navigation to find a way out of Totto Land and Support to keep the crew alive through the chaos, you never escape',
+    tests:[{stat:'navigation',required:62,severity:.40},{stat:'support',required:60,severity:.32}],
   },
   'Katakuri':{
     label:'Future Sight',
-    desc:'He reads every move before you make it — high strategy is the only counter',
-    tests:[{stat:'strategy',required:72,severity:.48},{stat:'combat',required:70,severity:.30}],
+    desc:"He sees every move before you make it — only elite Haki users with overwhelming combat skill, led by a decisive commander who can improvise, have any hope of landing a hit",
+    tests:[{stat:'leadership',required:68,severity:.45},{stat:'combat',required:70,severity:.30},{stat:'haki',required:65,severity:.28}],
   },
   'Akainu':{
     label:'Absolute Justice',
-    desc:'Magma that melts battleships — without elite combat and Haki, your crew is ash',
-    tests:[{stat:'combat',required:76,severity:.44},{stat:'haki',required:68,severity:.30}],
-  },
-  'Aokiji':{
-    label:'Lazy Justice',
-    desc:'Casual and overwhelming — his ice reshapes the battlefield without effort',
-    tests:[{stat:'combat',required:70,severity:.35},{stat:'navigation',required:55,severity:.22}],
-  },
-  'Garp':{
-    label:'Hero of the Marines',
-    desc:'His legendary presence shatters crew morale — only strong leaders keep the team together',
-    tests:[{stat:'leadership',required:66,severity:.38},{stat:'combat',required:72,severity:.30}],
+    desc:"Magma that melts resolve — without elite fighters, a leader who holds the line when everything burns, and support to keep the crew standing, your entire crew is ash",
+    tests:[{stat:'combat',required:76,severity:.44},{stat:'leadership',required:65,severity:.28},{stat:'support',required:62,severity:.24}],
   },
   'Sengoku':{
     label:'The Grand Tactician',
@@ -1019,7 +1019,7 @@ const BOSS_DEBUFFS={
 
 // Returns boss entries with computed stats (sourced from FALLBACK so always available)
 function getScenarioBossData(sc){
-  const names=new Set(BOSSES[sc.id]||[]);
+  const names=new Set(getActiveBossNames(sc));
   if(!names.size)return[];
   return FALLBACK.filter(c=>names.has(c.name)).map(c=>({...c,stats:computeStats(c)}));
 }
@@ -1054,7 +1054,7 @@ function computeBossMod(sc,team){
 function getBossDebuffReport(sc,team){
   if(!team||!team.length)return[];
   const report=[];
-  for(const name of(BOSSES[sc.id]||[])){
+  for(const name of getActiveBossNames(sc)){
     const debuff=BOSS_DEBUFFS[name];
     if(!debuff)continue;
     const details=debuff.tests.map(({stat,required})=>{
@@ -1266,7 +1266,7 @@ function scoreTeam(team,sc){
   const difficultyMod=sc.difficultyMod;
   const bossMod=computeBossMod(sc,team);
   const bossDebuffs=getBossDebuffReport(sc,team);
-  const bossNames=(BOSSES[sc.id]||[]);
+  const bossNames=getActiveBossNames(sc);
 
   // ── Stage 1: raw crew stat score (no difficulty / boss applied yet) ──
   const rolesSeen=new Set();const breakdown=[];let rawBase=0;
@@ -1887,6 +1887,13 @@ document.getElementById('btn-start-after-toss').addEventListener('click',startDr
 async function startDraft(){
   if(!selectedScenario)return;
   document.getElementById('cointoss-overlay').classList.remove('open');
+  // For multi-boss battlegrounds, lock in one random boss for this session
+  const allBossPool=BOSSES[selectedScenario.id]||[];
+  if(allBossPool.length>1){
+    activeBossOverride[selectedScenario.id]=allBossPool[Math.floor(Math.random()*allBossPool.length)];
+  }else{
+    delete activeBossOverride[selectedScenario.id];
+  }
   draft=createDraft(budgetMode?'budget':'unlimited');
   showScreen('screen-draft');
 

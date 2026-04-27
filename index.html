@@ -340,6 +340,16 @@
     .stage-connector{text-align:center;font-size:.7rem;color:var(--muted);margin:.18rem 0;letter-spacing:.04em}
     .stage-bonus-chips{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.3rem}
     .stage-bonus-chip{font-size:.6rem;padding:.1rem .35rem;border-radius:3px;background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.25)}
+    .boss-debuff-entry{margin-top:.4rem;padding:.35rem .4rem;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.18);border-radius:5px}
+    .boss-debuff-entry+.boss-debuff-entry{margin-top:.3rem}
+    .boss-debuff-hdr{display:flex;align-items:baseline;gap:.4rem;margin-bottom:.15rem}
+    .boss-debuff-name{font-size:.68rem;font-weight:700;color:var(--text)}
+    .boss-debuff-label{font-size:.58rem;color:#f87171;text-transform:uppercase;letter-spacing:.06em}
+    .boss-debuff-desc{font-size:.59rem;color:var(--muted);line-height:1.45;margin-bottom:.25rem}
+    .boss-debuff-stats{display:flex;flex-wrap:wrap;gap:.2rem}
+    .boss-stat-chip{font-size:.58rem;padding:.1rem .3rem;border-radius:3px;white-space:nowrap}
+    .boss-stat-chip.exploited{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.28)}
+    .boss-stat-chip.matched{background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.22)}
 
     /* ─── REVEAL SCREEN ──────────────────────────────── */
     #screen-reveal{background:var(--reveal-grad);justify-content:center}
@@ -937,6 +947,76 @@ const BOSSES={
   alabasta:    ['Crocodile'],
 };
 
+// Thematic debuffs — each boss tests specific stats. Low team avg = heavy penalty.
+// tests: [{ stat, required (0-100 threshold), severity (0-1 weight of penalty) }]
+const BOSS_DEBUFFS={
+  'Crocodile':{
+    label:'Master Schemer',
+    desc:'Plans within plans — a crew without sharp strategy walks straight into his trap',
+    tests:[{stat:'strategy',required:70,severity:.55}],
+  },
+  'Lucci':{
+    label:"Assassin's Precision",
+    desc:'Rokushiki at its peak — only elite fighters with Haki have a chance',
+    tests:[{stat:'combat',required:68,severity:.40},{stat:'haki',required:58,severity:.28}],
+  },
+  'Enel':{
+    label:"God's Immunity",
+    desc:'Lightning cannot be stopped without Haki — crews relying on brute force are helpless',
+    tests:[{stat:'haki',required:72,severity:.58}],
+  },
+  'Magellan':{
+    label:'Venom Hydra',
+    desc:'His poison overwhelms any crew without strong healing and support',
+    tests:[{stat:'support',required:62,severity:.50},{stat:'combat',required:60,severity:.22}],
+  },
+  'Kaido':{
+    label:'Strongest Creature Alive',
+    desc:'Invincible scales — only advanced Haki and overwhelming combat can scratch him',
+    tests:[{stat:'haki',required:78,severity:.48},{stat:'combat',required:80,severity:.42}],
+  },
+  'Doflamingo':{
+    label:'Heavenly Yaksha',
+    desc:'Strings and schemes everywhere — poor strategists become his puppets',
+    tests:[{stat:'strategy',required:66,severity:.45},{stat:'leadership',required:60,severity:.22}],
+  },
+  'Kizaru':{
+    label:'Speed of Light',
+    desc:"You can't fight an Admiral head-on — only Navigation saves the crew from annihilation",
+    tests:[{stat:'navigation',required:68,severity:.52},{stat:'haki',required:65,severity:.25}],
+  },
+  'Big Mom':{
+    label:"Yonko's Domain",
+    desc:'Her homies control every inch of sea — without Navigation you never escape',
+    tests:[{stat:'navigation',required:62,severity:.40},{stat:'combat',required:65,severity:.28}],
+  },
+  'Katakuri':{
+    label:'Future Sight',
+    desc:'He reads every move before you make it — high strategy is the only counter',
+    tests:[{stat:'strategy',required:72,severity:.48},{stat:'combat',required:70,severity:.30}],
+  },
+  'Akainu':{
+    label:'Absolute Justice',
+    desc:'Magma that melts battleships — without elite combat and Haki, your crew is ash',
+    tests:[{stat:'combat',required:76,severity:.44},{stat:'haki',required:68,severity:.30}],
+  },
+  'Aokiji':{
+    label:'Lazy Justice',
+    desc:'Casual and overwhelming — his ice reshapes the battlefield without effort',
+    tests:[{stat:'combat',required:70,severity:.35},{stat:'navigation',required:55,severity:.22}],
+  },
+  'Garp':{
+    label:'Hero of the Marines',
+    desc:'His legendary presence shatters crew morale — only strong leaders keep the team together',
+    tests:[{stat:'leadership',required:66,severity:.38},{stat:'combat',required:72,severity:.30}],
+  },
+  'Sengoku':{
+    label:'The Grand Tactician',
+    desc:"The Fleet Admiral's battlefield mastery — poor strategists and leaders are outclassed entirely",
+    tests:[{stat:'strategy',required:65,severity:.38},{stat:'leadership',required:70,severity:.32}],
+  },
+};
+
 // Returns boss entries with computed stats (sourced from FALLBACK so always available)
 function getScenarioBossData(sc){
   const names=new Set(BOSSES[sc.id]||[]);
@@ -944,20 +1024,52 @@ function getScenarioBossData(sc){
   return FALLBACK.filter(c=>names.has(c.name)).map(c=>({...c,stats:computeStats(c)}));
 }
 
-// Additional difficulty multiplier driven by boss strength
-function computeBossMod(sc){
+// Team-aware boss modifier. Pass null team for generic threat-level estimate.
+function computeBossMod(sc,team){
   const bosses=getScenarioBossData(sc);
   if(!bosses.length)return 1.0;
-  const scores=bosses.map(b=>{let s=0;for(const[k,w]of Object.entries(sc.weights))s+=(b.stats[k]||0)*w;return s;});
-  const avg=scores.reduce((a,b)=>a+b,0)/scores.length;
-  const countPenalty=(bosses.length-1)*0.015;
-  return Math.max(0.75,1-(avg/100)*0.20-countPenalty);
+  let totalMod=1.0;
+  for(const boss of bosses){
+    const debuff=BOSS_DEBUFFS[boss.name];
+    if(debuff&&team&&team.length){
+      for(const{stat,required,severity}of debuff.tests){
+        const avg=team.reduce((s,c)=>s+(c.stats[stat]||0),0)/team.length;
+        if(avg<required){
+          const gap=(required-avg)/required; // 0→1
+          const penalty=Math.pow(gap,1.3)*severity;
+          totalMod*=(1-penalty);
+        }
+      }
+    }else{
+      // Generic estimate (no team or no defined debuff)
+      let s=0;for(const[k,w]of Object.entries(sc.weights))s+=(boss.stats[k]||0)*w;
+      totalMod*=Math.max(0.82,1-(s/100)*0.18);
+    }
+  }
+  if(bosses.length>1)totalMod*=(1-(bosses.length-1)*0.02);
+  return Math.max(0.28,totalMod);
+}
+
+// Build per-boss debuff report for results display
+function getBossDebuffReport(sc,team){
+  if(!team||!team.length)return[];
+  const report=[];
+  for(const name of(BOSSES[sc.id]||[])){
+    const debuff=BOSS_DEBUFFS[name];
+    if(!debuff)continue;
+    const details=debuff.tests.map(({stat,required})=>{
+      const avg=Math.round(team.reduce((s,c)=>s+(c.stats[stat]||0),0)/team.length);
+      return{stat,required,avg,exploited:avg<required};
+    });
+    report.push({boss:name,label:debuff.label,desc:debuff.desc,details});
+  }
+  return report;
 }
 
 // 0-100 threat display value (0 = no bosses, 100 = maximum threat)
 function getBossThreatLevel(sc){
-  const mod=computeBossMod(sc);
-  return mod>=1?0:Math.round((1-mod)/(0.25)*100);
+  const mod=computeBossMod(sc,null);
+  return mod>=1?0:Math.round((1-mod)/0.25*100);
 }
 
 // ═══ ROLE CAPS — max of each role per team ═══════════════════════════════════
@@ -1149,10 +1261,11 @@ function computeStats(c){
 }
 
 function scoreTeam(team,sc){
-  if(!team||!team.length)return{percentage:0,crewScore:0,afterBonuses:0,afterDifficulty:0,breakdown:[],bonuses:{diversity:0,leader:0,fruit:0,crew:0,haki:0},synergies:[],difficultyMod:sc.difficultyMod,bossMod:1,bossNames:[]};
+  if(!team||!team.length)return{percentage:0,crewScore:0,afterBonuses:0,afterDifficulty:0,breakdown:[],bonuses:{diversity:0,leader:0,fruit:0,crew:0,haki:0},synergies:[],difficultyMod:sc.difficultyMod,bossMod:1,bossNames:[],bossDebuffs:[]};
   const{weights}=sc;
   const difficultyMod=sc.difficultyMod;
-  const bossMod=computeBossMod(sc);
+  const bossMod=computeBossMod(sc,team);
+  const bossDebuffs=getBossDebuffReport(sc,team);
   const bossNames=(BOSSES[sc.id]||[]);
 
   // ── Stage 1: raw crew stat score (no difficulty / boss applied yet) ──
@@ -1184,7 +1297,7 @@ function scoreTeam(team,sc){
   // Breakdown scores shown relative to crewScore for stage-1 display
   const rs=breakdown.reduce((s,b)=>s+b.raw,0)||1;
   const scaledBreakdown=breakdown.map(b=>({character:b.character,score:Math.round((b.raw/rs)*crewScore)})).sort((a,b)=>b.score-a.score);
-  return{percentage,crewScore,afterBonuses,afterDifficulty,breakdown:scaledBreakdown,bonuses:{diversity:Math.round((div-1)*100),leader:hasLeader?6:0,fruit:Math.round((fb-1)*100),crew:Math.round((crewBonus-1)*100),haki:Math.round((hakiMult-1)*100)},synergies:activeSynergies,difficultyMod,mismatchPenalty,bossMod,bossNames};
+  return{percentage,crewScore,afterBonuses,afterDifficulty,breakdown:scaledBreakdown,bonuses:{diversity:Math.round((div-1)*100),leader:hasLeader?6:0,fruit:Math.round((fb-1)*100),crew:Math.round((crewBonus-1)*100),haki:Math.round((hakiMult-1)*100)},synergies:activeSynergies,difficultyMod,mismatchPenalty,bossMod,bossNames,bossDebuffs};
 }
 
 // ═══ POOL GENERATOR ══════════════════════════════════════════════════════════
@@ -2099,7 +2212,22 @@ function showResults(){
             <span class="stage-score boss-col" id="boss-score-${prefix}">—</span>
           </div>
           <div class="stage-subbar"><div class="stage-subbar-fill" id="boss-bar-${prefix}" style="background:#f87171"></div></div>
-          <div class="stage-detail-txt">${result.bossNames.length?`Boss${result.bossNames.length>1?'es':''}: <strong style="color:var(--text)">${bossNames}</strong>`:'No bosses for this battleground'}</div>
+          ${result.bossDebuffs&&result.bossDebuffs.length
+            ? result.bossDebuffs.map(b=>`
+              <div class="boss-debuff-entry">
+                <div class="boss-debuff-hdr">
+                  <span class="boss-debuff-name">${b.boss}</span>
+                  <span class="boss-debuff-label">${b.label}</span>
+                </div>
+                <div class="boss-debuff-desc">${b.desc}</div>
+                <div class="boss-debuff-stats">
+                  ${b.details.map(d=>`<span class="boss-stat-chip ${d.exploited?'exploited':'matched'}">
+                    ${STAT_INFO[d.stat]?STAT_INFO[d.stat].icon+' ':''}<strong>${d.stat}</strong> ${d.avg}/${d.required} ${d.exploited?'✗':'✓'}
+                  </span>`).join('')}
+                </div>
+              </div>`).join('')
+            : `<div class="stage-detail-txt">No bosses for this battleground</div>`
+          }
         </div>
       </div>
 

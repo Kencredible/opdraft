@@ -1147,11 +1147,11 @@ function scoreTeam(team,sc){
   const hakiMult=conquerors>=3?1.10:conquerors>=2?1.07:conquerors>=1?1.04:avgHaki>=70?1.02:1;
   const activeSynergies=getActiveSynergies(team);
   const synergyPts=Math.round(synDelta(activeSynergies,weights));
-  const afterBonuses=Math.min(99,Math.max(3,Math.round(crewScore*div*lb*fb*crewBonus*hakiMult)+synergyPts));
+  const afterBonuses=Math.max(3,Math.round(crewScore*div*lb*fb*crewBonus*hakiMult)+synergyPts);
 
   // ── Stage 3: battleground difficulty + crew mismatch penalty ──
   const mismatchPenalty=computeMismatchPenalty(team,sc);
-  const afterDifficulty=Math.min(99,Math.max(3,Math.round(afterBonuses*difficultyMod*mismatchPenalty)));
+  const afterDifficulty=Math.max(3,Math.round(afterBonuses*difficultyMod*mismatchPenalty));
 
   // ── Stage 4: boss threat ──
   const percentage=Math.min(99,Math.max(3,Math.round(afterDifficulty*bossMod)));
@@ -2102,13 +2102,13 @@ function showResults(){
     const st=document.getElementById(stageId);
     if(st){st.classList.add('revealed');}
     const b=document.getElementById(barId);
-    if(b)setTimeout(()=>{b.style.width=pct+'%';},60);
+    if(b)setTimeout(()=>{b.style.width=Math.min(100,pct)+'%';},60);
   }
 
   // Master bar transitions through each intermediate value
   function setBar(prefix,pct){
     const b=document.getElementById('bar-'+prefix);
-    if(b)b.style.width=pct+'%';
+    if(b)b.style.width=Math.min(100,pct)+'%';
   }
   function setScoreNum(id,val){
     const el=document.getElementById(id);

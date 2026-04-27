@@ -189,11 +189,13 @@
     .turn-bar-left{display:flex;flex-direction:column;align-items:flex-start}
     .turn-text{font-family:'Cinzel',serif;font-size:.9rem;color:var(--gold)}
     .pick-num{font-size:.72rem;color:var(--muted);margin-top:.08rem}
-    .char-controls{display:flex;gap:.4rem;margin-bottom:.55rem}
-    .char-controls input,.char-controls select{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.38rem .65rem;font-size:.8rem;font-family:inherit}
-    .char-controls input{flex:1}.char-controls input::placeholder{color:var(--muted)}
-    .char-controls input:focus,.char-controls select:focus{outline:none;border-color:var(--gold)}
-    .char-controls select option{background:#0f1829}
+    .char-controls{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.55rem}
+    .char-controls input{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.38rem .65rem;font-size:.8rem;font-family:inherit;width:100%}
+    .char-controls input::placeholder{color:var(--muted)}
+    .char-controls input:focus{outline:none;border-color:var(--gold)}
+    .filter-pills{display:flex;gap:.28rem;flex-wrap:wrap}
+    .filter-pill{background:transparent;border:1px solid var(--border);border-radius:20px;color:var(--muted);padding:.22rem .65rem;font-size:.68rem;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.4}
+    .filter-pill:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
     /* Character grid */
     .char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:.45rem;overflow-y:auto;flex:1;padding-right:3px;align-content:start}
     .char-grid::-webkit-scrollbar{width:4px}.char-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
@@ -538,25 +540,14 @@
         </div>
         <div class="char-controls">
           <input type="text" id="char-search" placeholder="🔍 Search pool..." />
-          <select id="role-filter">
-            <option value="">All</option>
-            <optgroup label="── By Specialty ──">
-              <option value="__combatants">⚔️ Combatants</option>
-              <option value="__tacticians">🧠 Tacticians</option>
-              <option value="__commanders">👑 Commanders</option>
-              <option value="__navigators">🧭 Navigators</option>
-              <option value="__support">🛡️ Support</option>
-            </optgroup>
-            <optgroup label="── By Role ──">
-              <option value="emperor">Emperor</option><option value="captain">Captain</option>
-              <option value="marine">Marine</option><option value="revolutionary">Revolutionary</option>
-              <option value="swordsman">Swordsman</option><option value="fighter">Fighter</option>
-              <option value="sniper">Sniper</option><option value="navigator">Navigator</option>
-              <option value="doctor">Doctor</option><option value="cook">Cook</option>
-              <option value="engineer">Engineer</option><option value="musician">Musician</option>
-              <option value="scholar">Scholar</option>
-            </optgroup>
-          </select>
+          <div class="filter-pills" id="filter-pills">
+            <button class="filter-pill active" data-filter="" data-color="var(--gold)">All</button>
+            <button class="filter-pill" data-filter="__combatants" data-color="#f87171">⚔️ Combatants</button>
+            <button class="filter-pill" data-filter="__tacticians" data-color="#fbbf24">🧠 Tacticians</button>
+            <button class="filter-pill" data-filter="__commanders" data-color="#34d399">👑 Commanders</button>
+            <button class="filter-pill" data-filter="__navigators" data-color="#38bdf8">🧭 Navigators</button>
+            <button class="filter-pill" data-filter="__support"    data-color="#fb923c">🛡️ Support</button>
+          </div>
         </div>
         <div id="char-grid" class="char-grid"><div class="loading-msg">⚓ Loading crew manifest...</div></div>
       </div>
@@ -1412,15 +1403,13 @@ function renderPickSlots(pid,team,budgetMode,budget){
 function renderCharGrid(pool,draft,onPick,budgetMode){
   const grid=document.getElementById('char-grid');
   const q=document.getElementById('char-search').value.trim().toLowerCase();
-  const rf=document.getElementById('role-filter').value.toLowerCase();
+  const rf=activeFilter;
   const filtered=pool.filter(c=>{
     if(q&&!c.name.toLowerCase().includes(q)&&!(c.job||'').toLowerCase().includes(q))return false;
     if(rf){
       if(rf.startsWith('__')){
-        // Specialty group filter
         if(charSpecialty(c)!==rf.slice(2))return false;
       } else {
-        // Role type filter
         if(!c.stats.roleType.includes(rf)&&!(c.job||'').toLowerCase().includes(rf))return false;
       }
     }
@@ -1577,7 +1566,7 @@ function selectScenario(sc){
 }
 
 // ═══ GAME STATE ═══════════════════════════════════════════════════════════════
-let allChars=[],poolChars=[],draft=null,gameMode=null,budgetMode=false,refreshGrid=null;
+let allChars=[],poolChars=[],draft=null,gameMode=null,budgetMode=false,refreshGrid=null,activeFilter='';
 let isBlindScenario=false;
 let selectedOpponent=null;
 
@@ -1610,6 +1599,29 @@ document.getElementById('btn-budget').addEventListener('click',()=>{
 });
 
 // ─ Scenario ───────────────────────────────────────────────────────────────────
+// ═══ FILTER PILLS ════════════════════════════════════════════════════════════
+function setActivePill(filter){
+  document.querySelectorAll('.filter-pill').forEach(p=>{
+    const isActive=p.dataset.filter===filter;
+    const color=p.dataset.color||'var(--gold)';
+    p.classList.toggle('active',isActive);
+    if(isActive){
+      p.style.borderColor=color;
+      p.style.color=color;
+      p.style.background=`color-mix(in srgb,${color} 12%,transparent)`;
+    } else {
+      p.style.borderColor='';p.style.color='';p.style.background='';
+    }
+  });
+}
+document.getElementById('filter-pills').addEventListener('click',e=>{
+  const pill=e.target.closest('.filter-pill');
+  if(!pill)return;
+  activeFilter=pill.dataset.filter;
+  setActivePill(activeFilter);
+  if(refreshGrid)refreshGrid();
+});
+
 document.getElementById('btn-randomize').addEventListener('click',()=>{
   const sc=SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)];
   isBlindScenario=true;
@@ -1723,10 +1735,11 @@ async function startDraft(){
   const poolSize=budgetMode?20:30;
   poolChars=generatePool(allChars.filter(c=>!bossNames.has(c.name)),poolSize);
   updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
-  document.getElementById('char-search').value='';document.getElementById('role-filter').value='';
+  document.getElementById('char-search').value='';
+  activeFilter='';
+  setActivePill('');
   refreshGrid=()=>renderCharGrid(poolChars,draft,handlePick,budgetMode);
   document.getElementById('char-search').oninput=refreshGrid;
-  document.getElementById('role-filter').onchange=refreshGrid;
   refreshGrid();
 
   // If AI won the coin toss and goes first, trigger its opening pick

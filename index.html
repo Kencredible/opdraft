@@ -470,6 +470,47 @@
     .glos-rec-stat-fill{height:100%;border-radius:2px}
     .glos-rec-stat-val{font-size:.58rem;color:var(--text);width:18px;text-align:right;flex-shrink:0;font-weight:600}
 
+    /* ─── BOSSES GLOSSARY ───────────────────────────────── */
+    .glos-boss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.85rem;margin-top:.25rem}
+    .glos-boss-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:.9rem;display:flex;flex-direction:column;gap:.45rem;transition:border-color .18s}
+    .glos-boss-card:hover{border-color:rgba(248,113,113,.35)}
+    .glos-boss-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+    .glos-boss-name{font-family:'Cinzel',serif;font-size:.95rem;color:var(--text);font-weight:700}
+    .glos-boss-label{font-size:.58rem;color:#f87171;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:4px;padding:.1rem .38rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;align-self:flex-start}
+    .glos-boss-bgs{display:flex;flex-wrap:wrap;gap:.25rem}
+    .glos-boss-bg-tag{font-size:.58rem;padding:.08rem .35rem;border-radius:4px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,162,39,.3)}
+    .glos-boss-random{font-size:.56rem;color:var(--muted);font-style:italic}
+    .glos-boss-desc{font-size:.64rem;color:var(--muted);line-height:1.55}
+    .glos-boss-tests-hdr{font-size:.6rem;color:var(--text);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-top:.15rem}
+    .glos-boss-test-row{display:flex;align-items:center;gap:.38rem}
+    .glos-boss-test-icon{width:14px;text-align:center;font-size:.68rem;flex-shrink:0}
+    .glos-boss-test-name{width:72px;font-size:.62rem;color:var(--muted);flex-shrink:0}
+    .glos-boss-test-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+    .glos-boss-test-fill{height:100%;border-radius:2px}
+    .glos-boss-test-val{font-size:.6rem;color:var(--text);font-weight:700;min-width:24px;text-align:right;flex-shrink:0}
+    .glos-boss-severity{font-size:.55rem;padding:.06rem .28rem;border-radius:3px;flex-shrink:0;font-weight:600}
+    .glos-boss-sev-high{background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.25)}
+    .glos-boss-sev-med{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.2)}
+    .glos-boss-sev-low{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.18)}
+
+    /* ─── SYNERGIES GLOSSARY ─────────────────────────────── */
+    .glos-syn-section{margin-bottom:1.75rem}
+    .glos-syn-section-hdr{font-family:'Cinzel',serif;font-size:.82rem;color:var(--gold);border-bottom:1px solid var(--border);padding-bottom:.45rem;margin-bottom:.8rem;letter-spacing:.05em}
+    .glos-syn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.75rem}
+    .glos-syn-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:.85rem;display:flex;flex-direction:column;gap:.42rem;transition:border-color .18s}
+    .glos-syn-card:hover{border-color:rgba(201,162,39,.35)}
+    .glos-syn-hdr{display:flex;align-items:center;gap:.45rem}
+    .glos-syn-icon{font-size:1.2rem;flex-shrink:0;line-height:1}
+    .glos-syn-name{font-family:'Cinzel',serif;font-size:.82rem;color:var(--text);font-weight:700;line-height:1.2}
+    .glos-syn-desc{font-size:.63rem;color:var(--muted);line-height:1.5;font-style:italic}
+    .glos-syn-members-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+    .glos-syn-members{display:flex;flex-wrap:wrap;gap:.2rem}
+    .glos-syn-member{font-size:.58rem;padding:.07rem .3rem;border-radius:4px;background:rgba(201,162,39,.08);color:var(--gold);border:1px solid rgba(201,162,39,.22)}
+    .glos-syn-bonuses{display:flex;flex-wrap:wrap;gap:.2rem}
+    .glos-syn-bonus{font-size:.6rem;padding:.08rem .32rem;border-radius:4px;font-weight:700}
+    .glos-syn-bonus-pos{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.25)}
+    .glos-syn-bonus-neg{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.25)}
+
     ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
 
     /* ─── THEME TOGGLE ───────────────────────────────── */
@@ -680,6 +721,8 @@
     <div class="glos-tabs">
       <button class="glos-tab active" id="tab-chars">⚔️ Characters</button>
       <button class="glos-tab" id="tab-bgs">🗺️ Battlegrounds</button>
+      <button class="glos-tab" id="tab-bosses">☠️ Bosses</button>
+      <button class="glos-tab" id="tab-synergies">⚡ Synergies</button>
     </div>
   </div>
   <div class="glos-body">
@@ -692,6 +735,12 @@
         <nav class="glos-bg-sidenav" id="glos-bg-sidenav"></nav>
         <div class="glos-bg-detail" id="glos-bg-detail"></div>
       </div>
+    </div>
+    <div id="glos-bosses-panel" style="display:none">
+      <div class="glos-boss-grid" id="glos-boss-grid"></div>
+    </div>
+    <div id="glos-synergies-panel" style="display:none">
+      <div id="glos-syn-content"></div>
     </div>
   </div>
 </div>
@@ -2463,13 +2512,18 @@ const GLOS_STATS=[
 ];
 const TIER_CLS={'S+':'glos-tier-sp','S':'glos-tier-s','A':'glos-tier-a','B':'glos-tier-b','C':'glos-tier-c'};
 
+const GLOS_ALL_TABS=['tab-chars','tab-bgs','tab-bosses','tab-synergies'];
+const GLOS_ALL_PANELS=['glos-chars-panel','glos-bgs-panel','glos-bosses-panel','glos-synergies-panel'];
+
+function switchGlossaryTab(tabId,panelId,renderFn){
+  GLOS_ALL_TABS.forEach(id=>document.getElementById(id).classList.toggle('active',id===tabId));
+  GLOS_ALL_PANELS.forEach(id=>document.getElementById(id).style.display=id===panelId?'':'none');
+  if(renderFn)renderFn();
+}
+
 async function openGlossary(){
   showScreen('screen-glossary');
-  // Switch back to characters tab state
-  document.getElementById('glos-chars-panel').style.display='';
-  document.getElementById('glos-bgs-panel').style.display='none';
-  document.getElementById('tab-chars').classList.add('active');
-  document.getElementById('tab-bgs').classList.remove('active');
+  switchGlossaryTab('tab-chars','glos-chars-panel');
   document.getElementById('glos-search').value='';
   // Load roster if not yet populated (glossary can be opened before any draft)
   if(!allChars.length){
@@ -2594,6 +2648,92 @@ function renderBGDetail(sc){
   </div>`;
 }
 
+// ─── Boss glossary ───────────────────────────────────────────────────────────
+function buildBossLocationMap(){
+  const map={};
+  for(const[scId,names]of Object.entries(BOSSES)){
+    const sc=SCENARIOS.find(s=>s.id===scId);
+    if(!sc)continue;
+    const isMulti=names.length>1;
+    for(const name of names){
+      if(!map[name])map[name]=[];
+      map[name].push({label:sc.shortName,isMulti});
+    }
+  }
+  return map;
+}
+
+function renderGlossaryBosses(){
+  const grid=document.getElementById('glos-boss-grid');
+  const bossLocations=buildBossLocationMap();
+  grid.innerHTML=Object.entries(BOSS_DEBUFFS).map(([name,debuff])=>{
+    const locs=bossLocations[name]||[];
+    const bgTags=locs.map(l=>`<span class="glos-boss-bg-tag">${l.label}</span>`).join('');
+    const isRandom=locs.some(l=>l.isMulti);
+    const testRows=debuff.tests.map(t=>{
+      const info=STAT_INFO[t.stat];
+      const sevLabel=t.severity>=.45?'High':t.severity>=.25?'Med':'Low';
+      const sevCls=t.severity>=.45?'glos-boss-sev-high':t.severity>=.25?'glos-boss-sev-med':'glos-boss-sev-low';
+      return`<div class="glos-boss-test-row">
+        <span class="glos-boss-test-icon">${info.icon}</span>
+        <span class="glos-boss-test-name">${info.label}</span>
+        <div class="glos-boss-test-bar"><div class="glos-boss-test-fill" style="width:${t.required}%;background:${info.color}"></div></div>
+        <span class="glos-boss-test-val">${t.required}</span>
+        <span class="glos-boss-severity ${sevCls}">${sevLabel}</span>
+      </div>`;
+    }).join('');
+    return`<div class="glos-boss-card">
+      <div class="glos-boss-hdr">
+        <div class="glos-boss-name">${name}</div>
+        <div class="glos-boss-label">${debuff.label}</div>
+      </div>
+      <div class="glos-boss-bgs">${bgTags}</div>
+      ${isRandom?`<div class="glos-boss-random">⚄ Randomly drawn — one boss chosen per session</div>`:''}
+      <div class="glos-boss-desc">${debuff.desc}</div>
+      <div class="glos-boss-tests-hdr">Team Requirements</div>
+      <div style="display:flex;flex-direction:column;gap:.3rem">${testRows}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Synergies glossary ───────────────────────────────────────────────────────
+const SYNERGY_GROUPS=[
+  {label:'🏴‍☠️ Straw Hat Crew',   ids:['monster_trio','straw_hat_core','straw_hat_full','navigator_duo','ship_doctors','jinbe_luffy','zoro_mihawk','sanji_nami']},
+  {label:'🏛️ Marine Forces',      ids:['marine_legends','smoker_tashigi','garp_koby','admiral_pair','triple_admiral']},
+  {label:'🤝 Alliances & Bonds',  ids:['flsmp_alliance','shanks_beckman','revolutionary_duo','whitebeard_sons','shanks_luffy']},
+  {label:'💀 Factions & Rivals',  ids:['blackbeard_core','blackbeard_full','warlords_gambit','big_mom_vanguard','kaido_king','kid_killer','law_bepo','cross_guild','sea_dominance','supernovas']},
+];
+
+function renderGlossarySynergies(){
+  const container=document.getElementById('glos-syn-content');
+  const synMap=Object.fromEntries(SYNERGIES.map(s=>[s.id,s]));
+  container.innerHTML=SYNERGY_GROUPS.map(group=>{
+    const cards=group.ids.map(id=>{
+      const s=synMap[id];if(!s)return'';
+      const members=s.members.map(m=>`<span class="glos-syn-member">${m}</span>`).join('');
+      const bonuses=Object.entries(s.bonus).map(([k,v])=>{
+        const info=STAT_INFO[k];
+        const cls=v>0?'glos-syn-bonus-pos':'glos-syn-bonus-neg';
+        return`<span class="glos-syn-bonus ${cls}">${info?info.icon:k} ${v>0?'+':''}${v}</span>`;
+      }).join('');
+      return`<div class="glos-syn-card">
+        <div class="glos-syn-hdr">
+          <span class="glos-syn-icon">${s.icon}</span>
+          <span class="glos-syn-name">${s.name}</span>
+        </div>
+        <div class="glos-syn-desc">${s.desc}</div>
+        <div class="glos-syn-members-label">Requires</div>
+        <div class="glos-syn-members">${members}</div>
+        <div class="glos-syn-bonuses">${bonuses}</div>
+      </div>`;
+    }).join('');
+    return`<div class="glos-syn-section">
+      <div class="glos-syn-section-hdr">${group.label}</div>
+      <div class="glos-syn-grid">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
 // ═══ THEME TOGGLE ════════════════════════════════════════════════════════════
 (function(){
   const btn=document.getElementById('theme-toggle');
@@ -2613,19 +2753,10 @@ function renderBGDetail(sc){
 
 document.getElementById('btn-glossary').addEventListener('click',openGlossary);
 document.getElementById('btn-glos-back').addEventListener('click',()=>showScreen('screen-home'));
-document.getElementById('tab-chars').addEventListener('click',()=>{
-  document.getElementById('glos-chars-panel').style.display='';
-  document.getElementById('glos-bgs-panel').style.display='none';
-  document.getElementById('tab-chars').classList.add('active');
-  document.getElementById('tab-bgs').classList.remove('active');
-});
-document.getElementById('tab-bgs').addEventListener('click',()=>{
-  document.getElementById('glos-chars-panel').style.display='none';
-  document.getElementById('glos-bgs-panel').style.display='';
-  document.getElementById('tab-chars').classList.remove('active');
-  document.getElementById('tab-bgs').classList.add('active');
-  renderGlossaryBGs();
-});
+document.getElementById('tab-chars').addEventListener('click',()=>switchGlossaryTab('tab-chars','glos-chars-panel'));
+document.getElementById('tab-bgs').addEventListener('click',()=>switchGlossaryTab('tab-bgs','glos-bgs-panel',renderGlossaryBGs));
+document.getElementById('tab-bosses').addEventListener('click',()=>switchGlossaryTab('tab-bosses','glos-bosses-panel',renderGlossaryBosses));
+document.getElementById('tab-synergies').addEventListener('click',()=>switchGlossaryTab('tab-synergies','glos-synergies-panel',renderGlossarySynergies));
 document.getElementById('glos-search').addEventListener('input',e=>{
   renderGlossaryChars(e.target.value.trim().toLowerCase());
 });

@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Piece Draft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Open+Sans:wght@400;600&display=swap">
+  <style>
+    :root{
+      --bg:#080d1a;--bg-card:#0f1829;--bg-hover:#17243a;
+      --gold:#c9a227;--gold-light:#e8c547;--gold-dim:rgba(201,162,39,.15);
+      --muted:#6b7fa0;--border:#1e2f48;--text:#e2e8f0;
+      --p1:#3b82f6;--p1-dim:rgba(59,130,246,.15);
+      --p2:#ef4444;--p2-dim:rgba(239,68,68,.15);
+      --fruit:#a78bfa;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    .screen{display:none;min-height:100vh}
+    .screen.active{display:flex;flex-direction:column;align-items:center}
+
+    /* ─── Buttons ────────────────────────────────────── */
+    .btn{padding:.65rem 1.5rem;border:none;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .18s;font-family:inherit;letter-spacing:.02em}
+    .btn-primary{background:var(--gold);color:#080d1a}
+    .btn-primary:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,162,39,.35)}
+    .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+    .btn-secondary{background:transparent;color:var(--gold);border:2px solid var(--gold)}
+    .btn-secondary:hover,.btn-secondary.active{background:var(--gold-dim);transform:translateY(-2px)}
+    .btn-secondary.active{border-color:var(--gold-light);color:var(--gold-light)}
+    .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);font-size:.78rem;padding:.45rem .9rem}
+    .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+    .btn-danger{background:rgba(239,68,68,.15);color:var(--p2);border:1px solid rgba(239,68,68,.35);font-size:.8rem;padding:.45rem 1rem}
+    .btn-danger:hover{background:rgba(239,68,68,.25)}
+
+    /* ─── HOME ───────────────────────────────────────── */
+    #screen-home{justify-content:center;background:radial-gradient(ellipse at 50% 40%,#0f1f3d 0%,#080d1a 65%)}
+    .home-content{display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem;gap:.75rem;max-width:700px;width:100%}
+    .skull{font-size:4.5rem;filter:drop-shadow(0 0 20px rgba(201,162,39,.4))}
+    .title{font-family:'Cinzel',serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;color:var(--gold);line-height:1.05;letter-spacing:.05em;text-shadow:0 0 40px rgba(201,162,39,.25)}
+    .title span{display:block;font-size:.65em;letter-spacing:.4em;color:var(--gold-light)}
+    .subtitle{color:var(--muted);font-size:1rem;margin-bottom:.5rem}
+    /* Step labels */
+    .step-section{width:100%;margin-top:.75rem}
+    .step-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.6rem}
+    .opp-buttons{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+    /* Mode cards */
+    .mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;width:100%;margin-top:.25rem}
+    .mode-card{background:var(--bg-card);border:2px solid var(--border);border-radius:12px;padding:1.1rem 1rem;cursor:pointer;transition:all .18s;text-align:left;display:flex;flex-direction:column;gap:.4rem}
+    .mode-card:hover{border-color:rgba(201,162,39,.5);transform:translateY(-2px)}
+    .mode-card.selected{border-color:var(--gold);background:var(--bg-hover);box-shadow:0 0 16px rgba(201,162,39,.12)}
+    .mc-icon{font-size:1.6rem}
+    .mc-title{font-family:'Cinzel',serif;font-size:.95rem;color:var(--gold)}
+    .mc-desc{font-size:.75rem;color:var(--muted);line-height:1.5}
+    .mc-tag{display:inline-block;font-size:.62rem;padding:.15rem .45rem;border-radius:4px;font-weight:600;margin-top:.1rem;width:fit-content}
+    .mc-tag-budget{background:rgba(201,162,39,.15);color:var(--gold);border:1px solid rgba(201,162,39,.3)}
+    /* Proceed button */
+    .home-proceed{margin-top:.75rem}
+    #step-mode,#step-proceed{display:none}
+    #step-mode.show,#step-proceed.show{display:block}
+
+    /* ─── SCENARIO ───────────────────────────────────── */
+    #screen-scenario{background:var(--bg)}
+    /* ── Coin Toss ── */
+    .ct-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem 1rem;gap:1rem}
+    .ct-title{font-family:'Cinzel',serif;font-size:1.6rem;color:var(--gold);text-align:center}
+    .ct-sub{font-size:.85rem;color:var(--muted);text-align:center}
+    .ct-legend{display:flex;gap:.6rem;align-items:center;font-size:.78rem;margin:.2rem 0}
+    .ct-legend-sep{color:var(--border)}
+    .ct-heads-label{color:#fbbf24}.ct-tails-label{color:#60a5fa}
+    .coin-stage{perspective:800px;margin:1.2rem 0}
+    .coin{width:120px;height:120px;position:relative;transform-style:preserve-3d;transform:rotateY(0deg)}
+    .coin-face{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.8rem;backface-visibility:hidden;border:4px solid rgba(255,255,255,.15);box-shadow:0 4px 24px rgba(0,0,0,.5)}
+    .coin-heads{background:radial-gradient(circle at 35% 35%,#fde68a,#d97706);transform:rotateY(0deg)}
+    .coin-tails{background:radial-gradient(circle at 35% 35%,#93c5fd,#1d4ed8);transform:rotateY(180deg)}
+    @keyframes coinFlip{0%{transform:rotateY(0deg)}100%{transform:rotateY(var(--flip-deg,1800deg))}}
+    .coin.flipping{animation:coinFlip 2s cubic-bezier(.4,0,.2,1) forwards}
+    .coin.landed-heads{transform:rotateY(0deg)}.coin.landed-tails{transform:rotateY(180deg)}
+    .ct-result{font-size:1.1rem;font-family:'Cinzel',serif;text-align:center;min-height:2rem;opacity:0;transition:opacity .5s ease .1s}
+    .ct-result.visible{opacity:1}
+    .ct-winner-name{color:var(--gold);font-size:1.3rem}
+    .ct-winner-sub{color:var(--text);font-size:.9rem}
+    .ct-actions{display:flex;flex-direction:column;align-items:center;gap:.7rem;margin-top:.4rem}
+    .btn-gold{background:linear-gradient(135deg,#d97706,#92400e);color:#fff;border:none;font-size:.88rem;padding:.65rem 1.6rem;border-radius:8px;cursor:pointer;font-weight:600;transition:opacity .2s}
+    .btn-gold:hover{opacity:.85}.btn-gold:disabled{opacity:.4;cursor:not-allowed}
+    /* ── Scenario ── */
+    .sc-page{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;width:100%}
+    .sc-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1080px;margin-bottom:.5rem;flex-wrap:wrap;gap:.75rem}
+    .page-title{font-family:'Cinzel',serif;font-size:clamp(1.3rem,3vw,1.75rem);color:var(--gold)}
+    .page-sub{color:var(--muted);font-size:.82rem;margin-top:.2rem}
+    .scenario-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.875rem;width:100%;max-width:860px;margin:.75rem 0}
+    .scenario-card{background:var(--bg-card);border:2px solid var(--border);border-radius:12px;padding:1rem;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;gap:.35rem}
+    .scenario-card:hover{border-color:rgba(201,162,39,.5);transform:translateY(-2px)}
+    .scenario-card.selected{border-color:var(--gold);background:var(--bg-hover);box-shadow:0 0 20px rgba(201,162,39,.15)}
+    .scenario-card.dimmed{opacity:.42}
+    .sc-banner{display:block;width:calc(100% + 2rem);margin:-1rem -1rem .75rem;height:auto;border-radius:10px 10px 0 0}
+    .sc-arc{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+    .sc-name{font-family:'Cinzel',serif;font-size:.95rem;color:var(--gold);line-height:1.25}
+    .sc-desc{font-size:.74rem;color:var(--muted);line-height:1.5}
+    .sc-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+    .sc-tag{background:var(--gold-dim);border:1px solid rgba(201,162,39,.25);color:var(--gold);font-size:.58rem;padding:.15rem .4rem;border-radius:4px;text-transform:uppercase;letter-spacing:.05em}
+    .sc-diff{font-size:.66rem;color:var(--muted)}.sc-diff span{color:var(--text);font-weight:600}
+    .sc-weights{display:flex;flex-direction:column;gap:.28rem;margin-top:.4rem;padding-top:.45rem;border-top:1px solid var(--border)}
+    .sc-bosses{display:flex;align-items:center;flex-wrap:wrap;gap:.25rem .3rem;margin-top:.38rem;padding-top:.38rem;border-top:1px solid var(--border)}
+    .sc-boss-lbl{font-size:.56rem;text-transform:uppercase;letter-spacing:.08em;color:#f87171;white-space:nowrap;margin-right:.1rem}
+    .sc-boss-tag{font-size:.57rem;padding:.08rem .28rem;border-radius:4px;background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.22)}
+    .dsb-bosses{margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--border)}
+    .dsb-boss-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.18rem}
+    .dsb-boss-threat-val{font-size:.7rem;font-weight:700}
+    .dsb-boss-bar-wrap{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-bottom:.22rem}
+    .dsb-boss-bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
+    .dsb-boss-names{display:flex;flex-wrap:wrap;gap:.2rem .28rem}
+    .dsb-boss-chip{font-size:.58rem;padding:.08rem .26rem;border-radius:4px;background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.22)}
+    /* ── Battleground demand labels ── */
+    .demand-grid{display:flex;flex-direction:column;gap:.28rem}
+    .demand-row{display:flex;align-items:center;gap:.42rem;font-size:.72rem}
+    .demand-icon{font-size:.82rem;width:18px;text-align:center;flex-shrink:0}
+    .demand-name{width:68px;color:var(--muted);flex-shrink:0}
+    .demand-bar-wrap{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+    .demand-bar-fill{height:100%;border-radius:2px;max-width:100%;transition:width .6s ease}
+    .demand-chip{padding:.1rem .5rem;border-radius:10px;border:1px solid;font-size:.65rem;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+    /* mismatch callout in results */
+    .mismatch-detail{display:flex;flex-direction:column;gap:.18rem;margin-top:.35rem}
+    .mismatch-row{display:flex;align-items:center;gap:.4rem;font-size:.63rem;color:var(--muted)}
+    .mismatch-gap{font-weight:700;font-size:.6rem;padding:.08rem .35rem;border-radius:4px;margin-left:auto;white-space:nowrap}
+    .mismatch-gap.gap-0{color:#34d399;background:rgba(52,211,153,.1)}
+    .mismatch-gap.gap-bad{color:#f87171;background:rgba(248,113,113,.1)}
+    .sw-row{display:flex;align-items:center;gap:.35rem}
+    .sw-label{font-size:.62rem;color:var(--muted);width:74px;flex-shrink:0}
+    .sw-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+    .sw-bar-fill{height:100%;border-radius:2px}
+    .sw-pct{font-size:.6rem;color:var(--muted);width:26px;text-align:right;flex-shrink:0}
+    .sc-cta{display:flex;align-items:center;gap:1rem;margin-top:.75rem}
+    .sc-sel-label{font-size:.82rem;color:var(--muted)}.sc-sel-label strong{color:var(--gold)}
+
+    /* ─── DRAFT SCREEN ───────────────────────────────── */
+    #screen-draft{background:var(--bg)}
+    .dsb{width:100%;background:var(--bg-card);border-bottom:1px solid var(--border);flex-shrink:0;overflow:hidden}
+    .dsb-inner{display:flex;align-items:stretch;max-width:1080px;margin:0 auto;min-height:44px}
+    .dsb-banner{width:200px;object-fit:cover;flex-shrink:0;display:none;border-right:1px solid var(--border)}
+    .dsb-content{display:flex;flex-direction:column;justify-content:center;gap:.3rem;padding:.55rem .9rem;flex:1;min-width:0}
+    .dsb-top{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}
+    .dsb-name{font-family:'Cinzel',serif;font-size:.88rem;color:var(--gold);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .dsb-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:.12rem .5rem}
+    .dsb-stats .sw-label{width:68px}
+    .dsb-pool{font-size:.72rem;color:var(--muted);white-space:nowrap}.dsb-pool strong{color:var(--gold)}
+    /* Budget mode banner chip */
+    .dsb-mode-chip{font-size:.62rem;padding:.15rem .5rem;border-radius:4px;font-weight:600;white-space:nowrap}
+    .chip-budget{background:rgba(201,162,39,.15);color:var(--gold);border:1px solid rgba(201,162,39,.3)}
+    .chip-unlimited{background:rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.25)}
+
+    .draft-wrap{flex:1;display:flex;width:100%;max-width:1080px;overflow:hidden}
+    .draft-grid{display:grid;grid-template-columns:195px 1fr 195px;width:100%;overflow:hidden}
+    .side-panel{display:flex;flex-direction:column;padding:.65rem;background:#0b1220;overflow-y:auto}
+    .side-p1{border-right:1px solid var(--border)}.side-p2{border-left:1px solid var(--border)}
+    .panel-hdr{display:flex;justify-content:space-between;align-items:center;padding:.4rem .65rem;border-radius:7px;margin-bottom:.5rem;font-family:'Cinzel',serif;font-size:.78rem}
+    .p1-hdr{background:var(--p1-dim);border:1px solid var(--p1);color:var(--p1)}
+    .p2-hdr{background:var(--p2-dim);border:1px solid var(--p2);color:var(--p2)}
+    .panel-pwr{font-size:.68rem;opacity:.8}
+    /* Budget bar in side panel */
+    .budget-display{margin-bottom:.5rem;padding:.4rem .5rem;background:var(--bg-card);border-radius:6px;border:1px solid var(--border)}
+    .budget-label{font-size:.68rem;color:var(--muted);margin-bottom:.3rem;display:flex;justify-content:space-between}
+    .budget-label strong{color:var(--gold)}
+    .budget-bar-wrap{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+    .budget-bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
+    .p1-budget-fill{background:linear-gradient(90deg,var(--p1),#93c5fd)}
+    .p2-budget-fill{background:linear-gradient(90deg,var(--p2),#fca5a5)}
+    .pick-slots{display:flex;flex-direction:column;gap:.4rem}
+    .pick-slot{background:var(--bg-card);border:1px dashed var(--border);border-radius:8px;padding:.45rem .6rem;min-height:52px;display:flex;align-items:center;color:var(--muted);font-size:.7rem;gap:.45rem}
+    .pick-slot.filled{border-style:solid;border-color:var(--border)}
+    .pick-slot.filled.p1-pick{border-left:3px solid var(--p1)}
+    .pick-slot.filled.p2-pick{border-left:3px solid var(--p2)}
+    .slot-img{width:34px;height:34px;border-radius:5px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;font-family:'Cinzel',serif}
+    .slot-img img{width:100%;height:100%;object-fit:cover;object-position:top center}
+    .slot-info{display:flex;flex-direction:column;gap:.06rem;min-width:0}
+    .slot-name{font-weight:700;font-size:.74rem;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .slot-role{font-size:.6rem;color:var(--muted)}
+    .slot-pwr{font-size:.6rem;color:var(--gold)}
+    .slot-cost{font-size:.58rem;color:var(--gold-light);opacity:.7}
+
+    /* Draft center */
+    .draft-center{display:flex;flex-direction:column;padding:.65rem;overflow:hidden}
+    .turn-bar{display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;margin-bottom:.55rem;background:var(--bg-card);border-radius:8px;border:1px solid var(--border);gap:.5rem}
+    .turn-bar-left{display:flex;flex-direction:column;align-items:flex-start}
+    .turn-text{font-family:'Cinzel',serif;font-size:.9rem;color:var(--gold)}
+    .pick-num{font-size:.72rem;color:var(--muted);margin-top:.08rem}
+    .char-controls{display:flex;gap:.4rem;margin-bottom:.55rem}
+    .char-controls input,.char-controls select{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.38rem .65rem;font-size:.8rem;font-family:inherit}
+    .char-controls input{flex:1}.char-controls input::placeholder{color:var(--muted)}
+    .char-controls input:focus,.char-controls select:focus{outline:none;border-color:var(--gold)}
+    .char-controls select option{background:#0f1829}
+    /* Character grid */
+    .char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:.45rem;overflow-y:auto;flex:1;padding-right:3px;align-content:start}
+    .char-grid::-webkit-scrollbar{width:4px}.char-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .loading-msg{grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--muted)}
+
+    /* Tier header row in grid */
+    .tier-hdr{grid-column:1/-1;display:flex;align-items:center;gap:.5rem;padding:.5rem 0 .2rem;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+    .tier-hdr-line{flex:1;height:1px;background:var(--border)}
+
+    /* Character cards */
+    .char-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;overflow:hidden;position:relative}
+    .char-card:hover{background:var(--bg-hover);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 14px rgba(201,162,39,.12)}
+    .char-card.taken-p1{border-color:var(--p1);opacity:.28;pointer-events:none}
+    .char-card.taken-p2{border-color:var(--p2);opacity:.28;pointer-events:none}
+    .char-card.cant-afford{opacity:.38;pointer-events:none;border-color:rgba(239,68,68,.3)}
+    .char-card.role-capped{opacity:.28;pointer-events:none;border-color:rgba(239,68,68,.18)}
+    .badge-full{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+    /* Crew manifest */
+    .crew-manifest{padding:.4rem .5rem .45rem;border-bottom:1px solid var(--border);margin-bottom:.4rem}
+    .cm-label{font-size:.54rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3rem}
+    .cm-grid{display:flex;flex-wrap:wrap;gap:.22rem .3rem}
+    .cm-pill{font-size:.56rem;padding:.1rem .32rem;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);white-space:nowrap;transition:all .15s}
+    .cm-pill.at-cap{background:rgba(201,162,39,.1);border-color:rgba(201,162,39,.35);color:var(--gold)}
+    /* Card image */
+    .cc-img{width:100%;height:82px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+    .cc-img img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+    .cc-img-fb{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+    .cc-initials{font-family:'Cinzel',serif;font-size:1.2rem;font-weight:900;line-height:1}
+    /* Cost badge overlaid on image */
+    .cost-badge{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.82);border-radius:4px;padding:.12rem .32rem;font-size:.6rem;font-weight:700;font-family:'Cinzel',serif;color:var(--gold);border:1px solid rgba(201,162,39,.3);z-index:1}
+    .cost-badge.unaffordable{color:#f87171;border-color:rgba(239,68,68,.4)}
+    /* Card body */
+    .cc-body{padding:.4rem .45rem .48rem;display:flex;flex-direction:column;gap:.16rem}
+    .cc-name{font-weight:700;font-size:.72rem;line-height:1.25;color:var(--text)}
+    .cc-badge{display:inline-block;font-size:.54rem;padding:.08rem .3rem;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;width:fit-content}
+    .badge-emperor{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+    .badge-captain{background:rgba(251,146,60,.15);color:#fb923c;border:1px solid rgba(251,146,60,.3)}
+    .badge-marine{background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
+    .badge-revolutionary{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+    .badge-swordsman{background:rgba(74,222,128,.12);color:#86efac;border:1px solid rgba(74,222,128,.25)}
+    .badge-default{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}
+    .badge-haki{background:rgba(192,132,252,.15);color:#e879f9;border:1px solid rgba(192,132,252,.35)}
+    .cc-meta{font-size:.6rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cc-fruit{font-size:.58rem;color:var(--fruit);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cc-bar-row{display:flex;align-items:center;gap:.28rem;margin-top:.08rem}
+    .cc-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+    .cc-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px}
+    .cc-pwr{font-size:.6rem;color:var(--gold);font-weight:700;min-width:18px;text-align:right}
+    /* ── 6-attribute stat grid ── */
+    .cc-attrs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px 5px;margin-top:5px}
+    .cc-attr{display:flex;align-items:center;gap:2px}
+    .cc-attr-icon{font-size:.58rem;width:13px;text-align:center;flex-shrink:0;line-height:1}
+    .cc-attr-bar{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+    .cc-attr-bar div{height:100%;border-radius:2px;background:var(--ac,var(--gold))}
+    .cc-attr-val{font-size:.52rem;color:var(--muted);min-width:16px;text-align:right;font-weight:600}
+
+    /* ─── RESULTS ────────────────────────────────────── */
+    .results-page{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;width:100%}
+    .winner-banner{font-family:'Cinzel',serif;font-size:clamp(1rem,2.5vw,1.35rem);color:var(--gold);text-align:center;margin-bottom:1.1rem;padding:.65rem 2rem;background:var(--gold-dim);border:1px solid rgba(201,162,39,.3);border-radius:10px;opacity:0;transition:opacity .6s ease}
+    .results-panels{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;width:100%;max-width:940px;margin-bottom:1.5rem}
+    .result-panel{background:var(--bg-card);border:2px solid var(--border);border-radius:12px;padding:1.1rem}
+    .result-panel.is-winner{border-color:var(--gold);box-shadow:0 0 24px rgba(201,162,39,.15)}
+    .rp-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.65rem}
+    .rp-player{font-family:'Cinzel',serif;font-size:.9rem}
+    .rp-score{font-family:'Cinzel',serif;font-size:2rem;font-weight:700}
+    .rp-sub{font-size:.7rem;color:var(--muted);margin-bottom:.6rem}
+    .rp-bar-wrap{height:9px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:.9rem}
+    .rp-bar-fill{height:100%;border-radius:5px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+    .fill-p1{background:linear-gradient(90deg,var(--p1),#60a5fa)}.fill-p2{background:linear-gradient(90deg,var(--p2),#f87171)}
+    .rp-chars{display:flex;flex-direction:column;gap:.32rem}
+    .rp-char{display:flex;align-items:center;gap:.5rem;padding:.32rem .5rem;background:rgba(255,255,255,.03);border-radius:6px}
+    .rp-char-img{width:28px;height:28px;border-radius:4px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.48rem;font-weight:700;font-family:'Cinzel',serif}
+    .rp-char-img img{width:100%;height:100%;object-fit:cover;object-position:top center}
+    .rp-char-info{flex:1;min-width:0}
+    .rp-char-name{font-size:.76rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .rp-char-role{font-size:.6rem;color:var(--muted)}
+    .rp-char-score{font-size:.72rem;color:var(--gold);font-weight:600;white-space:nowrap}
+    .rp-bonuses{margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--border);font-size:.67rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:.32rem}
+    .bonus-chip{background:rgba(255,255,255,.04);border-radius:4px;padding:.16rem .42rem}
+    /* ── Synergy chips ── */
+    .synergy-panel{margin-top:.5rem;padding:.4rem .5rem;border-top:1px solid var(--border)}
+    .synergy-panel-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.35rem}
+    .synergy-chip{display:flex;align-items:flex-start;gap:.35rem;padding:.3rem .45rem;border-radius:6px;border:1px solid;margin-bottom:.28rem;font-size:.65rem;line-height:1.3}
+    .synergy-chip.syn-pos{background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.3);color:#6ee7b7}
+    .synergy-chip.syn-neg{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.3);color:#fca5a5}
+    .synergy-chip.syn-mix{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.3);color:#fde68a}
+    .syn-icon{font-size:.9rem;flex-shrink:0;margin-top:-.05rem}
+    .syn-body{display:flex;flex-direction:column;gap:.1rem}
+    .syn-name{font-weight:700;font-size:.67rem}
+    .syn-desc{font-size:.58rem;opacity:.8}
+    .syn-delta{font-size:.6rem;font-weight:700;opacity:.9;white-space:nowrap}
+    /* results page synergy chips */
+    .rp-synergies{margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--border)}
+    .rp-syn-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.32rem}
+    .rp-syn-chip{display:flex;align-items:center;gap:.4rem;padding:.28rem .5rem;border-radius:6px;border:1px solid;margin-bottom:.22rem;font-size:.67rem}
+    .rp-syn-chip.syn-pos{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.3);color:#6ee7b7}
+    .rp-syn-chip.syn-neg{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:#fca5a5}
+    .rp-syn-chip.syn-mix{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3);color:#fde68a}
+    .rp-score-num{display:inline-block;min-width:2.2ch;text-align:right}
+    .rp-verdict{margin-top:.8rem;padding:.7rem .85rem;background:rgba(255,255,255,.035);border-left:2px solid var(--gold);border-radius:0 6px 6px 0;font-size:.74rem;line-height:1.7;color:var(--muted);opacity:0;transition:opacity .7s ease .1s}
+    .rp-verdict.visible{opacity:1}
+    .rp-verdict strong{color:var(--text)}
+    /* ── Score stages (breakdown reveal) ── */
+    .score-stage{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease;pointer-events:none}
+    .score-stage.revealed{opacity:1;transform:none;pointer-events:auto}
+    .stage-block{margin-top:.7rem;padding:.6rem .7rem;border-radius:8px;border:1px solid}
+    .stage-block.stage-crew{background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.25)}
+    .stage-block.stage-bonus{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.25)}
+    .stage-block.stage-bground{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.25)}
+    .stage-block.stage-boss{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.25)}
+    .stage-block.stage-final{background:rgba(201,162,39,.09);border-color:rgba(201,162,39,.45);margin-top:.85rem}
+    .stage-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.22rem}
+    .stage-label-txt{font-size:.7rem;font-weight:700;letter-spacing:.03em;display:flex;align-items:center;gap:.35rem}
+    .stage-score{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;white-space:nowrap}
+    .stage-score.crew-col{color:#60a5fa}
+    .stage-score.bonus-col{color:#34d399}
+    .stage-score.bground-col{color:#fbbf24}
+    .stage-score.boss-col{color:#f87171}
+    .stage-score.final-col{color:var(--gold);font-size:1.35rem}
+    .stage-subbar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:.4rem}
+    .stage-subbar-fill{height:100%;border-radius:2px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+    .stage-detail-txt{font-size:.63rem;color:var(--muted);line-height:1.55}
+    .stage-connector{text-align:center;font-size:.7rem;color:var(--muted);margin:.18rem 0;letter-spacing:.04em}
+    .stage-bonus-chips{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.3rem}
+    .stage-bonus-chip{font-size:.6rem;padding:.1rem .35rem;border-radius:3px;background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.25)}
+
+    /* ─── REVEAL SCREEN ──────────────────────────────── */
+    #screen-reveal{background:radial-gradient(ellipse at 50% 30%,#0f1f3d 0%,var(--bg) 65%);justify-content:center}
+    .reveal-page{display:flex;flex-direction:column;align-items:center;padding:2rem 1rem;gap:1.5rem;max-width:580px;width:100%;text-align:center}
+    .reveal-eyebrow{font-size:.68rem;text-transform:uppercase;letter-spacing:.2em;color:var(--muted)}
+    .reveal-title{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;color:var(--gold);text-shadow:0 0 30px rgba(201,162,39,.3);line-height:1.1}
+    .reveal-card{background:var(--bg-card);border:2px solid var(--gold);border-radius:16px;padding:1.5rem;width:100%;box-shadow:0 0 40px rgba(201,162,39,.2);text-align:left;opacity:0;animation:revealDrop .6s cubic-bezier(.22,.61,.36,1) .15s forwards}
+    @keyframes revealDrop{from{opacity:0;transform:translateY(-24px) scale(.97)}to{opacity:1;transform:none}}
+    .rv-banner{display:block;width:calc(100% + 3rem);margin:-1.5rem -1.5rem .8rem;height:auto;border-radius:14px 14px 0 0}
+    .rv-arc{font-size:.62rem;text-transform:uppercase;letter-spacing:.15em;color:var(--muted)}
+    .rv-name{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold);margin:.3rem 0 .5rem}
+    .rv-desc{font-size:.78rem;color:var(--text);line-height:1.65;margin-bottom:.75rem}
+    .rv-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.6rem}
+    .rv-diff{font-size:.66rem;color:var(--muted);margin-bottom:.75rem}.rv-diff span{color:var(--text);font-weight:600}
+    .rv-weights{display:flex;flex-direction:column;gap:.28rem;border-top:1px solid var(--border);padding-top:.7rem}
+    /* Blind state on scenario screen */
+    .scenario-grid.blind-mode .scenario-card{opacity:.2;pointer-events:none;filter:blur(2px)}
+    .blind-banner{background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.25);border-radius:10px;padding:.85rem 1.2rem;text-align:center;color:var(--gold-light);font-size:.82rem;line-height:1.6;margin:.25rem 0}
+    /* Blind mode draft banner override */
+    .dsb-sealed{display:flex;align-items:center;gap:.6rem;font-style:italic;color:var(--muted)}
+    .dsb-sealed strong{color:var(--gold);font-style:normal}
+
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    @media(max-width:820px){
+      .draft-grid{grid-template-columns:1fr}.side-panel{flex-direction:row;flex-wrap:wrap;border:none;border-bottom:1px solid var(--border)}
+      .pick-slots{flex-direction:row;flex:1}.pick-slot{min-width:70px}
+      .results-panels{grid-template-columns:1fr}.mode-cards{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ HOME ══════════════════════════════════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div class="home-content">
+    <div class="skull">☠</div>
+    <h1 class="title">ONE PIECE<br><span>DRAFT</span></h1>
+    <p class="subtitle">Assemble your crew. Conquer the seas.</p>
+
+    <!-- Step 1: Opponent -->
+    <div class="step-section" id="step-opponent">
+      <p class="step-label">Choose Opponent</p>
+      <div class="opp-buttons">
+        <button class="btn btn-secondary" id="btn-vs-ai">⚔️ vs AI</button>
+        <button class="btn btn-secondary" id="btn-vs-player">👥 vs Player</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Draft Mode (hidden until opponent chosen) -->
+    <div class="step-section" id="step-mode">
+      <p class="step-label">Choose Draft Mode</p>
+      <div class="mode-cards">
+        <button class="mode-card" id="btn-unlimited">
+          <div class="mc-icon">♾️</div>
+          <div class="mc-title">Unlimited Draft</div>
+          <div class="mc-desc">Each player picks exactly 5 characters from the shared pool using a snake draft order.</div>
+        </button>
+        <button class="mode-card" id="btn-budget">
+          <div class="mc-icon">💰</div>
+          <div class="mc-title">Budget Draft</div>
+          <div class="mc-desc">Each player has <strong style="color:var(--gold)">5,000 Berri</strong> to spend across a 20-character pool. Stronger characters cost more — pick as many as you can afford.</div>
+          <span class="mc-tag mc-tag-budget">Tier S: 1,800₿ &nbsp;·&nbsp; Tier A: 900₿ &nbsp;·&nbsp; Tier B: 450₿ &nbsp;·&nbsp; Tier C: 200₿ &nbsp;·&nbsp; Tier D: 75₿</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENARIO ═══════════════════════════════════════════════════════════════ -->
+<div id="screen-scenario" class="screen">
+  <div class="sc-page">
+    <div class="sc-header">
+      <div><h1 class="page-title">Choose Your Battleground</h1><p class="page-sub">Pick an arc — then draft your crew to conquer it</p></div>
+      <button class="btn btn-ghost" id="btn-randomize">🎲 Randomize</button>
+    </div>
+    <div id="scenario-grid" class="scenario-grid"></div>
+    <div class="sc-cta">
+      <span class="sc-sel-label" id="sc-sel-label">No arc selected yet</span>
+      <button class="btn btn-primary" id="btn-begin-draft" disabled>Begin Draft →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COIN TOSS ═════════════════════════════════════════════════════════════ -->
+<div id="screen-cointoss" class="screen">
+  <div class="ct-wrap">
+    <div class="ct-title">⚔️ Who Goes First?</div>
+    <div class="ct-sub">Flip the coin to decide the opening pick</div>
+    <div class="ct-legend">
+      <span class="ct-legend-item ct-heads-label">👑 Heads = <strong id="ct-p1-label">Player 1</strong></span>
+      <span class="ct-legend-sep">·</span>
+      <span class="ct-legend-item ct-tails-label">⚓ Tails = <strong id="ct-p2-label">Player 2</strong></span>
+    </div>
+    <div class="coin-stage">
+      <div class="coin" id="ct-coin">
+        <div class="coin-face coin-heads">👑</div>
+        <div class="coin-face coin-tails">⚓</div>
+      </div>
+    </div>
+    <div class="ct-result" id="ct-result"></div>
+    <div class="ct-actions">
+      <button class="btn btn-gold ct-flip-btn" id="btn-flip-coin">🪙 Flip Coin</button>
+      <button class="btn btn-primary" id="btn-start-after-toss" style="display:none">⚔️ Begin Draft →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DRAFT ════════════════════════════════════════════════════════════════ -->
+<div id="screen-draft" class="screen">
+  <div class="dsb">
+    <div class="dsb-inner">
+      <img class="dsb-banner" id="dsb-banner" alt="">
+      <div class="dsb-content">
+        <div class="dsb-top">
+          <span class="dsb-name" id="dsb-name">—</span>
+          <span class="dsb-mode-chip" id="dsb-mode-chip"></span>
+          <span class="dsb-pool" id="dsb-pool"></span>
+        </div>
+        <div class="dsb-stats" id="dsb-stats"></div>
+        <div class="dsb-bosses" id="dsb-bosses"></div>
+      </div>
+    </div>
+  </div>
+  <div class="draft-wrap">
+    <div class="draft-grid">
+      <!-- P1 -->
+      <div class="side-panel side-p1">
+        <div class="panel-hdr p1-hdr"><span>Player 1</span><span class="panel-pwr" id="p1-power">— PWR</span></div>
+        <div class="budget-display" id="p1-budget-display" style="display:none">
+          <div class="budget-label"><span>💰 Berri Budget</span><strong id="p1-budget-left">5,000</strong></div>
+          <div class="budget-bar-wrap"><div class="budget-bar-fill p1-budget-fill" id="p1-budget-bar" style="width:100%"></div></div>
+        </div>
+        <div class="crew-manifest" id="p1-manifest"></div>
+        <div id="p1-picks" class="pick-slots"></div>
+        <div id="p1-synergies"></div>
+      </div>
+      <!-- Center -->
+      <div class="draft-center">
+        <div class="turn-bar">
+          <div class="turn-bar-left">
+            <div class="turn-text" id="draft-turn-text">Loading...</div>
+            <div class="pick-num"  id="draft-pick-num"></div>
+          </div>
+          <button class="btn btn-danger" id="btn-pass" style="display:none">✓ Done Picking</button>
+        </div>
+        <div class="char-controls">
+          <input type="text" id="char-search" placeholder="🔍 Search pool..." />
+          <select id="role-filter">
+            <option value="">All</option>
+            <optgroup label="── By Specialty ──">
+              <option value="__combatants">⚔️ Combatants</option>
+              <option value="__tacticians">🧠 Tacticians</option>
+              <option value="__commanders">👑 Commanders</option>
+              <option value="__navigators">🧭 Navigators</option>
+              <option value="__support">🛡️ Support</option>
+            </optgroup>
+            <optgroup label="── By Role ──">
+              <option value="emperor">Emperor</option><option value="captain">Captain</option>
+              <option value="marine">Marine</option><option value="revolutionary">Revolutionary</option>
+              <option value="swordsman">Swordsman</option><option value="fighter">Fighter</option>
+              <option value="sniper">Sniper</option><option value="navigator">Navigator</option>
+              <option value="doctor">Doctor</option><option value="cook">Cook</option>
+              <option value="engineer">Engineer</option><option value="musician">Musician</option>
+              <option value="scholar">Scholar</option>
+            </optgroup>
+          </select>
+        </div>
+        <div id="char-grid" class="char-grid"><div class="loading-msg">⚓ Loading crew manifest...</div></div>
+      </div>
+      <!-- P2 -->
+      <div class="side-panel side-p2">
+        <div class="panel-hdr p2-hdr"><span id="p2-label">Player 2</span><span class="panel-pwr" id="p2-power">— PWR</span></div>
+        <div class="budget-display" id="p2-budget-display" style="display:none">
+          <div class="budget-label"><span>💰 Berri Budget</span><strong id="p2-budget-left">5,000</strong></div>
+          <div class="budget-bar-wrap"><div class="budget-bar-fill p2-budget-fill" id="p2-budget-bar" style="width:100%"></div></div>
+        </div>
+        <div class="crew-manifest" id="p2-manifest"></div>
+        <div id="p2-picks" class="pick-slots"></div>
+        <div id="p2-synergies"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESULTS ═══════════════════════════════════════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-page">
+    <h1 class="page-title" id="results-arc-name" style="margin-bottom:.75rem"></h1>
+    <div class="winner-banner" id="winner-banner"></div>
+    <div class="results-panels" id="results-panels"></div>
+    <button class="btn btn-primary" id="btn-play-again">⚓ Play Again</button>
+  </div>
+</div>
+
+<!-- ═══ REVEAL ════════════════════════════════════════════════════════════════ -->
+<div id="screen-reveal" class="screen">
+  <div class="reveal-page">
+    <div>
+      <p class="reveal-eyebrow">The sealed battleground is…</p>
+      <h1 class="reveal-title">⚡ Battleground<br>Revealed!</h1>
+    </div>
+    <div id="reveal-card" class="reveal-card"></div>
+    <button class="btn btn-primary" id="btn-see-results" style="font-size:1rem;padding:.8rem 2.2rem">⚔️ See Results →</button>
+  </div>
+</div>
+
+<script>
+// ═══ SCENARIOS ════════════════════════════════════════════════════════════════
+const SCENARIOS=[
+  {id:'marineford', arc:'Marineford Arc',          banner:'assets/Marineford.png',         name:'⚔️ Battle of Marineford', shortName:'Marineford',       desc:"Full-scale war between Marines and Whitebeard Pirates. Overwhelming numbers, Admiral-class enemies, fate of the world at stake.",             difficulty:'Extreme',difficultyMod:.72,weights:{combat:.38,strategy:.27,navigation:.25,haki:.10},tags:['Combat','War','Navigation']},
+  {id:'enies_lobby',arc:'Enies Lobby Arc',         banner:'assets/EniesLobby.png',         name:"🏛️ Siege of Enies Lobby",shortName:'Enies Lobby',      desc:"Infiltrate the World Government's judicial stronghold, defeat CP9, and rescue Robin before she's lost forever.",                            difficulty:'Hard',   difficultyMod:.84,weights:{combat:.42,strategy:.30,navigation:.18,haki:.10},tags:['Combat','Infiltration','Strategy']},
+  {id:'wano',       arc:'Wano Country Arc',        banner:'assets/Onigashima.png',         name:'🗡️ Onigashima Raid',      shortName:'Wano',             desc:"Storm Kaido's fortress and topple the strongest creature in the world. Haki mastery and raw power determine survival.",                     difficulty:'Extreme',difficultyMod:.68,weights:{combat:.44,strategy:.28,haki:.14,leadership:.08,navigation:.06},tags:['Combat','Haki','Raid']},
+  {id:'whole_cake', arc:'Whole Cake Island Arc',   banner:'assets/TottoLand.png',          name:'🎂 Totto Land Escape',    shortName:'Whole Cake Island',desc:"Navigate Big Mom's territory, survive her legendary crew, and escape while being hunted by a Yonko.",                                    difficulty:'Hard',   difficultyMod:.80,weights:{navigation:.30,strategy:.28,support:.18,haki:.12,combat:.12},tags:['Navigation','Strategy','Survival']},
+  {id:'impel_down', arc:'Impel Down Arc',          banner:'assets/ImpelDown.png',          name:'🔒 Impel Down Breakout',  shortName:'Impel Down',       desc:"Infiltrate the world's most impenetrable prison and escape from Level 6. Cunning and endurance above all.",                              difficulty:'Hard',   difficultyMod:.78,weights:{navigation:.42,strategy:.30,combat:.18,support:.10},tags:['Navigation','Infiltration','Strategy']},
+  {id:'dressrosa',  arc:'Dressrosa Arc',           banner:'assets/Dressrosa.png',          name:'🌹 Dressrosa Liberation', shortName:'Dressrosa',        desc:"Dismantle Doflamingo's empire across the island, managing multiple battles simultaneously and protecting civilians.",                    difficulty:'Hard',   difficultyMod:.82,weights:{strategy:.38,combat:.32,navigation:.18,leadership:.12},tags:['Strategy','Combat','Multi-front']},
+  {id:'sabaody',    arc:'Sabaody Archipelago Arc', banner:'assets/SabaodyArchipelago.png', name:'⚡ Sabaody Escape',       shortName:'Sabaody',          desc:"Outmaneuver Admiral Kizaru and Pacifistas — escape before the entire crew is captured.",                                               difficulty:'Medium', difficultyMod:.88,weights:{navigation:.44,strategy:.30,leadership:.08,support:.08,combat:.10},tags:['Navigation','Escape','Strategy']},
+  {id:'skypiea',    arc:'Skypiea Arc',             banner:'assets/Skypiea.png',            name:'☁️ Sky Island Conquest',  shortName:'Skypiea',          desc:"Explore the enigmatic sky island, uncover ancient mysteries, and face the self-proclaimed god Enel.",                                    difficulty:'Medium', difficultyMod:.90,weights:{strategy:.32,combat:.30,navigation:.28,haki:.10},tags:['Exploration','Combat','Strategy']},
+  {id:'alabasta',   arc:'Alabasta Arc',            banner:'assets/Alabasta.png',           name:'🏜️ Kingdom of Alabasta',  shortName:'Alabasta',         desc:"Expose Crocodile's conspiracy before civil war tears the desert kingdom apart. Infiltrate Baroque Works, survive the sandstorms, and topple a Warlord.",difficulty:'Medium', difficultyMod:.86,weights:{strategy:.40,combat:.32,navigation:.18,support:.10},tags:['Strategy','Combat','Infiltration']},
+  {id:'thriller_bark',arc:'Thriller Bark Arc',    banner:'assets/ThrillerBark.png',       name:'🪦 Thriller Bark',        shortName:'Thriller Bark',    desc:"Navigate a fog-shrouded ghost ship crawling with the undead. Recover stolen shadows from Gecko Moria's army before dawn breaks — or become one of them.",difficulty:'Medium', difficultyMod:.85,weights:{combat:.46,strategy:.24,support:.12,navigation:.10,haki:.08},tags:['Combat','Undead','Horror']},
+];
+const STAT_INFO={
+  combat:    {label:'Combat',    icon:'⚔️',color:'#ef4444'},
+  leadership:{label:'Leadership',icon:'👑',color:'#f59e0b'},
+  strategy:  {label:'Strategy',  icon:'🧠',color:'#a78bfa'},
+  navigation:{label:'Navigation',icon:'🧭',color:'#22d3ee'},
+  support:   {label:'Support',   icon:'💊',color:'#22c55e'},
+  haki:      {label:'Haki',      icon:'🔥',color:'#c084fc'},
+};
+
+// ═══ BATTLEGROUND DEMAND SYSTEM ══════════════════════════════════════════════
+// Three stats that players see on every battleground: Combat, Strategy, Navigation.
+// Raw weights stay hidden — displayed as human-readable demand level labels.
+const KEY_DEMAND_STATS=['combat','strategy','navigation'];
+
+const DEMAND_STEPS=[
+  {max:0.07, label:'Very Low',  color:'#6b7fa0', bg:'rgba(107,127,160,.12)'},
+  {max:0.15, label:'Low',       color:'#60a5fa', bg:'rgba(96,165,250,.12)'},
+  {max:0.24, label:'Normal',    color:'#fbbf24', bg:'rgba(251,191,36,.12)'},
+  {max:0.34, label:'High',      color:'#fb923c', bg:'rgba(251,146,60,.12)'},
+  {max:1.00, label:'Very High', color:'#f87171', bg:'rgba(248,113,113,.12)'},
+];
+
+function getDemandStep(weight){
+  return DEMAND_STEPS.find(s=>weight<=s.max)||DEMAND_STEPS[DEMAND_STEPS.length-1];
+}
+function getDemandLevel(weight){
+  return DEMAND_STEPS.findIndex(s=>weight<=s.max);
+}
+function getSupplyLevel(avgStat){
+  if(avgStat>=85)return 4;
+  if(avgStat>=70)return 3;
+  if(avgStat>=55)return 2;
+  if(avgStat>=35)return 1;
+  return 0;
+}
+
+// Mismatch penalty: product of per-stat gap factors for the 3 key stats.
+// A team that undersupplies a high-demand stat gets hit hard.
+const MISMATCH_FACTORS=[1.0, 0.90, 0.75, 0.55, 0.35];
+function computeMismatchPenalty(team,sc){
+  if(!team||!team.length)return 1;
+  let penalty=1;
+  for(const k of KEY_DEMAND_STATS){
+    const demand=sc.weights[k]||0;
+    const avgStat=team.reduce((s,c)=>s+(c.stats[k]||0),0)/team.length;
+    const dLevel=getDemandLevel(demand);
+    const sLevel=getSupplyLevel(avgStat);
+    const gap=Math.max(0,dLevel-sLevel);
+    penalty*=MISMATCH_FACTORS[gap];
+  }
+  return Math.max(0.12,penalty); // floor at 12% so score is never zero
+}
+
+// Shared renderer for the 3-stat demand label display used in cards,
+// draft sidebar, reveal screen, and results.
+function demandStatsHtml(sc,compact=false){
+  return KEY_DEMAND_STATS.map(k=>{
+    const info=STAT_INFO[k];
+    const step=getDemandStep(sc.weights[k]||0);
+    if(compact){
+      return`<div class="demand-row">` +
+        `<span class="demand-icon">${info.icon}</span>` +
+        `<span class="demand-name">${info.label}</span>` +
+        `<span class="demand-chip" style="color:${step.color};background:${step.bg};border-color:${step.color}40">${step.label}</span>` +
+        `</div>`;
+    }
+    return`<div class="demand-row">` +
+      `<span class="demand-icon">${info.icon}</span>` +
+      `<span class="demand-name">${info.label}</span>` +
+      `<div class="demand-bar-wrap"><div class="demand-bar-fill" style="width:${Math.round((sc.weights[k]||0)*250)}%;background:${step.color}"></div></div>` +
+      `<span class="demand-chip" style="color:${step.color};background:${step.bg};border-color:${step.color}40">${step.label}</span>` +
+      `</div>`;
+  }).join('');
+}
+
+// ═══ POOL GROUPS — specialty-based draft pool grouping ═══════════════════════
+// Characters are assigned to whichever group contains their dominant stat.
+// Combat & Haki are averaged together (they're intrinsically linked in One Piece).
+const POOL_GROUPS=[
+  {id:'combatants',label:'Combatants', sublabel:'Combat & Haki specialists', icon:'⚔️', color:'#f87171'},
+  {id:'tacticians',label:'Tacticians', sublabel:'Strategy & deception',       icon:'🧠', color:'#fbbf24'},
+  {id:'commanders',label:'Commanders', sublabel:'Leadership & authority',      icon:'👑', color:'#34d399'},
+  {id:'navigators',label:'Navigators', sublabel:'Navigation & awareness',      icon:'🧭', color:'#38bdf8'},
+  {id:'support',   label:'Support',    sublabel:'Healing & utility',           icon:'🛡️', color:'#fb923c'},
+];
+
+// Returns the id of the specialty group a character belongs to.
+function charSpecialty(c){
+  const s=c.stats;
+  const scores={
+    combatants:(s.combat+s.haki)/2,
+    tacticians:s.strategy,
+    commanders:s.leadership,
+    navigators:s.navigation,
+    support:   s.support,
+  };
+  return Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+// Weighted scenario fit score (0-100 range) — drives sort order within each group.
+function scenarioFitScore(c,sc){
+  if(!sc)return c.stats.overall;
+  let score=0;
+  for(const[k,w]of Object.entries(sc.weights))score+=(c.stats[k]||0)*w;
+  return score;
+}
+
+// Known Haoshoku (Conqueror's) Haki users — receive haki stat bonus
+const CONQUERORS=new Set([
+  'Luffy','Shanks','Kaido','Big Mom','Blackbeard',
+  'Boa Hancock','Mihawk','Zoro','Kid','Yamato','Katakuri',
+]);
+
+// ═══ SYNERGIES ═══════════════════════════════════════════════════════════════
+// Each entry: members[] must ALL be on the same team to activate.
+// bonus{} values are additive stat deltas (0-100 scale, can be negative).
+// synergyDelta applied to final score = sum(bonus[k]*scenarioWeight[k]).
+const SYNERGIES=[
+  // ── Straw Hat Synergies ──────────────────────────────────────────────────
+  {id:'monster_trio',        icon:'🔥', name:'Monster Trio',
+   members:['Luffy','Zoro','Sanji'],
+   bonus:{combat:18,strategy:-10},
+   desc:'Unstoppable in battle, catastrophic in planning'},
+  {id:'straw_hat_core',      icon:'🏴‍☠️', name:'Straw Hat Spirit',
+   members:['Luffy','Nami','Usopp','Sanji','Zoro'],
+   bonus:{combat:10,leadership:12,navigation:8,strategy:-6},
+   desc:'The original five — raw heart over tactics'},
+  {id:'straw_hat_full',      icon:'⚓', name:'Grand Fleet Assembled',
+   members:['Luffy','Zoro','Sanji','Nami','Robin','Chopper','Franky','Brook','Usopp','Jinbe'],
+   bonus:{combat:12,leadership:15,navigation:15,strategy:6,support:10},
+   desc:'Every Straw Hat together — the crew at its absolute peak'},
+  {id:'navigator_duo',       icon:'🗺️', name:"Navigator's Bond",
+   members:['Nami','Robin'],
+   bonus:{navigation:12,strategy:10,support:6},
+   desc:'The brains behind the crew — maps, history, and cunning'},
+  {id:'ship_doctors',        icon:'💊', name:'Ship Doctors',
+   members:['Chopper','Robin'],
+   bonus:{support:15,strategy:8},
+   desc:"The Sunny's finest support duo — medicine and ancient knowledge"},
+  {id:'jinbe_luffy',         icon:'🌊', name:'Captain & Helmsman',
+   members:['Luffy','Jinbe'],
+   bonus:{navigation:14,combat:8,leadership:10},
+   desc:'The captain and his helmsman — unbeatable at sea'},
+  {id:'zoro_mihawk',         icon:'⚔️', name:'Student & Grandmaster',
+   members:['Zoro','Mihawk'],
+   bonus:{combat:14,haki:12,strategy:6},
+   desc:"The world's greatest swordsman and his greatest challenger"},
+  {id:'sanji_nami',          icon:'🍽️', name:'Head Chef & Navigator',
+   members:['Sanji','Nami'],
+   bonus:{navigation:8,support:10,strategy:5},
+   desc:'When the cook and navigator work together, the ship runs perfectly'},
+  // ── Marine Synergies ─────────────────────────────────────────────────────
+  {id:'marine_legends',      icon:'🏛️', name:'Marine Legends',
+   members:['Garp','Sengoku'],
+   bonus:{leadership:18,strategy:14,haki:8},
+   desc:'The two greatest Marines of their era — unshakeable authority'},
+  {id:'smoker_tashigi',      icon:'🌫️', name:'G-5 Pursuit',
+   members:['Smoker','Tashigi'],
+   bonus:{combat:8,strategy:10,leadership:6},
+   desc:'A relentless duo — shared justice and tightly coordinated tactics'},
+  {id:'garp_koby',           icon:'🥊', name:"Hero's Legacy",
+   members:['Garp','Koby'],
+   bonus:{leadership:10,combat:8,haki:6},
+   desc:'The fist-fighting hero passing the torch to the next generation'},
+  {id:'admiral_pair',        icon:'🌋', name:'Admiral Pressure',
+   members:['Akainu','Aokiji'],
+   bonus:{combat:12,haki:10,strategy:8},
+   desc:'Fire and ice — the two admirals whose clash reshaped the world'},
+  {id:'triple_admiral',      icon:'🏅', name:'Three Admirals',
+   members:['Akainu','Kizaru','Fujitora'],
+   bonus:{combat:15,haki:12,leadership:10,strategy:8},
+   desc:'The full might of Marine Admiral power unleashed'},
+  // ── Alliance Synergies ───────────────────────────────────────────────────
+  {id:'flsmp_alliance',      icon:'🤝', name:'Pirate Alliance',
+   members:['Luffy','Law'],
+   bonus:{strategy:12,combat:10,leadership:8},
+   desc:'Two captains, one shared goal — the alliance that toppled Dressrosa'},
+  {id:'shanks_beckman',      icon:'⭐', name:'Red-Haired Command',
+   members:['Shanks','Benn Beckman'],
+   bonus:{strategy:14,leadership:12,haki:8,combat:6},
+   desc:"The emperor and his right hand — tactically untouchable"},
+  {id:'revolutionary_duo',   icon:'✊', name:'Revolutionary Flame',
+   members:['Dragon','Sabo'],
+   bonus:{leadership:12,strategy:10,combat:8},
+   desc:"Father and son-in-arms — the revolution's finest"},
+  {id:'whitebeard_sons',     icon:'🐋', name:'Sons of Whitebeard',
+   members:['Marco','Ace'],
+   bonus:{combat:12,leadership:10,support:8,haki:6},
+   desc:"Marco's healing and Ace's fire — the Whitebeard legacy lives on"},
+  {id:'shanks_luffy',        icon:'🎩', name:'Straw Hat Lineage',
+   members:['Shanks','Luffy'],
+   bonus:{haki:14,leadership:12,combat:10},
+   desc:'The emperor who gave his arm, and the boy who inherited his will'},
+  // ── Villain / Faction Synergies ──────────────────────────────────────────
+  {id:'blackbeard_core',     icon:'💀', name:"Blackbeard's Ambition",
+   members:['Blackbeard','Van Augur','Jesus Burgess'],
+   bonus:{combat:10,strategy:8,haki:6},
+   desc:'The core of the crew that shook heaven itself at Marineford'},
+  {id:'blackbeard_full',     icon:'☠️', name:'Ten Titanic Captains',
+   members:['Blackbeard','Shiryu','Van Augur','Jesus Burgess','Lafitte','Catarina Devon'],
+   bonus:{combat:14,strategy:10,haki:8,navigation:6},
+   desc:"Blackbeard's full arsenal of stolen devil fruit powers"},
+  {id:'warlords_gambit',     icon:'🎭', name:"Warlords' Gambit",
+   members:['Doflamingo','Crocodile'],
+   bonus:{strategy:16,leadership:10,combat:-4},
+   desc:'Two former Warlords who never truly followed anyone — pure scheming'},
+  {id:'big_mom_vanguard',    icon:'🍬', name:"Big Mom's Sweet Vanguard",
+   members:['Big Mom','Katakuri','Cracker'],
+   bonus:{combat:12,leadership:14,strategy:8},
+   desc:'The Empress and her two most powerful Sweet Commanders'},
+  {id:'kaido_king',          icon:'🐉', name:'King of Beasts',
+   members:['Kaido','King'],
+   bonus:{combat:14,haki:10,leadership:8,strategy:-6},
+   desc:'Raw, overwhelming power — subtlety not included'},
+  {id:'kid_killer',          icon:'🩸', name:'Massacre Duo',
+   members:['Kid','Killer'],
+   bonus:{combat:14,navigation:6,strategy:-8},
+   desc:'No plan, just destruction — savagery and precision in equal measure'},
+  {id:'law_bepo',            icon:'🐻', name:'Heart Pirates Core',
+   members:['Law','Bepo'],
+   bonus:{navigation:10,strategy:8,support:8},
+   desc:'The surgeon and his loyal navigator — a crew built on trust'},
+  {id:'cross_guild',         icon:'💰', name:"Cross Guild's Council",
+   members:['Mihawk','Crocodile','Buggy'],
+   bonus:{combat:8,strategy:14,leadership:6,navigation:4},
+   desc:'An unlikely alliance of legends — cunning and experience over chaos'},
+  {id:'sea_dominance',       icon:'🐟', name:'Fishman Tide',
+   members:['Jinbe','Arlong'],
+   bonus:{navigation:16,combat:8,strategy:-6},
+   desc:'Two fishman captains — absolute masters of the sea, bitter rivals on land'},
+  {id:'supernovas',          icon:'🌟', name:'Worst Generation',
+   members:['Luffy','Zoro','Kid','Killer','Law'],
+   bonus:{combat:12,haki:10,strategy:6,leadership:8},
+   desc:"The Worst Generation's finest — they reshaped the New World"},
+];
+
+function getActiveSynergies(team){
+  const names=new Set(team.map(c=>c.name));
+  return SYNERGIES.filter(s=>s.members.every(m=>names.has(m)));
+}
+
+// Compute flat %-point delta a set of synergies adds to a scenario score.
+// Positive bonus[k] adds weight[k]*bonus[k] to the score, negative subtracts.
+function synDelta(synergies,weights){
+  let d=0;
+  for(const s of synergies)for(const[k,w]of Object.entries(weights))d+=(s.bonus[k]||0)*w;
+  return d;
+}
+
+function renderSynergies(pid,team,weights){
+  const el=document.getElementById(`p${pid+1}-synergies`);
+  if(!el)return;
+  const active=getActiveSynergies(team);
+  if(!active.length){el.innerHTML='';return;}
+  const chips=active.map(s=>{
+    const delta=synDelta([s],weights||{});
+    const hasBothSigns=Object.values(s.bonus).some(v=>v>0)&&Object.values(s.bonus).some(v=>v<0);
+    const cls=hasBothSigns?'syn-mix':delta>=0?'syn-pos':'syn-neg';
+    const statStr=Object.entries(s.bonus).filter(([,v])=>v!==0).map(([k,v])=>`${v>0?'+':''}${v} ${k}`).join(' · ');
+    return`<div class="synergy-chip ${cls}">
+      <span class="syn-icon">${s.icon}</span>
+      <div class="syn-body">
+        <span class="syn-name">${s.name}</span>
+        <span class="syn-desc">${s.desc}</span>
+        <span class="syn-delta">${statStr}</span>
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div class="synergy-panel"><div class="synergy-panel-label">⚡ Active Synergies</div>${chips}</div>`;
+}
+
+// ═══ BOSSES — per-battleground antagonists (excluded from draft pool) ════════
+const BOSSES={
+  wano:        ['Kaido'],
+  marineford:  ['Akainu','Kizaru','Aokiji','Garp','Sengoku'],
+  enies_lobby: ['Lucci'],
+  whole_cake:  ['Big Mom','Katakuri'],
+  impel_down:  ['Magellan'],
+  dressrosa:   ['Doflamingo'],
+  sabaody:     ['Kizaru'],
+  skypiea:     ['Enel'],
+  alabasta:    ['Crocodile'],
+};
+
+// Returns boss entries with computed stats (sourced from FALLBACK so always available)
+function getScenarioBossData(sc){
+  const names=new Set(BOSSES[sc.id]||[]);
+  if(!names.size)return[];
+  return FALLBACK.filter(c=>names.has(c.name)).map(c=>({...c,stats:computeStats(c)}));
+}
+
+// Additional difficulty multiplier driven by boss strength
+function computeBossMod(sc){
+  const bosses=getScenarioBossData(sc);
+  if(!bosses.length)return 1.0;
+  const scores=bosses.map(b=>{let s=0;for(const[k,w]of Object.entries(sc.weights))s+=(b.stats[k]||0)*w;return s;});
+  const avg=scores.reduce((a,b)=>a+b,0)/scores.length;
+  const countPenalty=(bosses.length-1)*0.015;
+  return Math.max(0.75,1-(avg/100)*0.20-countPenalty);
+}
+
+// 0-100 threat display value (0 = no bosses, 100 = maximum threat)
+function getBossThreatLevel(sc){
+  const mod=computeBossMod(sc);
+  return mod>=1?0:Math.round((1-mod)/(0.25)*100);
+}
+
+// ═══ ROLE CAPS — max of each role per team ═══════════════════════════════════
+const ROLE_CAPS={
+  emperor:1, captain:1,
+  marine:2, revolutionary:2,
+  swordsman:2, fighter:3,
+  sniper:1, doctor:1, navigator:1,
+  scholar:1, engineer:1, cook:1, musician:1,
+};
+function roleCount(team,rt){return team.filter(c=>c.stats.roleType===rt).length}
+function roleFull(team,rt){const cap=ROLE_CAPS[rt];return cap!==undefined&&roleCount(team,rt)>=cap}
+
+// ═══ COST TIERS ══════════════════════════════════════════════════════════════
+const BUDGET_AMOUNT = 5000;
+// Costs are calibrated to 5,000₿ budget / 5 picks.
+// Tier thresholds tightened so each band holds a meaningful number of characters:
+//   S  (GLCQ ≥ 930):       5 chars  — true Yonko (checked via GLCQ, not overall)
+//   A  (overall ≥ 90):    19 chars  — Mihawk → Katakuri  (GLCQ ~845–929)
+//   B  (overall ≥ 78):    32 chars  — Crocodile → Page One (GLCQ ~730–844)
+//   C  (overall ≥ 60):    44 chars  — Ivankov → Helmeppo  (GLCQ ~550–729)
+//   D  (overall  < 60):   48 chars  — the rest
+const TIERS = [
+  {min:90, cost:1800, label:'Tier S', sublabel:'Yonko Class',     icon:'👑', color:'#f87171'},
+  {min:90, cost: 900, label:'Tier A', sublabel:'Commander Class', icon:'⭐', color:'#fb923c'},
+  {min:78, cost: 450, label:'Tier B', sublabel:'Supernova Class', icon:'🔥', color:'#a78bfa'},
+  {min:60, cost: 200, label:'Tier C', sublabel:'Officer Class',   icon:'⚡', color:'#60a5fa'},
+  {min:0,  cost:  75, label:'Tier D', sublabel:'Crew Class',      icon:'🌊', color:'#6b7fa0'},
+];
+// Tier is stored directly on each character as c.tier ('S+','S','A','B','C')
+// Legacy characters (glcq-based) fall back to power-score threshold lookup
+const TIER_MAP={'S+':0,'S':1,'A':2,'B':3,'C':4};
+function getCharTier(c){
+  if(c.tier!=null&&TIER_MAP[c.tier]!=null)return TIERS[TIER_MAP[c.tier]];
+  if((c.glcq??0)>=930)return TIERS[0];
+  return TIERS.slice(1).find(t=>c.stats.overall>=t.min)||TIERS[TIERS.length-1];
+}
+function getCharCost(c){ return getCharTier(c).cost }
+
+// ═══ ROSTER — 66 characters, tier+power from fighting-game scale ═════════════
+// tier: S+=Yonko, S=Commander, A=Supernova, B=Officer, C=Crew
+const FALLBACK=[
+  // ── S+ Tier ──────────────────────────────────────────────────────────────
+  {id:1,  name:"Luffy",          job:"Pirate Emperor",      power:990, tier:"S+", crew:"Straw Hats",          fruit:{name:"Hito Hito no Mi Model: Nika"},        attrs:{combat:97,strategy:75,haki:100,leadership:90,navigation:30,support:65}},
+  {id:2,  name:"Kaido",          job:"Pirate Emperor",      power:985, tier:"S+", crew:"Beasts Pirates",      fruit:{name:"Uo Uo no Mi Model: Seiryu"},          attrs:{combat:100,strategy:58,haki:97,leadership:72,navigation:20,support:25}},
+  {id:3,  name:"Shanks",         job:"Pirate Emperor",      power:980, tier:"S+", crew:"Red-Haired Pirates",  fruit:null,                                        attrs:{combat:95,strategy:87,haki:100,leadership:95,navigation:65,support:58}},
+  {id:4,  name:"Blackbeard",     job:"Pirate Emperor",      power:975, tier:"S+", crew:"Blackbeard Pirates",  fruit:{name:"Yami Yami no Mi"},                    attrs:{combat:92,strategy:90,haki:82,leadership:80,navigation:42,support:30}},
+  {id:5,  name:"Mihawk",         job:"Swordsman",           power:975, tier:"S+", crew:"Cross Guild",         fruit:null,                                        attrs:{combat:98,strategy:78,haki:88,leadership:42,navigation:30,support:18}},
+  {id:6,  name:"Akainu",         job:"Fleet Admiral",       power:970, tier:"S+", crew:"Marines",             fruit:{name:"Magu Magu no Mi"},                    attrs:{combat:95,strategy:82,haki:90,leadership:88,navigation:45,support:32}},
+  {id:7,  name:"Dragon",         job:"Revolutionary Leader",power:970, tier:"S+", crew:"Revolutionary Army",  fruit:null,                                        attrs:{combat:88,strategy:97,haki:85,leadership:100,navigation:55,support:70}},
+  // ── S Tier ───────────────────────────────────────────────────────────────
+  {id:8,  name:"Aokiji",         job:"Admiral",             power:960, tier:"S",  crew:"Blackbeard Pirates",  fruit:{name:"Hie Hie no Mi"},                      attrs:{combat:88,strategy:80,haki:85,leadership:70,navigation:60,support:52}},
+  {id:9,  name:"Big Mom",        job:"Pirate Emperor",      power:960, tier:"S",  crew:"Big Mom Pirates",     fruit:{name:"Soru Soru no Mi"},                    attrs:{combat:93,strategy:70,haki:92,leadership:82,navigation:35,support:58}},
+  {id:10, name:"Kizaru",         job:"Admiral",             power:955, tier:"S",  crew:"Marines",             fruit:{name:"Pika Pika no Mi"},                    attrs:{combat:90,strategy:72,haki:84,leadership:68,navigation:55,support:38}},
+  {id:11, name:"Fujitora",       job:"Admiral",             power:955, tier:"S",  crew:"Marines",             fruit:{name:"Zushi Zushi no Mi"},                  attrs:{combat:88,strategy:82,haki:87,leadership:75,navigation:40,support:55}},
+  {id:12, name:"Greenbull",      job:"Admiral",             power:955, tier:"S",  crew:"Marines",             fruit:{name:"Mori Mori no Mi"},                    attrs:{combat:86,strategy:68,haki:80,leadership:68,navigation:35,support:48}},
+  {id:13, name:"Zoro",           job:"Swordsman",           power:945, tier:"S",  crew:"Straw Hats",          fruit:null,                                        attrs:{combat:95,strategy:62,haki:90,leadership:52,navigation:22,support:28}},
+  {id:14, name:"Law",            job:"Pirate Captain",      power:945, tier:"S",  crew:"Heart Pirates",       fruit:{name:"Ope Ope no Mi"},                      attrs:{combat:82,strategy:93,haki:80,leadership:72,navigation:62,support:77}},
+  {id:15, name:"Benn Beckman",   job:"Pirate Commander",    power:945, tier:"S",  crew:"Red-Haired Pirates",  fruit:null,                                        attrs:{combat:85,strategy:90,haki:75,leadership:80,navigation:72,support:65}},
+  {id:16, name:"Sanji",          job:"Cook",                power:940, tier:"S",  crew:"Straw Hats",          fruit:null,                                        attrs:{combat:88,strategy:72,haki:78,leadership:55,navigation:48,support:82}},
+  {id:17, name:"Kid",            job:"Pirate Captain",      power:940, tier:"S",  crew:"Kid Pirates",         fruit:{name:"Jiki Jiki no Mi"},                    attrs:{combat:87,strategy:58,haki:78,leadership:62,navigation:52,support:28}},
+  {id:18, name:"Yamato",         job:"Fighter",             power:940, tier:"S",  crew:"Wano",                fruit:{name:"Inu Inu no Mi Model: Okuchi no Makami"},attrs:{combat:86,strategy:68,haki:80,leadership:62,navigation:35,support:45}},
+  {id:19, name:"Sabo",           job:"Revolutionary",       power:940, tier:"S",  crew:"Revolutionary Army",  fruit:{name:"Mera Mera no Mi"},                    attrs:{combat:85,strategy:78,haki:80,leadership:75,navigation:52,support:60}},
+  {id:67, name:"Garp",           job:"Vice Admiral",        power:945, tier:"S",  crew:"Marines",             fruit:null,                                        attrs:{combat:92,strategy:72,haki:88,leadership:85,navigation:55,support:42}},
+  {id:68, name:"Sengoku",        job:"Fleet Admiral",       power:935, tier:"S",  crew:"Marines",             fruit:{name:"Hito Hito no Mi Model: Daibutsu"},    attrs:{combat:85,strategy:92,haki:85,leadership:95,navigation:50,support:65}},
+  // ── A Tier ───────────────────────────────────────────────────────────────
+  {id:20, name:"Marco",          job:"Pirate Commander",    power:930, tier:"A",  crew:"Whitebeard Pirates",  fruit:{name:"Tori Tori no Mi Model: Phoenix"},     attrs:{combat:80,strategy:75,haki:76,leadership:72,navigation:55,support:88}},
+  {id:21, name:"King",           job:"Fighter",             power:930, tier:"A",  crew:"Beasts Pirates",      fruit:null,                                        attrs:{combat:83,strategy:60,haki:78,leadership:62,navigation:28,support:22}},
+  {id:22, name:"Katakuri",       job:"Sweet Commander",     power:925, tier:"A",  crew:"Big Mom Pirates",     fruit:{name:"Mochi Mochi no Mi"},                  attrs:{combat:85,strategy:80,haki:83,leadership:68,navigation:35,support:40}},
+  {id:23, name:"Shiryu",         job:"Pirate Commander",    power:925, tier:"A",  crew:"Blackbeard Pirates",  fruit:{name:"Suke Suke no Mi"},                    attrs:{combat:83,strategy:72,haki:70,leadership:48,navigation:42,support:18}},
+  {id:24, name:"Lucci",          job:"Marine",              power:920, tier:"A",  crew:"CP0",                 fruit:{name:"Neko Neko no Mi Model: Leopard"},     attrs:{combat:84,strategy:78,haki:72,leadership:52,navigation:48,support:22}},
+  {id:25, name:"Boa Hancock",    job:"Pirate Captain",      power:920, tier:"A",  crew:"Kuja Pirates",        fruit:{name:"Mero Mero no Mi"},                    attrs:{combat:80,strategy:75,haki:76,leadership:75,navigation:52,support:55}},
+  {id:26, name:"Enel",           job:"Fighter",             power:910, tier:"A",  crew:"Skypiea",             fruit:{name:"Goro Goro no Mi"},                    attrs:{combat:78,strategy:68,haki:62,leadership:65,navigation:72,support:28}},
+  {id:27, name:"Jack",           job:"Fighter",             power:910, tier:"A",  crew:"Beasts Pirates",      fruit:{name:"Zou Zou no Mi Model: Mammoth"},       attrs:{combat:86,strategy:38,haki:72,leadership:48,navigation:28,support:18}},
+  {id:28, name:"Queen",          job:"Fighter",             power:915, tier:"A",  crew:"Beasts Pirates",      fruit:{name:"Ryu Ryu no Mi Model: Brachiosaurus"}, attrs:{combat:78,strategy:78,haki:64,leadership:55,navigation:32,support:62}},
+  {id:29, name:"Ace",            job:"Pirate Captain",      power:905, tier:"A",  crew:"Whitebeard Pirates",  fruit:{name:"Mera Mera no Mi"},                    attrs:{combat:80,strategy:65,haki:72,leadership:65,navigation:58,support:50}},
+  {id:30, name:"Cracker",        job:"Pirate Commander",    power:905, tier:"A",  crew:"Big Mom Pirates",     fruit:{name:"Bisu Bisu no Mi"},                    attrs:{combat:78,strategy:68,haki:70,leadership:52,navigation:28,support:38}},
+  {id:31, name:"Van Augur",      job:"Sniper",              power:900, tier:"A",  crew:"Blackbeard Pirates",  fruit:null,                                        attrs:{combat:72,strategy:78,haki:60,leadership:45,navigation:58,support:40}},
+  {id:32, name:"Smoothie",       job:"Sweet Commander",     power:900, tier:"A",  crew:"Big Mom Pirates",     fruit:{name:"Shibo Shibo no Mi"},                  attrs:{combat:75,strategy:65,haki:68,leadership:60,navigation:42,support:58}},
+  {id:33, name:"Doflamingo",     job:"Pirate Captain",      power:900, tier:"A",  crew:"Donquixote Pirates",  fruit:{name:"Ito Ito no Mi"},                      attrs:{combat:80,strategy:88,haki:75,leadership:82,navigation:45,support:32}},
+  {id:34, name:"Crocodile",      job:"Pirate Captain",      power:900, tier:"A",  crew:"Cross Guild",         fruit:{name:"Suna Suna no Mi"},                    attrs:{combat:75,strategy:92,haki:62,leadership:80,navigation:58,support:38}},
+  {id:35, name:"Jinbe",          job:"Pirate Captain",      power:900, tier:"A",  crew:"Straw Hats",          fruit:null,                                        attrs:{combat:78,strategy:76,haki:72,leadership:72,navigation:92,support:65}},
+  {id:36, name:"Catarina Devon", job:"Fighter",             power:895, tier:"A",  crew:"Blackbeard Pirates",  fruit:{name:"Inu Inu no Mi Model: Kyubi no Kitsune"},attrs:{combat:74,strategy:80,haki:62,leadership:52,navigation:45,support:28}},
+  {id:37, name:"Perospero",      job:"Pirate Commander",    power:890, tier:"A",  crew:"Big Mom Pirates",     fruit:{name:"Pero Pero no Mi"},                    attrs:{combat:68,strategy:78,haki:60,leadership:60,navigation:38,support:58}},
+  {id:38, name:"Jesus Burgess",  job:"Fighter",             power:890, tier:"A",  crew:"Blackbeard Pirates",  fruit:null,                                        attrs:{combat:78,strategy:52,haki:65,leadership:45,navigation:28,support:22}},
+  {id:39, name:"Lafitte",        job:"Fighter",             power:885, tier:"A",  crew:"Blackbeard Pirates",  fruit:null,                                        attrs:{combat:65,strategy:75,haki:52,leadership:58,navigation:62,support:42}},
+  {id:40, name:"Oven",           job:"Pirate Commander",    power:880, tier:"A",  crew:"Big Mom Pirates",     fruit:{name:"Netsu Netsu no Mi"},                  attrs:{combat:74,strategy:55,haki:65,leadership:55,navigation:32,support:28}},
+  {id:41, name:"Daifuku",        job:"Pirate Commander",    power:880, tier:"A",  crew:"Big Mom Pirates",     fruit:{name:"Hoya Hoya no Mi"},                    attrs:{combat:72,strategy:58,haki:62,leadership:52,navigation:32,support:32}},
+  // ── B Tier ───────────────────────────────────────────────────────────────
+  {id:42, name:"Magellan",       job:"Marine",              power:930, tier:"B",  crew:"Impel Down",          fruit:{name:"Doku Doku no Mi"},                    attrs:{combat:75,strategy:72,haki:52,leadership:70,navigation:38,support:48}},
+  {id:43, name:"Killer",         job:"Fighter",             power:890, tier:"B",  crew:"Kid Pirates",         fruit:null,                                        attrs:{combat:75,strategy:62,haki:58,leadership:45,navigation:32,support:28}},
+  {id:44, name:"X Drake",        job:"Marine",              power:890, tier:"B",  crew:"SWORD",               fruit:{name:"Ryu Ryu no Mi Model: Allosaurus"},    attrs:{combat:74,strategy:72,haki:60,leadership:62,navigation:45,support:35}},
+  {id:45, name:"Urouge",         job:"Pirate Captain",      power:885, tier:"B",  crew:"Fallen Monk Pirates", fruit:null,                                        attrs:{combat:72,strategy:58,haki:62,leadership:48,navigation:38,support:28}},
+  {id:46, name:"Hawkins",        job:"Fighter",             power:880, tier:"B",  crew:"Beasts Pirates",      fruit:{name:"Wara Wara no Mi"},                    attrs:{combat:68,strategy:78,haki:58,leadership:50,navigation:42,support:48}},
+  {id:47, name:"Capone Bege",    job:"Pirate Captain",      power:880, tier:"B",  crew:"Firetank Pirates",    fruit:{name:"Shiro Shiro no Mi"},                  attrs:{combat:65,strategy:85,haki:50,leadership:75,navigation:58,support:58}},
+  {id:48, name:"Koby",           job:"Marine",              power:880, tier:"B",  crew:"Marines",             fruit:null,                                        attrs:{combat:62,strategy:65,haki:58,leadership:68,navigation:52,support:58}},
+  {id:49, name:"Apoo",           job:"Musician",            power:875, tier:"B",  crew:"On Air Pirates",      fruit:{name:"Oto Oto no Mi"},                      attrs:{combat:65,strategy:62,haki:50,leadership:45,navigation:52,support:62}},
+  {id:50, name:"Caesar Clown",   job:"Scholar",             power:860, tier:"B",  crew:"Independent",         fruit:{name:"Gasu Gasu no Mi"},                    attrs:{combat:58,strategy:82,haki:28,leadership:48,navigation:38,support:58}},
+  {id:51, name:"Smoker",         job:"Marine",              power:870, tier:"B",  crew:"Marines",             fruit:{name:"Moku Moku no Mi"},                    attrs:{combat:68,strategy:65,haki:62,leadership:65,navigation:50,support:45}},
+  {id:52, name:"Sentomaru",      job:"Marine",              power:870, tier:"B",  crew:"Marines",             fruit:null,                                        attrs:{combat:70,strategy:55,haki:65,leadership:55,navigation:32,support:28}},
+  {id:53, name:"Robin",          job:"Archaeologist",       power:845, tier:"B",  crew:"Straw Hats",          fruit:{name:"Hana Hana no Mi"},                    attrs:{combat:55,strategy:88,haki:45,leadership:55,navigation:65,support:78}},
+  {id:54, name:"Franky",         job:"Shipwright",          power:840, tier:"B",  crew:"Straw Hats",          fruit:null,                                        attrs:{combat:65,strategy:72,haki:28,leadership:50,navigation:55,support:82}},
+  {id:55, name:"Bepo",           job:"Navigator",           power:840, tier:"B",  crew:"Heart Pirates",       fruit:null,                                        attrs:{combat:60,strategy:58,haki:42,leadership:48,navigation:72,support:55}},
+  {id:56, name:"Nami",           job:"Navigator",           power:830, tier:"B",  crew:"Straw Hats",          fruit:null,                                        attrs:{combat:38,strategy:88,haki:12,leadership:55,navigation:97,support:72}},
+  {id:57, name:"Brook",          job:"Musician",            power:830, tier:"B",  crew:"Straw Hats",          fruit:{name:"Yomi Yomi no Mi"},                    attrs:{combat:65,strategy:62,haki:55,leadership:40,navigation:48,support:62}},
+  {id:58, name:"Usopp",          job:"Sniper",              power:820, tier:"B",  crew:"Straw Hats",          fruit:null,                                        attrs:{combat:48,strategy:80,haki:18,leadership:42,navigation:52,support:68}},
+  {id:59, name:"Chopper",        job:"Doctor",              power:820, tier:"B",  crew:"Straw Hats",          fruit:{name:"Hito Hito no Mi"},                    attrs:{combat:55,strategy:68,haki:32,leadership:40,navigation:32,support:92}},
+  {id:60, name:"Tashigi",        job:"Swordsman",           power:780, tier:"B",  crew:"Marines",             fruit:null,                                        attrs:{combat:62,strategy:60,haki:58,leadership:52,navigation:38,support:48}},
+  // ── C Tier ───────────────────────────────────────────────────────────────
+  {id:61, name:"Buggy",          job:"Pirate Emperor",      power:750, tier:"C",  crew:"Cross Guild",         fruit:{name:"Bara Bara no Mi"},                    attrs:{combat:45,strategy:62,haki:12,leadership:72,navigation:42,support:48}},
+  {id:62, name:"Mr 1",           job:"Fighter",             power:820, tier:"C",  crew:"Cross Guild",         fruit:{name:"Supa Supa no Mi"},                    attrs:{combat:70,strategy:45,haki:35,leadership:35,navigation:22,support:18}},
+  {id:63, name:"Mr 2",           job:"Fighter",             power:800, tier:"C",  crew:"Impel Down",          fruit:{name:"Mane Mane no Mi"},                    attrs:{combat:62,strategy:58,haki:28,leadership:40,navigation:35,support:42}},
+  {id:64, name:"Mr 3",           job:"Fighter",             power:780, tier:"C",  crew:"Cross Guild",         fruit:{name:"Doru Doru no Mi"},                    attrs:{combat:50,strategy:65,haki:18,leadership:38,navigation:28,support:48}},
+  {id:65, name:"Arlong",         job:"Pirate Captain",      power:750, tier:"C",  crew:"Arlong Pirates",      fruit:null,                                        attrs:{combat:62,strategy:50,haki:28,leadership:55,navigation:78,support:28}},
+  {id:66, name:"Hody Jones",     job:"Pirate Captain",      power:780, tier:"C",  crew:"Fishman Pirates",     fruit:null,                                        attrs:{combat:65,strategy:48,haki:32,leadership:55,navigation:82,support:22}},
+];
+
+// ═══ ENGINE ══════════════════════════════════════════════════════════════════
+function parseBounty(s){if(!s)return 0;const n=parseInt(s.replace(/[^0-9]/g,''),10);return isNaN(n)?0:n}
+function getRoleType(job){
+  if(!job)return'fighter';const j=job.toLowerCase();
+  if(/emperor|fleet admiral/i.test(j))return'emperor';
+  if(/captain|commander/i.test(j))return'captain';
+  if(/admiral|vice admiral/i.test(j))return'marine';
+  if(/revolutionary.*leader|leader.*rev/i.test(j))return'revolutionary';
+  if(/revolutionary/i.test(j))return'revolutionary';
+  if(/swordsman|sword|samurai/i.test(j))return'swordsman';
+  if(/navigator/i.test(j))return'navigator';
+  if(/doctor|physician/i.test(j))return'doctor';
+  if(/sniper|marksman/i.test(j))return'sniper';
+  if(/archaeologist|scholar/i.test(j))return'scholar';
+  if(/shipwright|engineer/i.test(j))return'engineer';
+  if(/cook|chef/i.test(j))return'cook';
+  if(/musician/i.test(j))return'musician';
+  if(/marine/i.test(j))return'marine';
+  return'fighter';
+}
+const ROLE_BASE={emperor:92,captain:68,marine:65,revolutionary:62,swordsman:60,fighter:55,sniper:50,doctor:45,navigator:44,scholar:42,engineer:42,cook:40,musician:38};
+const ROLE_MULTS={
+  emperor:      {combat:1.00,leadership:1.00,strategy:.85,navigation:.50,support:.40},
+  captain:      {combat:.90, leadership:.95, strategy:.78,navigation:.45,support:.45},
+  marine:       {combat:.88, leadership:.80, strategy:.72,navigation:.50,support:.42},
+  revolutionary:{combat:.78, leadership:.80, strategy:.90,navigation:.55,support:.45},
+  swordsman:    {combat:1.00,leadership:.55, strategy:.48,navigation:.35,support:.28},
+  fighter:      {combat:.95, leadership:.48, strategy:.42,navigation:.30,support:.28},
+  sniper:       {combat:.70, leadership:.38, strategy:.65,navigation:.46,support:.52},
+  doctor:       {combat:.32, leadership:.42, strategy:.80,navigation:.38,support:1.00},
+  navigator:    {combat:.36, leadership:.48, strategy:.76,navigation:1.00,support:.52},
+  scholar:      {combat:.28, leadership:.48, strategy:1.00,navigation:.62,support:.65},
+  engineer:     {combat:.55, leadership:.42, strategy:.72,navigation:.65,support:.72},
+  cook:         {combat:.68, leadership:.38, strategy:.55,navigation:.40,support:.80},
+  musician:     {combat:.40, leadership:.35, strategy:.55,navigation:.42,support:.78},
+};
+function computeHaki(name,power,roleType){
+  // Base haki scales with power level
+  let h=power>=85?88:power>=70?72:power>=55?55:power>=40?38:20;
+  // Conqueror's Haki users get a significant boost
+  if(CONQUERORS.has(name))h=Math.min(100,h+18);
+  // Support/utility roles typically have less combat haki
+  if(['doctor','navigator','scholar','engineer','musician'].includes(roleType))h=Math.round(h*.6);
+  return Math.round(Math.min(100,h));
+}
+
+function computeStats(c){
+  const hasFruit=!!c.fruit,roleType=getRoleType(c.job);
+  // Compute overall from power (drives tier cost & sorting)
+  let overall;
+  if(c.power!==undefined){
+    overall=Math.round(5+((c.power-750)/(990-750))*95);
+  } else if(c.glcq!==undefined){
+    overall=Math.round(5+((c.glcq-5)/(945-5))*95);
+  } else {
+    const bounty=parseBounty(c.bounty);
+    let base;
+    if(bounty>1e6){const ML=Math.log10(5.5e9),mL=Math.log10(1e6+1);base=15+((Math.log10(bounty+1)-mL)/(ML-mL))*80}
+    else base=ROLE_BASE[roleType]||40;
+    base=Math.min(95,Math.max(15,base));
+    overall=Math.round(Math.min(100,hasFruit?base*1.14:base));
+  }
+  // If the character has an explicit attribute profile, use it directly
+  if(c.attrs){
+    const{combat,strategy,haki,leadership,navigation,support}=c.attrs;
+    return{combat,strategy,haki,leadership,navigation,support,overall,roleType,hasFruit,bounty:0};
+  }
+  // Legacy formula fallback (for any CSV-sourced char without attrs columns)
+  const m=ROLE_MULTS[roleType]||ROLE_MULTS.fighter;
+  const haki=computeHaki(c.name||'',overall,roleType);
+  return{combat:Math.round(Math.min(100,overall*m.combat)),leadership:Math.round(Math.min(100,overall*m.leadership)),strategy:Math.round(Math.min(100,overall*m.strategy)),navigation:Math.round(Math.min(100,overall*m.navigation)),support:Math.round(Math.min(100,overall*m.support)),overall,haki,roleType,hasFruit,bounty:0};
+}
+
+function scoreTeam(team,sc){
+  if(!team||!team.length)return{percentage:0,crewScore:0,afterBonuses:0,afterDifficulty:0,breakdown:[],bonuses:{diversity:0,leader:0,fruit:0,crew:0,haki:0},synergies:[],difficultyMod:sc.difficultyMod,bossMod:1,bossNames:[]};
+  const{weights}=sc;
+  const difficultyMod=sc.difficultyMod;
+  const bossMod=computeBossMod(sc);
+  const bossNames=(BOSSES[sc.id]||[]);
+
+  // ── Stage 1: raw crew stat score (no difficulty / boss applied yet) ──
+  const rolesSeen=new Set();const breakdown=[];let rawBase=0;
+  for(const c of team){const s=c.stats;let raw=0;for(const[k,w]of Object.entries(weights))raw+=(s[k]||0)*w;rolesSeen.add(s.roleType);rawBase+=raw;breakdown.push({character:c,raw});}
+  const crewScore=Math.round(rawBase/team.length);
+
+  // ── Stage 2: apply team composition bonuses ──
+  const div=rolesSeen.size>=5?1.22:rolesSeen.size>=4?1.15:rolesSeen.size>=3?1.08:rolesSeen.size>=2?1.03:1;
+  const hasLeader=team.some(c=>c.stats.roleType==='captain'||c.stats.roleType==='emperor');
+  const lb=hasLeader?1.06:1;
+  const fruits=team.filter(c=>c.stats.hasFruit).length;
+  const fb=fruits>=4?1.08:fruits>=3?1.05:fruits>=2?1.02:1;
+  const crewBonus=team.length>=5?1:team.length>=4?.96:team.length>=3?.90:team.length>=2?.80:.65;
+  const conquerors=team.filter(c=>CONQUERORS.has(c.name)).length;
+  const avgHaki=team.reduce((s,c)=>s+c.stats.haki,0)/team.length;
+  const hakiMult=conquerors>=3?1.10:conquerors>=2?1.07:conquerors>=1?1.04:avgHaki>=70?1.02:1;
+  const activeSynergies=getActiveSynergies(team);
+  const synergyPts=Math.round(synDelta(activeSynergies,weights));
+  const afterBonuses=Math.min(99,Math.max(3,Math.round(crewScore*div*lb*fb*crewBonus*hakiMult)+synergyPts));
+
+  // ── Stage 3: battleground difficulty + crew mismatch penalty ──
+  const mismatchPenalty=computeMismatchPenalty(team,sc);
+  const afterDifficulty=Math.min(99,Math.max(3,Math.round(afterBonuses*difficultyMod*mismatchPenalty)));
+
+  // ── Stage 4: boss threat ──
+  const percentage=Math.min(99,Math.max(3,Math.round(afterDifficulty*bossMod)));
+
+  // Breakdown scores shown relative to crewScore for stage-1 display
+  const rs=breakdown.reduce((s,b)=>s+b.raw,0)||1;
+  const scaledBreakdown=breakdown.map(b=>({character:b.character,score:Math.round((b.raw/rs)*crewScore)})).sort((a,b)=>b.score-a.score);
+  return{percentage,crewScore,afterBonuses,afterDifficulty,breakdown:scaledBreakdown,bonuses:{diversity:Math.round((div-1)*100),leader:hasLeader?6:0,fruit:Math.round((fb-1)*100),crew:Math.round((crewBonus-1)*100),haki:Math.round((hakiMult-1)*100)},synergies:activeSynergies,difficultyMod,mismatchPenalty,bossMod,bossNames};
+}
+
+// ═══ POOL GENERATOR ══════════════════════════════════════════════════════════
+const QUOTAS=[
+  {role:'emperor',min:2,max:3},{role:'captain',min:3,max:5},{role:'marine',min:3,max:4},
+  {role:'revolutionary',min:2,max:3},{role:'swordsman',min:2,max:4},{role:'fighter',min:3,max:5},
+  {role:'sniper',min:1,max:2},{role:'doctor',min:1,max:2},{role:'navigator',min:2,max:2},
+  {role:'scholar',min:1,max:2},{role:'engineer',min:1,max:2},{role:'cook',min:1,max:1},{role:'musician',min:0,max:1},
+];
+function generatePool(all, size=30){
+  const scale=size/30;
+  const pool=[],used=new Set();
+
+  // ── Step 0: Always seed exactly 2 Yonko-class (S tier) characters first ──
+  // Pre-selecting avoids the quota system swamping them out at small pool sizes.
+  const yonkos=all.filter(c=>getCharTier(c)===TIERS[0]).sort(()=>Math.random()-.5);
+  for(const y of yonkos.slice(0,2)){pool.push(y);used.add(y.id);}
+
+  const buckets={};
+  for(const c of all){const r=c.stats.roleType;if(!buckets[r])buckets[r]=[];buckets[r].push(c)}
+  for(const r of Object.keys(buckets))buckets[r].sort(()=>Math.random()-.5);
+
+  // Phase 1: guarantee role minimums (scaled to pool size), skip emperor (already seeded above)
+  for(const{role,min}of QUOTAS){
+    if(role==='emperor')continue;
+    const sMin=Math.max(0,Math.round(min*scale));
+    const b=buckets[role]||[];
+    for(let i=0;i<sMin&&i<b.length;i++)if(!used.has(b[i].id)){pool.push(b[i]);used.add(b[i].id)}
+  }
+  // Phase 2: fill up to scaled maximums in random role order
+  for(const{role,max}of[...QUOTAS].sort(()=>Math.random()-.5)){
+    if(pool.length>=size)break;
+    const sMax=Math.max(1,Math.round(max*scale));
+    const cur=pool.filter(c=>c.stats.roleType===role).length;
+    const b=(buckets[role]||[]).filter(c=>!used.has(c.id));
+    for(let i=0;i<sMax-cur&&i<b.length&&pool.length<size;i++){pool.push(b[i]);used.add(b[i].id)}
+  }
+  // Phase 3: pad with any remaining chars to hit target size
+  for(const c of all.filter(c=>!used.has(c.id)).sort(()=>Math.random()-.5)){if(pool.length>=size)break;pool.push(c)}
+  return pool.slice(0,size).sort(()=>Math.random()-.5);
+}
+
+// ═══ API ═══════════════════════════════════════════════════════════════════════════════
+// Loads roster from assets/roster.csv; falls back to the hardcoded FALLBACK if missing.
+function parseRosterCSV(text){
+  const lines=text.trim().split('\n');
+  const headers=lines[0].split(',').map(h=>h.trim());
+  const idx=h=>headers.indexOf(h);
+  // Attr column indices (may not exist in older CSVs)
+  const ATTR_COLS=['combat','strategy','haki','leadership','navigation','support'];
+  // fruit must come before attr columns in the CSV; find first attr col after fruit
+  const fruitCol=idx('fruit');
+  const firstAttrCol=ATTR_COLS.map(a=>idx(a)).filter(i=>i>0).reduce((mn,i)=>Math.min(mn,i),999);
+  return lines.slice(1).filter(l=>l.trim()).map(line=>{
+    const cols=line.split(',');
+    const id=parseInt(cols[idx('id')],10);
+    const name=cols[idx('name')].trim();
+    const job=cols[idx('job')].trim();
+    // Support both new (power+tier) and legacy (glcq) CSV formats
+    const powerIdx=idx('power');
+    const glcqIdx=idx('glcq');
+    const power=powerIdx>=0&&cols[powerIdx]?parseInt(cols[powerIdx],10)||undefined:undefined;
+    const glcq=glcqIdx>=0&&cols[glcqIdx]?parseInt(cols[glcqIdx],10)||undefined:undefined;
+    const tier=(idx('tier')>=0?cols[idx('tier')]||'':'').trim()||undefined;
+    const crew=(idx('crew')>=0?cols[idx('crew')]||'':'').trim()||undefined;
+    // fruit = columns between fruit index and first attr col (handles commas in long fruit names)
+    const fruitEnd=firstAttrCol<999?firstAttrCol:cols.length;
+    const fruitRaw=cols.slice(fruitCol,fruitEnd).join(',').trim();
+    const fruit=fruitRaw?{name:fruitRaw}:null;
+    // Parse attrs if present in CSV
+    let attrs=undefined;
+    if(firstAttrCol<999){
+      const a={};
+      for(const ac of ATTR_COLS){const ci=idx(ac);if(ci>=0&&cols[ci])a[ac]=parseInt(cols[ci],10)||0;}
+      if(Object.keys(a).length===6)attrs=a;
+    }
+    return{id,name,job,power,glcq,tier,crew,fruit,attrs};
+  });
+}
+
+async function fetchCharacters(){
+  try{
+    const res=await fetch('assets/roster.csv');
+    if(!res.ok)throw new Error('not found');
+    const text=await res.text();
+    const roster=parseRosterCSV(text);
+    if(roster.length>0)return roster;
+    throw new Error('empty');
+  }catch(e){
+    console.warn('[roster] CSV load failed, using built-in roster.',e.message);
+    return FALLBACK;
+  }
+}
+// ═══ DRAFT STATE ══════════════════════════════════════════════════════════════
+// coinTossWinner: 0 = P1 goes first, 1 = P2 goes first (set by coin toss screen)
+let coinTossWinner=0;
+const SNAKE_BASE=[0,1,1,0,0,1,1,0,0,1];
+function getSnakeOrder(){
+  // Flip all slots when P2 won the toss
+  return coinTossWinner===0?SNAKE_BASE:SNAKE_BASE.map(p=>1-p);
+}
+
+function createDraft(mode){
+  return{mode,teams:[[],[]],pickedIds:new Set(),
+    // unlimited fields
+    pickIndex:0,
+    // budget fields
+    budgets:[BUDGET_AMOUNT,BUDGET_AMOUNT],done:[false,false],currentPlayer:coinTossWinner,
+    complete:false};
+}
+
+function draftCurrentPlayer(d){
+  return d.mode==='unlimited'?getSnakeOrder()[d.pickIndex]:d.currentPlayer;
+}
+
+function draftCanAfford(d,char,pid){
+  if(d.mode!=='budget')return true;
+  return d.budgets[pid]>=getCharCost(char);
+}
+
+function draftPick(d,char,pid,pool){
+  if(d.complete||draftCurrentPlayer(d)!==pid||d.pickedIds.has(char.id))return false;
+  if(roleFull(d.teams[pid],char.stats.roleType))return false; // role cap enforced for both modes
+  if(d.mode==='budget'){
+    if(!draftCanAfford(d,char,pid)||d.teams[pid].length>=5)return false;
+    d.teams[pid].push(char);d.pickedIds.add(char.id);d.budgets[pid]-=getCharCost(char);
+    budgetAdvanceTurn(d,pool);
+  }else{
+    d.teams[pid].push(char);d.pickedIds.add(char.id);d.pickIndex++;
+    if(d.pickIndex>=SNAKE_BASE.length)d.complete=true;
+  }
+  return true;
+}
+
+function draftPass(d,pid,pool){
+  if(d.mode!=='budget'||d.done[pid]||draftCurrentPlayer(d)!==pid)return false;
+  d.done[pid]=true;budgetAdvanceTurn(d,pool);return true;
+}
+
+function canStillPick(d,pool,pid){
+  if(d.done[pid])return false;
+  if(d.teams[pid].length>=5){d.done[pid]=true;return false}
+  const available=pool.some(c=>!d.pickedIds.has(c.id)&&d.budgets[pid]>=getCharCost(c)&&!roleFull(d.teams[pid],c.stats.roleType));
+  if(!available){d.done[pid]=true;return false}
+  return true;
+}
+
+function budgetAdvanceTurn(d,pool){
+  const other=1-d.currentPlayer;
+  if(canStillPick(d,pool,other)){d.currentPlayer=other;return}
+  if(canStillPick(d,pool,d.currentPlayer))return; // stay
+  d.complete=true;
+}
+
+function draftTeamPower(d,p){const t=d.teams[p];return t.length?Math.round(t.reduce((s,c)=>s+c.stats.overall,0)/t.length):0}
+function draftBudgetSpent(d,p){return BUDGET_AMOUNT-d.budgets[p]}
+
+// ═══ AI ═══════════════════════════════════════════════════════════════════════
+function aiPick(pool,draft,sc){
+  const pid=1,budget=draft.mode==='budget'?draft.budgets[pid]:Infinity;
+  const avail=pool.filter(c=>
+    !draft.pickedIds.has(c.id)&&
+    (draft.mode!=='budget'||getCharCost(c)<=budget)&&
+    !roleFull(draft.teams[pid],c.stats.roleType)
+  );
+  if(!avail.length)return null;
+  const scored=avail.map(c=>{let s=c.stats.overall*.4;for(const[k,w]of Object.entries(sc.weights))s+=(c.stats[k]||0)*w*.6;return{c,s}}).sort((a,b)=>b.s-a.s);
+  const n=Math.min(3,scored.length);return scored[Math.random()<.78?0:Math.floor(Math.random()*n)].c;
+}
+
+// ═══ AVATAR / IMAGE ══════════════════════════════════════════════════════════
+const ROLE_COLORS={
+  emperor:['#450a0a','#fca5a5'],captain:['#431407','#fdba74'],marine:['#082f49','#7dd3fc'],
+  revolutionary:['#2e1065','#c4b5fd'],swordsman:['#052e16','#86efac'],fighter:['#1c1917','#d6d3d1'],
+  sniper:['#422006','#fb923c'],doctor:['#022c22','#6ee7b7'],navigator:['#0c4a6e','#67e8f9'],
+  scholar:['#1e1b4b','#a5b4fc'],engineer:['#292524','#a8a29e'],cook:['#4c0519','#fda4af'],musician:['#1a103d','#c084fc'],
+};
+const ROLE_ICON={emperor:'👑',captain:'⚓',marine:'⚔',revolutionary:'✊',swordsman:'🗡',fighter:'👊',sniper:'🎯',doctor:'💊',navigator:'🧭',scholar:'📚',engineer:'🔧',cook:'🍽',musician:'🎵'};
+function getImgUrl(c){return c.avatarSrc||c.image||c.portrait||c.picture||c.img||null}
+function initials(name){return name.split(/\s+/).map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase()}
+
+function avatarHtml(char,w,h,isSlot){
+  const[bg,fg]=ROLE_COLORS[char.stats.roleType]||['#1e2f48','#94a3b8'];
+  const init=initials(char.name),icon=ROLE_ICON[char.stats.roleType]||'•';
+  const br=isSlot?'5px':'0';const imgUrl=getImgUrl(char);
+  const fb=`<div class="cc-img-fb" style="width:${w}px;height:${h}px;background:${bg}">
+    <span style="font-size:${isSlot?.65:.9}rem">${icon}</span>
+    <span class="cc-initials" style="font-size:${isSlot?.5:.82}rem;color:${fg}">${init}</span></div>`;
+  if(!imgUrl)return fb;
+  return`<div style="width:${w}px;height:${h}px;border-radius:${br};background:${bg};overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+    <img src="${imgUrl}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:${br}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
+    <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:3px">
+      <span style="font-size:${isSlot?.65:.9}rem">${icon}</span>
+      <span style="font-family:'Cinzel',serif;font-size:${isSlot?.5:.82}rem;font-weight:700;color:${fg}">${init}</span>
+    </div></div>`;
+}
+
+// ═══ UI ══════════════════════════════════════════════════════════════════════
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function fmtBounty(n){if(n>=1e9)return(n/1e9).toFixed(2).replace(/\.?0+$/,'')+'B';if(n>=1e6)return(n/1e6).toFixed(0)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return n>0?String(n):null}
+const BADGE_CLASS={emperor:'badge-emperor',captain:'badge-captain',marine:'badge-marine',revolutionary:'badge-revolutionary',swordsman:'badge-swordsman'};
+function roleBadge(r){return`<span class="cc-badge ${BADGE_CLASS[r]||'badge-default'}">${r.charAt(0).toUpperCase()+r.slice(1)}</span>`}
+
+function renderCrewManifest(pid,team){
+  const el=document.getElementById(`p${pid+1}-manifest`);
+  if(!el)return;
+  const pills=Object.entries(ROLE_CAPS).map(([rt,cap])=>{
+    const used=roleCount(team,rt);
+    const icon=ROLE_ICON[rt]||'•';
+    const atCap=used>=cap;
+    const label=cap===1?`${icon} ${used}/${cap}`:`${icon} ${used}/${cap}`;
+    return`<span class="cm-pill${atCap?' at-cap':''}" title="${rt} (${used}/${cap})">${label}</span>`;
+  }).join('');
+  el.innerHTML=`<div class="cm-label">Crew Roster</div><div class="cm-grid">${pills}</div>`;
+}
+
+function renderPickSlots(pid,team,budgetMode,budget){
+  const el=document.getElementById(`p${pid+1}-picks`);el.innerHTML='';const cls=pid===0?'p1-pick':'p2-pick';
+  for(let i=0;i<5;i++){
+    const c=team[i],slot=document.createElement('div');
+    if(c){
+      slot.className=`pick-slot filled ${cls}`;
+      const costStr=budgetMode?`<div class="slot-cost">Cost: ${getCharCost(c)}₿</div>`:'';
+      slot.innerHTML=`${avatarHtml(c,34,34,true)}<div class="slot-info"><div class="slot-name">${c.name}</div><div class="slot-role">${c.stats.roleType}</div><div class="slot-pwr">⚡${c.stats.overall}${costStr}</div></div>`;
+    }else{slot.className='pick-slot';slot.textContent=`Pick ${i+1}`}
+    el.appendChild(slot);
+  }
+  renderCrewManifest(pid,team);
+  renderSynergies(pid,team,selectedScenario?.weights||{});
+  // Budget displays
+  const bdEl=document.getElementById(`p${pid+1}-budget-display`);
+  if(bdEl){
+    bdEl.style.display=budgetMode?'block':'none';
+    if(budgetMode){
+      const pct=Math.round((budget/BUDGET_AMOUNT)*100);
+      document.getElementById(`p${pid+1}-budget-left`).textContent=budget.toLocaleString();
+      document.getElementById(`p${pid+1}-budget-bar`).style.width=pct+'%';
+    }
+  }
+}
+
+function renderCharGrid(pool,draft,onPick,budgetMode){
+  const grid=document.getElementById('char-grid');
+  const q=document.getElementById('char-search').value.trim().toLowerCase();
+  const rf=document.getElementById('role-filter').value.toLowerCase();
+  const filtered=pool.filter(c=>{
+    if(q&&!c.name.toLowerCase().includes(q)&&!(c.job||'').toLowerCase().includes(q))return false;
+    if(rf){
+      if(rf.startsWith('__')){
+        // Specialty group filter
+        if(charSpecialty(c)!==rf.slice(2))return false;
+      } else {
+        // Role type filter
+        if(!c.stats.roleType.includes(rf)&&!(c.job||'').toLowerCase().includes(rf))return false;
+      }
+    }
+    return true;
+  });
+  grid.innerHTML='';
+  if(!filtered.length){grid.innerHTML='<div class="loading-msg">No characters match.</div>';return}
+
+  const curPid=draftCurrentPlayer(draft);
+  const humanPid=gameMode==='vs-ai'?0:curPid;
+  const humanBudget=draft.mode==='budget'?draft.budgets[humanPid]:null;
+  const humanTeam=draft.teams[humanPid];
+
+  // Group by specialty (Combatants / Tacticians / Commanders / Navigators / Support)
+  // Within each group, sort by scenario fit score desc so the best battleground picks surface first.
+  const sc=selectedScenario;
+  const groups={};
+  for(const g of POOL_GROUPS)groups[g.id]={group:g,chars:[]};
+  for(const c of filtered){const sp=charSpecialty(c);groups[sp].chars.push(c);}
+  for(const{group,chars}of Object.values(groups)){
+    if(!chars.length)continue;
+    chars.sort((a,b)=>{
+      const pa=pickedBy(draft,a.id)!==null,pb=pickedBy(draft,b.id)!==null;
+      if(pa!==pb)return pa?1:-1;
+      // Primary sort: scenario fit (higher = better for this battleground)
+      const fd=scenarioFitScore(b,sc)-scenarioFitScore(a,sc);
+      if(Math.abs(fd)>0.5)return fd;
+      // Tiebreak: budget cost desc (more expensive = generally stronger)
+      return getCharCost(b)-getCharCost(a);
+    });
+    // Build group header — show scenario's top-weighted stats as subtle icons
+    // so players can infer why certain characters rank higher within this group
+    const topWeights=sc?Object.entries(sc.weights).sort((a,b)=>b[1]-a[1]).slice(0,3)
+      .map(([k])=>{const i=STAT_INFO[k];return i?`<span style="color:${i.color};opacity:.7">${i.icon}</span>`:''}).join(' '):'';
+    const hdr=document.createElement('div');hdr.className='tier-hdr';
+    hdr.innerHTML=`<div class="tier-hdr-line"></div>` +
+      `<span style="color:${group.color}">${group.icon} ${group.label}</span> ` +
+      `<span style="color:var(--muted);font-size:.6rem">· ${group.sublabel}</span>` +
+      (topWeights?` <span style="font-size:.65rem;margin-left:.3rem" title="Top scenario stats">${topWeights}</span>`:'') +
+      `<div class="tier-hdr-line"></div>`;
+    grid.appendChild(hdr);
+    chars.forEach(c=>appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam));
+  }
+}
+
+function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
+  const tb=pickedBy(draft,c.id);
+  const cost=getCharCost(c);
+  const cantAfford=budgetMode&&humanBudget!==null&&humanBudget<cost&&tb===null;
+  const isCapped=tb===null&&humanTeam&&roleFull(humanTeam,c.stats.roleType);
+  const card=document.createElement('div');
+  let cls='char-card';
+  if(tb===0)cls+=' taken-p1';
+  else if(tb===1)cls+=' taken-p2';
+  else if(isCapped)cls+=' role-capped';
+  else if(cantAfford)cls+=' cant-afford';
+  card.className=cls;
+  const bf=fmtBounty(c.stats.bounty);
+  const costBadgeClass=(cantAfford&&!isCapped)?'cost-badge unaffordable':'cost-badge';
+  const costBadgeHtml=budgetMode?`<div class="${costBadgeClass}">${cost}₿</div>`:'';
+  const isConqueror=CONQUERORS.has(c.name);
+  const roleDisplay=isCapped
+    ?`<span class="cc-badge badge-full">⛔ Slot Full</span>`
+    :roleBadge(c.stats.roleType);
+  card.innerHTML=`
+    <div class="cc-img">${avatarHtml(c,128,82,false)}${costBadgeHtml}</div>
+    <div class="cc-body">
+      <div class="cc-name">${c.name}</div>
+      ${roleDisplay}
+      ${isConqueror?'<span class="cc-badge badge-haki">🔥 Haoshoku</span>':''}
+      ${bf?`<div class="cc-meta">💰 ${bf}</div>`:''}
+      ${c.fruit?`<div class="cc-fruit">🍎 ${c.fruit.name}</div>`:''}
+      <div class="cc-bar-row" title="Scenario fit score for current battleground">
+        <div class="cc-bar"><div class="cc-bar-fill" style="width:${Math.round(scenarioFitScore(c,selectedScenario))}%;background:linear-gradient(90deg,${POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)'},var(--gold-light))"></div></div>
+        <span class="cc-pwr" style="color:${POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)'}">
+          ${Math.round(scenarioFitScore(c,selectedScenario))}
+        </span>
+      </div>
+      <div class="cc-attrs">
+        <div class="cc-attr"><span class="cc-attr-icon">⚔️</span><div class="cc-attr-bar"><div style="width:${c.stats.combat}%;--ac:#f87171"></div></div><span class="cc-attr-val">${c.stats.combat}</span></div>
+        <div class="cc-attr"><span class="cc-attr-icon">✨</span><div class="cc-attr-bar"><div style="width:${c.stats.haki}%;--ac:#c084fc"></div></div><span class="cc-attr-val">${c.stats.haki}</span></div>
+        <div class="cc-attr"><span class="cc-attr-icon">🧠</span><div class="cc-attr-bar"><div style="width:${c.stats.strategy}%;--ac:#fbbf24"></div></div><span class="cc-attr-val">${c.stats.strategy}</span></div>
+        <div class="cc-attr"><span class="cc-attr-icon">👑</span><div class="cc-attr-bar"><div style="width:${c.stats.leadership}%;--ac:#34d399"></div></div><span class="cc-attr-val">${c.stats.leadership}</span></div>
+        <div class="cc-attr"><span class="cc-attr-icon">🧭</span><div class="cc-attr-bar"><div style="width:${c.stats.navigation}%;--ac:#38bdf8"></div></div><span class="cc-attr-val">${c.stats.navigation}</span></div>
+        <div class="cc-attr"><span class="cc-attr-icon">🛡️</span><div class="cc-attr-bar"><div style="width:${c.stats.support}%;--ac:#fb923c"></div></div><span class="cc-attr-val">${c.stats.support}</span></div>
+      </div>
+    </div>`;
+  if(tb===null&&!cantAfford&&!isCapped)card.addEventListener('click',()=>onPick(c));
+  grid.appendChild(card);
+}
+
+function pickedBy(d,id){for(let p=0;p<2;p++)if(d.teams[p].some(c=>c.id===id))return p;return null}
+
+function updatePoolCounter(pool,pickedIds,budgetMode){
+  const rem=pool.filter(c=>!pickedIds.has(c.id)).length;
+  const total=pool.length;
+  const el=document.getElementById('dsb-pool');if(el)el.innerHTML=`Pool: <strong>${rem}/${total}</strong>`;
+}
+
+function renderScenarioBanner(sc,bMode){
+  const bannerEl=document.getElementById('dsb-banner');
+  const bossesEl=document.getElementById('dsb-bosses');
+  if(isBlindScenario){
+    bannerEl.style.display='none';
+    document.getElementById('dsb-name').innerHTML='<span class="dsb-sealed">🎲 <strong>Sealed Battleground</strong> — revealed after the draft</span>';
+    document.getElementById('dsb-stats').innerHTML='<span style="color:var(--muted);font-size:.72rem;letter-spacing:.05em">? ? ? ? ?</span>';
+    if(bossesEl)bossesEl.innerHTML='';
+  } else {
+    if(sc.banner){bannerEl.src=sc.banner;bannerEl.style.display='block';}
+    else bannerEl.style.display='none';
+    document.getElementById('dsb-name').textContent=sc.name;
+    document.getElementById('dsb-stats').innerHTML=`<div class="demand-grid">${demandStatsHtml(sc,false)}</div>`;
+    if(bossesEl){
+      const dBossNames=BOSSES[sc.id]||[];
+      if(dBossNames.length){
+        const threat=getBossThreatLevel(sc);
+        const threatColor=threat>70?'#ef4444':threat>40?'#fb923c':'#fbbf24';
+        bossesEl.innerHTML=`<div class="dsb-boss-header"><span style="color:${threatColor};font-size:.6rem;text-transform:uppercase;letter-spacing:.08em">⚔️ Boss Threat</span><span class="dsb-boss-threat-val" style="color:${threatColor}">${threat}%</span></div><div class="dsb-boss-bar-wrap"><div class="dsb-boss-bar-fill" style="width:${threat}%;background:${threatColor}"></div></div><div class="dsb-boss-names">${dBossNames.map(n=>`<span class="dsb-boss-chip">${n}</span>`).join('')}</div>`;
+      } else {
+        bossesEl.innerHTML='';
+      }
+    }
+  }
+  const chip=document.getElementById('dsb-mode-chip');
+  chip.className='dsb-mode-chip '+(bMode?'chip-budget':'chip-unlimited');
+  chip.textContent=bMode?'💰 Budget Draft':'♾️ Unlimited Draft';
+}
+
+// ═══ SCENARIO SCREEN ═════════════════════════════════════════════════════════
+let selectedScenario=null;
+function renderScenarioScreen(){
+  isBlindScenario=false;
+  selectedScenario=null;document.getElementById('btn-begin-draft').disabled=true;document.getElementById('sc-sel-label').textContent='No arc selected yet';
+  const grid=document.getElementById('scenario-grid');grid.innerHTML='';grid.classList.remove('blind-mode');
+  for(const sc of SCENARIOS){
+    const card=document.createElement('div');card.className='scenario-card';card.dataset.id=sc.id;
+    const wHtml=`<div class="demand-grid">${demandStatsHtml(sc,true)}</div>`;
+    const scBossNames=BOSSES[sc.id]||[];
+    const bossHtml=scBossNames.length
+      ?`<div class="sc-bosses"><span class="sc-boss-lbl">⚔️ Boss${scBossNames.length>1?'es':''}</span>${scBossNames.map(n=>`<span class="sc-boss-tag">${n}</span>`).join('')}</div>`
+      :'';
+    card.innerHTML=`${sc.banner?`<img class="sc-banner" src="${sc.banner}" alt="${sc.shortName}" loading="lazy">`:''}` +
+      `<div class="sc-arc">${sc.arc}</div><div class="sc-name">${sc.name}</div><div class="sc-desc">${sc.desc}</div><div class="sc-tags">${sc.tags.map(t=>`<span class="sc-tag">${t}</span>`).join('')}</div><div class="sc-diff">Difficulty: <span>${sc.difficulty}</span></div>${bossHtml}<div class="sc-weights">${wHtml}</div>`;
+    card.addEventListener('click',()=>selectScenario(sc));grid.appendChild(card);
+  }
+}
+function selectScenario(sc){
+  isBlindScenario=false;
+  selectedScenario=sc;
+  document.getElementById('scenario-grid').classList.remove('blind-mode');
+  document.querySelectorAll('.scenario-card').forEach(el=>{const mine=el.dataset.id===sc.id;el.classList.toggle('selected',mine);el.classList.toggle('dimmed',!mine)});
+  document.getElementById('sc-sel-label').innerHTML=`Selected: <strong>${sc.shortName}</strong>`;
+  document.getElementById('btn-begin-draft').disabled=false;
+}
+
+// ═══ GAME STATE ═══════════════════════════════════════════════════════════════
+let allChars=[],poolChars=[],draft=null,gameMode=null,budgetMode=false,refreshGrid=null;
+let isBlindScenario=false;
+let selectedOpponent=null;
+
+// ─ Home: Step 1 — Opponent ───────────────────────────────────────────────────
+document.getElementById('btn-vs-ai').addEventListener('click',()=>{
+  selectedOpponent='vs-ai';
+  document.querySelectorAll('#step-opponent .btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('btn-vs-ai').classList.add('active');
+  document.getElementById('step-mode').style.display='block';
+  document.getElementById('step-mode').scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+document.getElementById('btn-vs-player').addEventListener('click',()=>{
+  selectedOpponent='vs-player';
+  document.querySelectorAll('#step-opponent .btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('btn-vs-player').classList.add('active');
+  document.getElementById('step-mode').style.display='block';
+  document.getElementById('step-mode').scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+// ─ Home: Step 2 — Draft Mode ─────────────────────────────────────────────────
+document.getElementById('btn-unlimited').addEventListener('click',()=>{
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('btn-unlimited').classList.add('selected');
+  beginSetup(selectedOpponent,'unlimited');
+});
+document.getElementById('btn-budget').addEventListener('click',()=>{
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('btn-budget').classList.add('selected');
+  beginSetup(selectedOpponent,'budget');
+});
+
+// ─ Scenario ───────────────────────────────────────────────────────────────────
+document.getElementById('btn-randomize').addEventListener('click',()=>{
+  const sc=SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)];
+  isBlindScenario=true;
+  selectedScenario=sc;
+  // Blur all cards so neither player can see which was chosen
+  document.getElementById('scenario-grid').classList.add('blind-mode');
+  document.querySelectorAll('.scenario-card').forEach(el=>el.classList.remove('selected','dimmed'));
+  document.getElementById('sc-sel-label').innerHTML=
+    `<span style="color:var(--gold)">🎲 Battleground sealed</span> — revealed after the draft`;
+  document.getElementById('btn-begin-draft').disabled=false;
+});
+document.getElementById('btn-begin-draft').addEventListener('click',showCoinToss);
+
+// ─ Pass ───────────────────────────────────────────────────────────────────────
+document.getElementById('btn-pass').addEventListener('click',()=>{
+  if(!draft||!budgetMode)return;
+  const pid=draftCurrentPlayer(draft);
+  if(gameMode==='vs-ai'&&pid===1)return;
+  if(draftPass(draft,pid,poolChars)){
+    afterPick();
+  }
+});
+
+// ─ Play again ─────────────────────────────────────────────────────────────────
+document.getElementById('btn-play-again').addEventListener('click',()=>{
+  // Reset home screen state
+  document.querySelectorAll('#step-opponent .btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('step-mode').style.display='none';
+  selectedOpponent=null;
+  showScreen('screen-home');
+});
+
+// ─ Setup flow ─────────────────────────────────────────────────────────────────
+function beginSetup(opp,mode){
+  gameMode=opp;budgetMode=(mode==='budget');
+  document.getElementById('p2-label').textContent=opp==='vs-ai'?'AI Opponent':'Player 2';
+  renderScenarioScreen();showScreen('screen-scenario');
+}
+
+// ─ Coin Toss ─────────────────────────────────────────────────────────────────
+function showCoinToss(){
+  if(!selectedScenario)return;
+  coinTossWinner=0; // reset
+  const p2Name=gameMode==='vs-ai'?'AI Opponent':'Player 2';
+  document.getElementById('ct-p2-label').textContent=p2Name;
+  // Reset UI
+  const coin=document.getElementById('ct-coin');
+  coin.className='coin';
+  document.getElementById('ct-result').textContent='';
+  document.getElementById('ct-result').className='ct-result';
+  const flipBtn=document.getElementById('btn-flip-coin');
+  flipBtn.disabled=false;
+  flipBtn.style.display='inline-flex';
+  document.getElementById('btn-start-after-toss').style.display='none';
+  showScreen('screen-cointoss');
+}
+
+document.getElementById('btn-flip-coin').addEventListener('click',()=>{
+  const winner=Math.random()<0.5?0:1; // 0=heads=P1, 1=tails=P2
+  coinTossWinner=winner;
+  const coin=document.getElementById('ct-coin');
+  const flipBtn=document.getElementById('btn-flip-coin');
+  flipBtn.disabled=true;
+
+  // Spin count: 5 full rotations + land on correct face
+  // Heads (P1) = ends at 0° (even multiple of 360); Tails (P2) = ends at 180°
+  const extraDeg=winner===1?180:0;
+  const totalDeg=5*360+extraDeg;
+  coin.style.setProperty('--flip-deg',`${totalDeg}deg`);
+  coin.classList.add('flipping');
+
+  setTimeout(()=>{
+    // Set final resting state without animation
+    coin.classList.remove('flipping');
+    coin.classList.add(winner===0?'landed-heads':'landed-tails');
+
+    const p2Name=document.getElementById('ct-p2-label').textContent;
+    const winnerName=winner===0?'Player 1':p2Name;
+    const resultEl=document.getElementById('ct-result');
+    resultEl.innerHTML=`<span class="ct-winner-name">${winnerName}</span> <span class="ct-winner-sub">goes first!</span>`;
+    resultEl.classList.add('visible');
+
+    document.getElementById('btn-start-after-toss').style.display='inline-flex';
+    flipBtn.style.display='none';
+  },2000);
+});
+
+document.getElementById('btn-start-after-toss').addEventListener('click',startDraft);
+
+async function startDraft(){
+  if(!selectedScenario)return;
+  draft=createDraft(budgetMode?'budget':'unlimited');
+  showScreen('screen-draft');
+
+  renderPickSlots(0,[],budgetMode,BUDGET_AMOUNT);
+  renderPickSlots(1,[],budgetMode,BUDGET_AMOUNT);
+  document.getElementById('p1-power').textContent='— PWR';
+  document.getElementById('p2-power').textContent='— PWR';
+  setTurnStatus();renderScenarioBanner(selectedScenario,budgetMode);
+
+  // Pass button: only in budget mode, only on human turn
+  syncPassButton();
+
+  if(!allChars.length){
+    document.getElementById('char-grid').innerHTML='<div class="loading-msg">⚓ Loading crew manifest from the Grand Line...</div>';
+    const raw=await fetchCharacters();
+    allChars=raw.filter(c=>c.name).map(c=>({...c,stats:computeStats(c)})).sort((a,b)=>b.stats.overall-a.stats.overall);
+  }
+  const bossNames=new Set(BOSSES[selectedScenario?.id]||[]);
+  const poolSize=budgetMode?20:30;
+  poolChars=generatePool(allChars.filter(c=>!bossNames.has(c.name)),poolSize);
+  updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
+  document.getElementById('char-search').value='';document.getElementById('role-filter').value='';
+  refreshGrid=()=>renderCharGrid(poolChars,draft,handlePick,budgetMode);
+  document.getElementById('char-search').oninput=refreshGrid;
+  document.getElementById('role-filter').onchange=refreshGrid;
+  refreshGrid();
+
+  // If AI won the coin toss and goes first, trigger its opening pick
+  if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1&&!draft.complete){
+    setTimeout(doAiPick,1200);
+  }
+}
+
+function syncPassButton(){
+  const btn=document.getElementById('btn-pass');
+  if(!budgetMode){btn.style.display='none';return}
+  const curPid=draftCurrentPlayer(draft);
+  const isHumanTurn=!(gameMode==='vs-ai'&&curPid===1);
+  btn.style.display=(budgetMode&&isHumanTurn&&!draft.complete)?'block':'none';
+}
+
+function setTurnStatus(){
+  if(draft.complete){
+    document.getElementById('draft-turn-text').textContent='Draft Complete!';
+    document.getElementById('draft-pick-num').textContent='Calculating results...';
+    syncPassButton();return;
+  }
+  const names=['Player 1',gameMode==='vs-ai'?'AI Opponent':'Player 2'];
+  const curPid=draftCurrentPlayer(draft);
+  document.getElementById('draft-turn-text').textContent=`${names[curPid]}'s Pick`;
+  if(budgetMode){
+    const budget=draft.budgets[curPid];
+    document.getElementById('draft-pick-num').textContent=`Budget remaining: ${budget.toLocaleString()} Berri · ${draft.teams[curPid].length}/5 characters`;
+  }else{
+    document.getElementById('draft-pick-num').textContent=`Pick ${draft.pickIndex+1} of ${SNAKE_BASE.length}`;
+  }
+  syncPassButton();
+}
+
+function handlePick(c){
+  if(!draft||draft.complete)return;
+  const curPid=draftCurrentPlayer(draft);
+  if(gameMode==='vs-ai'&&curPid===1)return;
+  if(draftPick(draft,c,curPid,poolChars))afterPick();
+}
+
+function afterPick(){
+  renderPickSlots(0,draft.teams[0],budgetMode,draft.budgets[0]);
+  renderPickSlots(1,draft.teams[1],budgetMode,draft.budgets[1]);
+  const p0=draftTeamPower(draft,0),p1=draftTeamPower(draft,1);
+  document.getElementById('p1-power').textContent=p0>0?`${p0} PWR`:'— PWR';
+  document.getElementById('p2-power').textContent=p1>0?`${p1} PWR`:'— PWR';
+  updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
+
+  if(draft.complete){setTurnStatus();refreshGrid();setTimeout(isBlindScenario?showReveal:showResults,700);return}
+
+  setTurnStatus();refreshGrid();
+  if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1&&!draft.complete)setTimeout(doAiPick,900);
+}
+
+function doAiPick(){
+  if(!draft||draft.complete||draftCurrentPlayer(draft)!==1)return;
+  const pick=aiPick(poolChars,draft,selectedScenario);
+  if(pick){draftPick(draft,pick,1,poolChars);afterPick()}
+  else{
+    // AI has nothing affordable → auto-pass
+    if(budgetMode){draftPass(draft,1,poolChars);afterPick()}
+  }
+}
+
+function showReveal(){
+  const sc=selectedScenario;
+  const wHtml=`<div class="demand-grid">${demandStatsHtml(sc,false)}</div>`;
+  document.getElementById('reveal-card').innerHTML=
+    (sc.banner?`<img class="rv-banner" src="${sc.banner}" alt="${sc.shortName}">`:'') +
+    `<div class="rv-arc">${sc.arc}</div>
+    <div class="rv-name">${sc.name}</div>
+    <div class="rv-desc">${sc.desc}</div>
+    <div class="rv-tags">${sc.tags.map(t=>`<span class="sc-tag">${t}</span>`).join('')}</div>
+    <div class="rv-diff">Difficulty: <span>${sc.difficulty}</span></div>
+    <div class="rv-weights">${wHtml}</div>`;
+  // Re-trigger the drop animation by cloning the node
+  const card=document.getElementById('reveal-card');
+  card.style.animation='none';card.offsetHeight;card.style.animation='';
+  showScreen('screen-reveal');
+}
+document.getElementById('btn-see-results').addEventListener('click',showResults);
+
+// ─── Count-up animation ───────────────────────────────────────────────────────
+function animateCount(el,target,duration,onDone){
+  const start=performance.now();
+  (function tick(now){
+    const t=Math.min((now-start)/duration,1);
+    const eased=1-Math.pow(1-t,3); // cubic ease-out — slows near the end
+    el.textContent=Math.round(eased*target);
+    if(t<1)requestAnimationFrame(tick);
+    else{el.textContent=target;if(onDone)onDone();}
+  })(start);
+}
+
+// ─── Post-match verdict ───────────────────────────────────────────────────────
+function generateVerdict(team,result,sc,isWinner,opponentPct){
+  if(!team.length)return'No crew was assembled.';
+  const si=STAT_INFO;
+  const sortedW=Object.entries(sc.weights).sort((a,b)=>b[1]-a[1]);
+  const [primaryKey,primaryW]=sortedW[0];
+  const primaryLabel=si[primaryKey]?.label||primaryKey;
+  const primaryIcon=si[primaryKey]?.icon||'';
+
+  // Team averages for each scenario stat
+  const avg={};
+  for(const[k]of sortedW)avg[k]=Math.round(team.reduce((s,c)=>s+(c.stats[k]||0),0)/team.length);
+
+  // Performers
+  const sorted=[...result.breakdown].sort((a,b)=>b.score-a.score);
+  const mvp=sorted[0]?.character;
+  const weakLink=sorted[sorted.length-1]?.character;
+  const margin=Math.abs(result.percentage-opponentPct);
+
+  const lines=[];
+
+  if(isWinner){
+    if(margin>=15)lines.push(`A dominant victory — this battleground played perfectly into your crew's strengths.`);
+    else if(margin>=6)lines.push(`A solid win. Your crew was well-matched to the demands of ${sc.shortName}.`);
+    else lines.push(`A narrow victory, hard-fought to the very end.`);
+
+    if(avg[primaryKey]>=68)
+      lines.push(`Your crew's ${primaryIcon} <strong>${primaryLabel}</strong> average of <strong>${avg[primaryKey]}</strong> was exceptional — exactly what this scenario weights heaviest at ${Math.round(primaryW*100)}%.`);
+    else
+      lines.push(`Even without elite ${primaryIcon} <strong>${primaryLabel}</strong> (avg ${avg[primaryKey]}), the crew's overall balance across all scenario demands carried the day.`);
+
+    if(mvp)lines.push(`<strong>${mvp.name}</strong> was the standout performer, contributing the most to the crew's score.`);
+
+    const bonusParts=[];
+    if(result.bonuses.haki>0)bonusParts.push(`Haki dominance (+${result.bonuses.haki}%)`);
+    if(result.bonuses.diversity>0)bonusParts.push(`role diversity (+${result.bonuses.diversity}%)`);
+    if(result.bonuses.leader>0)bonusParts.push(`captain leadership (+${result.bonuses.leader}%)`);
+    if(result.bonuses.fruit>0)bonusParts.push(`Devil Fruit variety (+${result.bonuses.fruit}%)`);
+    if(bonusParts.length)lines.push(`Crew bonuses from ${bonusParts.join(', ')} pushed the score further ahead.`);
+
+  }else{
+    if(margin>=15)lines.push(`A heavy defeat — this battleground brutally exposed the crew's weaknesses.`);
+    else if(margin>=6)lines.push(`The crew fell short of what ${sc.shortName} truly demanded.`);
+    else lines.push(`A close loss — only a small gap separated the crews, but it was enough.`);
+
+    if(avg[primaryKey]<52)
+      lines.push(`The scenario's core requirement is ${primaryIcon} <strong>${primaryLabel}</strong> at ${Math.round(primaryW*100)}% weight — your crew averaged just <strong>${avg[primaryKey]}</strong> in that stat.`);
+    else{
+      const weakEntry=sortedW.find(([k])=>avg[k]<50&&(sc.weights[k]||0)>=0.12);
+      if(weakEntry){
+        const[wk]=weakEntry;
+        lines.push(`A hidden liability: the crew averaged only <strong>${avg[wk]}</strong> in ${si[wk]?.icon||''} <strong>${si[wk]?.label||wk}</strong>, which this scenario values at ${Math.round(sc.weights[wk]*100)}%.`);
+      }else{
+        lines.push(`The opponent's crew simply matched this battlefield better across every stat category.`);
+      }
+    }
+
+    const missed=[];
+    if(result.bonuses.haki===0&&(sc.weights.haki||0)>=0.15)missed.push("Conqueror's Haki users");
+    if(result.bonuses.diversity===0)missed.push('role variety');
+    if(result.bonuses.leader===0)missed.push('a captain or emperor');
+    if(missed.length)lines.push(`Lacking ${missed.slice(0,2).join(' and ')} cost valuable bonus multipliers that could have closed the gap.`);
+
+    if(weakLink&&weakLink!==mvp&&sorted.length>1)
+      lines.push(`<strong>${weakLink.name}</strong> struggled most to contribute in this environment.`);
+  }
+
+  return lines.join(' ');
+}
+
+function showResults(){
+  const p1=scoreTeam(draft.teams[0],selectedScenario);
+  const p2=scoreTeam(draft.teams[1],selectedScenario);
+  const p2Name=gameMode==='vs-ai'?'AI Opponent':'Player 2';
+
+  document.getElementById('results-arc-name').textContent=selectedScenario.shortName;
+
+  // Winner text — set but keep invisible until animation completes
+  const bannerEl=document.getElementById('winner-banner');
+  bannerEl.style.opacity='0';
+  if(p1.percentage>p2.percentage)bannerEl.textContent='🏆 Player 1 Wins!';
+  else if(p2.percentage>p1.percentage)bannerEl.textContent=`🏆 ${p2Name} Wins!`;
+  else bannerEl.textContent="⚓ It's a Tie!";
+
+  function teamSummary(d,pid){
+    if(!budgetMode)return`${d.teams[pid].length} characters`;
+    const spent=draftBudgetSpent(d,pid);return`${d.teams[pid].length} chars · ${spent}₿ spent`;
+  }
+
+  function buildPanel(name,result,team,pid,prefix,isWinner){
+    const color=`var(--${prefix})`;
+    if(!team.length)return`<div class="result-panel ${isWinner?'is-winner':''}"><div class="rp-hdr"><span class="rp-player" style="color:${color}">${name}</span><span class="rp-score" style="color:${color}">—%</span></div><p style="color:var(--muted);font-size:.8rem;padding:.5rem 0">No characters drafted.</p></div>`;
+
+    // Character list (for stage 1)
+    const chars=result.breakdown.map(item=>`
+      <div class="rp-char">
+        <div class="rp-char-img">${avatarHtml(item.character,28,28,true)}</div>
+        <div class="rp-char-info"><div class="rp-char-name">${item.character.name}</div><div class="rp-char-role">${item.character.stats.roleType}${budgetMode?' · '+getCharCost(item.character)+'₿':''}</div></div>
+        <div class="rp-char-score">+${item.score}</div>
+      </div>`).join('');
+
+    // Bonus chips (for stage 2)
+    const bonusChips=[];
+    if(result.bonuses.diversity>0)bonusChips.push(`🤝 Diversity +${result.bonuses.diversity}%`);
+    if(result.bonuses.leader>0)bonusChips.push(`👑 Captain +${result.bonuses.leader}%`);
+    if(result.bonuses.fruit>0)bonusChips.push(`🍎 Fruits +${result.bonuses.fruit}%`);
+    if(result.bonuses.haki>0)bonusChips.push(`🔥 Haki +${result.bonuses.haki}%`);
+    if(result.bonuses.crew<0)bonusChips.push(`👥 Small Crew ${result.bonuses.crew}%`);
+    const synChips=(result.synergies||[]).map(s=>{
+      const delta=synDelta([s],selectedScenario?.weights||{});
+      const sign=delta>=0?'+':'';
+      return`${s.icon} ${s.name} (${sign}${Math.round(delta)}pts)`;
+    });
+    const allBonusChips=[...bonusChips,...synChips];
+    const bonusChipsHtml=allBonusChips.map(b=>`<span class="stage-bonus-chip">${b}</span>`).join('');
+    const bonusDelta=result.afterBonuses-result.crewScore;
+    const bonusDeltaStr=bonusDelta>=0?`+${bonusDelta}`:`${bonusDelta}`;
+
+    // Battleground info
+    const diffPct=Math.round(result.difficultyMod*100);
+    const bgDelta=result.afterDifficulty-result.afterBonuses;
+
+    // Boss info
+    const bossMod=result.bossMod;
+    const bossPct=Math.round(bossMod*100);
+    const bossNames=result.bossNames.length?result.bossNames.join(', '):'None';
+    const bossDelta=result.percentage-result.afterDifficulty;
+
+    const verdict=generateVerdict(team,result,selectedScenario,isWinner,isWinner?Math.min(p1.percentage,p2.percentage):Math.max(p1.percentage,p2.percentage));
+
+    return`<div class="result-panel ${isWinner?'is-winner':''}">
+      <div class="rp-hdr">
+        <span class="rp-player" style="color:${color}">${name}</span>
+        <span class="rp-score" style="color:${color}"><span class="rp-score-num" id="score-${prefix}">0</span>%</span>
+      </div>
+      <p class="rp-sub">${teamSummary(draft,pid)}</p>
+      <div class="rp-bar-wrap"><div id="bar-${prefix}" class="rp-bar-fill fill-${prefix}"></div></div>
+
+      <!-- Stage 1: Crew Power -->
+      <div class="score-stage" id="st1-${prefix}">
+        <div class="stage-block stage-crew">
+          <div class="stage-row">
+            <span class="stage-label-txt">👥 Crew Power</span>
+            <span class="stage-score crew-col" id="crew-score-${prefix}">—</span>
+          </div>
+          <div class="stage-subbar"><div class="stage-subbar-fill" id="crew-bar-${prefix}" style="background:#3b82f6"></div></div>
+          <div class="rp-chars">${chars}</div>
+        </div>
+      </div>
+
+      <!-- Stage 2: Bonuses -->
+      <div class="score-stage" id="st2-${prefix}">
+        <div class="stage-connector">↓ team bonuses applied</div>
+        <div class="stage-block stage-bonus">
+          <div class="stage-row">
+            <span class="stage-label-txt">✨ After Bonuses <small style="font-weight:400;opacity:.7">(${bonusDeltaStr})</small></span>
+            <span class="stage-score bonus-col" id="bonus-score-${prefix}">—</span>
+          </div>
+          <div class="stage-subbar"><div class="stage-subbar-fill" id="bonus-bar-${prefix}" style="background:#34d399"></div></div>
+          ${allBonusChips.length?`<div class="stage-bonus-chips">${bonusChipsHtml}</div>`:'<div class="stage-detail-txt">No active bonuses</div>'}
+        </div>
+      </div>
+
+      <!-- Stage 3: Battleground Difficulty + Mismatch -->
+      <div class="score-stage" id="st3-${prefix}">
+        <div class="stage-connector">↓ battleground deduction applied</div>
+        <div class="stage-block stage-bground">
+          <div class="stage-row">
+            <span class="stage-label-txt">🌊 Battleground Deduction <small style="font-weight:400;opacity:.7">(×${Math.round(result.difficultyMod*result.mismatchPenalty*100)}%)</small></span>
+            <span class="stage-score bground-col" id="bg-score-${prefix}">—</span>
+          </div>
+          <div class="stage-subbar"><div class="stage-subbar-fill" id="bg-bar-${prefix}" style="background:#fbbf24"></div></div>
+          <div class="stage-detail-txt">
+            <span>${selectedScenario.name} — <em>${selectedScenario.difficulty}</em> difficulty ×${diffPct}%</span>
+            ${result.mismatchPenalty<0.98?`<span style="color:#f87171;font-weight:700"> · ⚠️ Crew mismatch ×${Math.round(result.mismatchPenalty*100)}%</span>`:''}
+          </div>
+          <div class="mismatch-detail">${KEY_DEMAND_STATS.map(k=>{
+            const demand=selectedScenario.weights[k]||0;
+            const avgStat=team.reduce((s,c)=>s+(c.stats[k]||0),0)/team.length;
+            const dLevel=getDemandLevel(demand);
+            const sLevel=getSupplyLevel(avgStat);
+            const gap=Math.max(0,dLevel-sLevel);
+            const dStep=getDemandStep(demand);
+            const sStep=DEMAND_STEPS[sLevel]||DEMAND_STEPS[0];
+            const info=STAT_INFO[k];
+            return`<div class="mismatch-row">
+              <span>${info.icon} ${info.label}</span>
+              <span>Needs <strong style="color:${dStep.color}">${dStep.label}</strong></span>
+              <span>· Team <strong style="color:${sStep.color}">${sStep.label}</strong> (avg ${Math.round(avgStat)})</span>
+              <span class="mismatch-gap ${gap===0?'gap-0':'gap-bad'}">${gap===0?'✓ Match':`−${gap} lvl → ×${MISMATCH_FACTORS[gap]*100|0}%`}</span>
+            </div>`;
+          }).join('')}</div>
+        </div>
+      </div>
+
+      <!-- Stage 4: Boss Threat -->
+      <div class="score-stage" id="st4-${prefix}">
+        <div class="stage-connector">↓ boss threat factored in</div>
+        <div class="stage-block stage-boss">
+          <div class="stage-row">
+            <span class="stage-label-txt">☠️ Boss Threat <small style="font-weight:400;opacity:.7">(×${bossPct}%${bossDelta<0?' / −'+Math.abs(bossDelta)+'pts':''})</small></span>
+            <span class="stage-score boss-col" id="boss-score-${prefix}">—</span>
+          </div>
+          <div class="stage-subbar"><div class="stage-subbar-fill" id="boss-bar-${prefix}" style="background:#f87171"></div></div>
+          <div class="stage-detail-txt">${result.bossNames.length?`Boss${result.bossNames.length>1?'es':''}: <strong style="color:var(--text)">${bossNames}</strong>`:'No bosses for this battleground'}</div>
+        </div>
+      </div>
+
+      <!-- Stage 5: Final Score -->
+      <div class="score-stage" id="st5-${prefix}">
+        <div class="stage-block stage-final">
+          <div class="stage-row">
+            <span class="stage-label-txt" style="font-size:.78rem">⚡ Final Score</span>
+            <span class="stage-score final-col" id="final-score-${prefix}">—</span>
+          </div>
+        </div>
+        <div class="rp-verdict" id="verdict-${prefix}">${verdict}</div>
+      </div>
+    </div>`;
+  }
+
+  const p1Win=p1.percentage>=p2.percentage;
+  document.getElementById('results-panels').innerHTML=
+    buildPanel('Player 1',p1,draft.teams[0],0,'p1',p1Win)+
+    buildPanel(p2Name,    p2,draft.teams[1],1,'p2',!p1Win||(p2.percentage===p1.percentage));
+  showScreen('screen-results');
+
+  // Helper: reveal a stage element and animate its sub-bar
+  function revealStage(stageId,barId,pct){
+    const st=document.getElementById(stageId);
+    if(st){st.classList.add('revealed');}
+    const b=document.getElementById(barId);
+    if(b)setTimeout(()=>{b.style.width=pct+'%';},60);
+  }
+
+  // Master bar transitions through each intermediate value
+  function setBar(prefix,pct){
+    const b=document.getElementById('bar-'+prefix);
+    if(b)b.style.width=pct+'%';
+  }
+  function setScoreNum(id,val){
+    const el=document.getElementById(id);
+    if(el)el.textContent=val;
+  }
+
+  // Staggered 5-stage reveal
+  const STAGE_GAP=1300; // ms between stages
+
+  // Stage 1 — Crew Power (300ms initial delay)
+  setTimeout(()=>{
+    revealStage('st1-p1','crew-bar-p1',p1.crewScore);
+    revealStage('st1-p2','crew-bar-p2',p2.crewScore);
+    setBar('p1',p1.crewScore); setBar('p2',p2.crewScore);
+    animateCount(document.getElementById('score-p1'),p1.crewScore,900,null);
+    animateCount(document.getElementById('score-p2'),p2.crewScore,900,null);
+    setScoreNum('crew-score-p1',p1.crewScore+'%');
+    setScoreNum('crew-score-p2',p2.crewScore+'%');
+  },300);
+
+  // Stage 2 — After Bonuses
+  setTimeout(()=>{
+    revealStage('st2-p1','bonus-bar-p1',p1.afterBonuses);
+    revealStage('st2-p2','bonus-bar-p2',p2.afterBonuses);
+    setBar('p1',p1.afterBonuses); setBar('p2',p2.afterBonuses);
+    animateCount(document.getElementById('score-p1'),p1.afterBonuses,800,null);
+    animateCount(document.getElementById('score-p2'),p2.afterBonuses,800,null);
+    setScoreNum('bonus-score-p1',p1.afterBonuses+'%');
+    setScoreNum('bonus-score-p2',p2.afterBonuses+'%');
+  },300+STAGE_GAP);
+
+  // Stage 3 — Battleground Difficulty
+  setTimeout(()=>{
+    revealStage('st3-p1','bg-bar-p1',p1.afterDifficulty);
+    revealStage('st3-p2','bg-bar-p2',p2.afterDifficulty);
+    setBar('p1',p1.afterDifficulty); setBar('p2',p2.afterDifficulty);
+    animateCount(document.getElementById('score-p1'),p1.afterDifficulty,800,null);
+    animateCount(document.getElementById('score-p2'),p2.afterDifficulty,800,null);
+    setScoreNum('bg-score-p1',p1.afterDifficulty+'%');
+    setScoreNum('bg-score-p2',p2.afterDifficulty+'%');
+  },300+STAGE_GAP*2);
+
+  // Stage 4 — Boss Threat
+  setTimeout(()=>{
+    revealStage('st4-p1','boss-bar-p1',p1.percentage);
+    revealStage('st4-p2','boss-bar-p2',p2.percentage);
+    setBar('p1',p1.percentage); setBar('p2',p2.percentage);
+    animateCount(document.getElementById('score-p1'),p1.percentage,800,null);
+    animateCount(document.getElementById('score-p2'),p2.percentage,800,null);
+    setScoreNum('boss-score-p1',p1.percentage+'%');
+    setScoreNum('boss-score-p2',p2.percentage+'%');
+  },300+STAGE_GAP*3);
+
+  // Stage 5 — Final Score + winner banner + verdict
+  setTimeout(()=>{
+    revealStage('st5-p1',null,0);
+    revealStage('st5-p2',null,0);
+    setScoreNum('final-score-p1',p1.percentage+'%');
+    setScoreNum('final-score-p2',p2.percentage+'%');
+    bannerEl.style.opacity='1';
+    setTimeout(()=>{
+      document.getElementById('verdict-p1')?.classList.add('visible');
+      document.getElementById('verdict-p2')?.classList.add('visible');
+    },500);
+  },300+STAGE_GAP*4);
+}
+</script>
+</body>
+</html>

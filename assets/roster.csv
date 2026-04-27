@@ -1,0 +1,69 @@
+id,name,job,power,tier,crew,fruit,combat,strategy,haki,leadership,navigation,support
+1,Luffy,Pirate Emperor,990,S+,Straw Hats,Hito Hito no Mi Model: Nika,97,75,100,90,30,65
+2,Kaido,Pirate Emperor,985,S+,Beasts Pirates,Uo Uo no Mi Model: Seiryu,100,58,97,72,20,25
+3,Shanks,Pirate Emperor,980,S+,Red-Haired Pirates,,95,87,100,95,65,58
+4,Blackbeard,Pirate Emperor,975,S+,Blackbeard Pirates,Yami Yami no Mi,92,90,82,80,42,30
+5,Mihawk,Swordsman,975,S+,Cross Guild,,98,78,88,42,30,18
+6,Akainu,Fleet Admiral,970,S+,Marines,Magu Magu no Mi,95,82,90,88,45,32
+7,Dragon,Revolutionary Leader,970,S+,Revolutionary Army,,88,97,85,100,55,70
+8,Aokiji,Admiral,960,S,Blackbeard Pirates,Hie Hie no Mi,88,80,85,70,60,52
+9,Big Mom,Pirate Emperor,960,S,Big Mom Pirates,Soru Soru no Mi,93,70,92,82,35,58
+10,Kizaru,Admiral,955,S,Marines,Pika Pika no Mi,90,72,84,68,55,38
+11,Fujitora,Admiral,955,S,Marines,Zushi Zushi no Mi,88,82,87,75,40,55
+12,Greenbull,Admiral,955,S,Marines,Mori Mori no Mi,86,68,80,68,35,48
+13,Zoro,Swordsman,945,S,Straw Hats,,95,62,90,52,22,28
+14,Law,Pirate Captain,945,S,Heart Pirates,Ope Ope no Mi,82,93,80,72,62,77
+15,Benn Beckman,Pirate Commander,945,S,Red-Haired Pirates,,85,90,75,80,72,65
+16,Sanji,Cook,940,S,Straw Hats,,88,72,78,55,48,82
+17,Kid,Pirate Captain,940,S,Kid Pirates,Jiki Jiki no Mi,87,58,78,62,52,28
+18,Yamato,Fighter,940,S,Wano,Inu Inu no Mi Model: Okuchi no Makami,86,68,80,62,35,45
+19,Sabo,Revolutionary,940,S,Revolutionary Army,Mera Mera no Mi,85,78,80,75,52,60
+20,Marco,Pirate Commander,930,A,Whitebeard Pirates,Tori Tori no Mi Model: Phoenix,80,75,76,72,55,88
+21,King,Fighter,930,A,Beasts Pirates,,83,60,78,62,28,22
+22,Katakuri,Sweet Commander,925,A,Big Mom Pirates,Mochi Mochi no Mi,85,80,83,68,35,40
+23,Shiryu,Pirate Commander,925,A,Blackbeard Pirates,Suke Suke no Mi,83,72,70,48,42,18
+24,Lucci,Marine,920,A,CP0,Neko Neko no Mi Model: Leopard,84,78,72,52,48,22
+25,Boa Hancock,Pirate Captain,920,A,Kuja Pirates,Mero Mero no Mi,80,75,76,75,52,55
+26,Enel,Fighter,910,A,Skypiea,Goro Goro no Mi,78,68,62,65,72,28
+27,Jack,Fighter,910,A,Beasts Pirates,Zou Zou no Mi Model: Mammoth,86,38,72,48,28,18
+28,Queen,Fighter,915,A,Beasts Pirates,Ryu Ryu no Mi Model: Brachiosaurus,78,78,64,55,32,62
+29,Ace,Pirate Captain,905,A,Whitebeard Pirates,Mera Mera no Mi,80,65,72,65,58,50
+30,Cracker,Pirate Commander,905,A,Big Mom Pirates,Bisu Bisu no Mi,78,68,70,52,28,38
+31,Van Augur,Sniper,900,A,Blackbeard Pirates,,72,78,60,45,58,40
+32,Smoothie,Sweet Commander,900,A,Big Mom Pirates,Shibo Shibo no Mi,75,65,68,60,42,58
+33,Doflamingo,Pirate Captain,900,A,Donquixote Pirates,Ito Ito no Mi,80,88,75,82,45,32
+34,Crocodile,Pirate Captain,900,A,Cross Guild,Suna Suna no Mi,75,92,62,80,58,38
+35,Jinbe,Pirate Captain,900,A,Straw Hats,,78,76,72,72,92,65
+36,Catarina Devon,Fighter,895,A,Blackbeard Pirates,Inu Inu no Mi Model: Kyubi no Kitsune,74,80,62,52,45,28
+37,Perospero,Pirate Commander,890,A,Big Mom Pirates,Pero Pero no Mi,68,78,60,60,38,58
+38,Jesus Burgess,Fighter,890,A,Blackbeard Pirates,,78,52,65,45,28,22
+39,Lafitte,Fighter,885,A,Blackbeard Pirates,,65,75,52,58,62,42
+40,Oven,Pirate Commander,880,A,Big Mom Pirates,Netsu Netsu no Mi,74,55,65,55,32,28
+41,Daifuku,Pirate Commander,880,A,Big Mom Pirates,Hoya Hoya no Mi,72,58,62,52,32,32
+42,Magellan,Marine,930,B,Impel Down,Doku Doku no Mi,75,72,52,70,38,48
+43,Killer,Fighter,890,B,Kid Pirates,,75,62,58,45,32,28
+44,X Drake,Marine,890,B,SWORD,Ryu Ryu no Mi Model: Allosaurus,74,72,60,62,45,35
+45,Urouge,Pirate Captain,885,B,Fallen Monk Pirates,,72,58,62,48,38,28
+46,Hawkins,Fighter,880,B,Beasts Pirates,Wara Wara no Mi,68,78,58,50,42,48
+47,Capone Bege,Pirate Captain,880,B,Firetank Pirates,Shiro Shiro no Mi,65,85,50,75,58,58
+48,Koby,Marine,880,B,Marines,,62,65,58,68,52,58
+49,Apoo,Musician,875,B,On Air Pirates,Oto Oto no Mi,65,62,50,45,52,62
+50,Caesar Clown,Scholar,860,B,Independent,Gasu Gasu no Mi,58,82,28,48,38,58
+51,Smoker,Marine,870,B,Marines,Moku Moku no Mi,68,65,62,65,50,45
+52,Sentomaru,Marine,870,B,Marines,,70,55,65,55,32,28
+53,Robin,Archaeologist,845,B,Straw Hats,Hana Hana no Mi,55,88,45,55,65,78
+54,Franky,Shipwright,840,B,Straw Hats,,65,72,28,50,55,82
+55,Bepo,Navigator,840,B,Heart Pirates,,60,58,42,48,72,55
+56,Nami,Navigator,830,B,Straw Hats,,38,88,12,55,97,72
+57,Brook,Musician,830,B,Straw Hats,Yomi Yomi no Mi,65,62,55,40,48,62
+58,Usopp,Sniper,820,B,Straw Hats,,48,80,18,42,52,68
+59,Chopper,Doctor,820,B,Straw Hats,Hito Hito no Mi,55,68,32,40,32,92
+60,Tashigi,Swordsman,780,B,Marines,,62,60,58,52,38,48
+61,Buggy,Pirate Emperor,750,C,Cross Guild,Bara Bara no Mi,45,62,12,72,42,48
+62,Mr 1,Fighter,820,C,Cross Guild,Supa Supa no Mi,70,45,35,35,22,18
+63,Mr 2,Fighter,800,C,Impel Down,Mane Mane no Mi,62,58,28,40,35,42
+64,Mr 3,Fighter,780,C,Cross Guild,Doru Doru no Mi,50,65,18,38,28,48
+65,Arlong,Pirate Captain,750,C,Arlong Pirates,,62,50,28,55,78,28
+66,Hody Jones,Pirate Captain,780,C,Fishman Pirates,,65,48,32,55,82,22
+67,Garp,Vice Admiral,945,S,Marines,,92,72,88,85,55,42
+68,Sengoku,Fleet Admiral,935,S,Marines,Hito Hito no Mi Model: Daibutsu,85,92,85,95,50,65

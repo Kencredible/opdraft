@@ -1516,9 +1516,7 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
     <div class="cc-body">
       <div class="cc-name">${c.name}</div>
       ${affiliationBadge(c)}${slotFullBadge}
-      ${isConqueror?'<span class="cc-badge badge-haki">🔥 Haoshoku</span>':''}
       ${bf?`<div class="cc-meta">💰 ${bf}</div>`:''}
-      ${c.fruit?`<div class="cc-fruit">🍎 ${c.fruit.name}</div>`:''}
       <div class="cc-bar-row" title="Scenario fit score for current battleground">
         <div class="cc-bar"><div class="cc-bar-fill" style="width:${Math.round(scenarioFitScore(c,selectedScenario))}%;background:linear-gradient(90deg,${POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)'},var(--gold-light))"></div></div>
         <span class="cc-pwr" style="color:${POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)'}">

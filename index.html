@@ -448,7 +448,7 @@
         <button class="mode-card" id="btn-unlimited">
           <div class="mc-icon">♾️</div>
           <div class="mc-title">Unlimited Draft</div>
-          <div class="mc-desc">Each player picks exactly 5 characters from the shared pool using a snake draft order.</div>
+          <div class="mc-desc">Each player picks exactly 6 characters from the shared pool using a snake draft order.</div>
         </button>
         <button class="mode-card" id="btn-budget">
           <div class="mc-icon">💰</div>
@@ -1140,7 +1140,7 @@ function scoreTeam(team,sc){
   const lb=hasLeader?1.06:1;
   const fruits=team.filter(c=>c.stats.hasFruit).length;
   const fb=fruits>=4?1.08:fruits>=3?1.05:fruits>=2?1.02:1;
-  const crewBonus=team.length>=5?1:team.length>=4?.96:team.length>=3?.90:team.length>=2?.80:.65;
+  const crewBonus=team.length>=6?1:team.length>=5?.97:team.length>=4?.93:team.length>=3?.88:team.length>=2?.80:.65;
   const conquerors=team.filter(c=>CONQUERORS.has(c.name)).length;
   const avgHaki=team.reduce((s,c)=>s+c.stats.haki,0)/team.length;
   const hakiMult=conquerors>=3?1.10:conquerors>=2?1.07:conquerors>=1?1.04:avgHaki>=70?1.02:1;
@@ -1255,7 +1255,7 @@ async function fetchCharacters(){
 // ═══ DRAFT STATE ══════════════════════════════════════════════════════════════
 // coinTossWinner: 0 = P1 goes first, 1 = P2 goes first (set by coin toss screen)
 let coinTossWinner=0;
-const SNAKE_BASE=[0,1,1,0,0,1,1,0,0,1];
+const SNAKE_BASE=[0,1,1,0,0,1,1,0,0,1,1,0];
 function getSnakeOrder(){
   // Flip all slots when P2 won the toss
   return coinTossWinner===0?SNAKE_BASE:SNAKE_BASE.map(p=>1-p);
@@ -1283,7 +1283,7 @@ function draftPick(d,char,pid,pool){
   if(d.complete||draftCurrentPlayer(d)!==pid||d.pickedIds.has(char.id))return false;
   if(roleFull(d.teams[pid],char.stats.roleType))return false; // role cap enforced for both modes
   if(d.mode==='budget'){
-    if(!draftCanAfford(d,char,pid)||d.teams[pid].length>=5)return false;
+    if(!draftCanAfford(d,char,pid)||d.teams[pid].length>=6)return false;
     d.teams[pid].push(char);d.pickedIds.add(char.id);d.budgets[pid]-=getCharCost(char);
     budgetAdvanceTurn(d,pool);
   }else{
@@ -1300,7 +1300,7 @@ function draftPass(d,pid,pool){
 
 function canStillPick(d,pool,pid){
   if(d.done[pid])return false;
-  if(d.teams[pid].length>=5){d.done[pid]=true;return false}
+  if(d.teams[pid].length>=6){d.done[pid]=true;return false}
   const available=pool.some(c=>!d.pickedIds.has(c.id)&&d.budgets[pid]>=getCharCost(c)&&!roleFull(d.teams[pid],c.stats.roleType));
   if(!available){d.done[pid]=true;return false}
   return true;
@@ -1767,7 +1767,7 @@ function setTurnStatus(){
   document.getElementById('draft-turn-text').textContent=`${names[curPid]}'s Pick`;
   if(budgetMode){
     const budget=draft.budgets[curPid];
-    document.getElementById('draft-pick-num').textContent=`Budget remaining: ${budget.toLocaleString()} Berri · ${draft.teams[curPid].length}/5 characters`;
+    document.getElementById('draft-pick-num').textContent=`Budget remaining: ${budget.toLocaleString()} Berri · ${draft.teams[curPid].length}/6 characters`;
   }else{
     document.getElementById('draft-pick-num').textContent=`Pick ${draft.pickIndex+1} of ${SNAKE_BASE.length}`;
   }

@@ -1377,7 +1377,7 @@ function renderCrewManifest(pid,team){
 
 function renderPickSlots(pid,team,budgetMode,budget){
   const el=document.getElementById(`p${pid+1}-picks`);el.innerHTML='';const cls=pid===0?'p1-pick':'p2-pick';
-  for(let i=0;i<5;i++){
+  for(let i=0;i<6;i++){
     const c=team[i],slot=document.createElement('div');
     if(c){
       slot.className=`pick-slot filled ${cls}`;

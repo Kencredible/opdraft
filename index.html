@@ -270,6 +270,37 @@
     .cc-attr-bar{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
     .cc-attr-bar div{height:100%;border-radius:2px;background:var(--ac,var(--gold))}
     .cc-attr-val{font-size:.52rem;color:var(--muted);min-width:16px;text-align:right;font-weight:600}
+    /* ── Character info button ── */
+    .cc-info-btn{position:absolute;bottom:5px;right:5px;width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(8,13,26,.72);color:var(--muted);font-size:.6rem;font-weight:700;font-style:italic;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;transition:background .15s,color .15s,border-color .15s;flex-shrink:0;padding:0;line-height:1}
+    .cc-info-btn:hover{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+    body.light .cc-info-btn{background:rgba(241,245,249,.82);border-color:rgba(0,0,0,.18)}
+    /* ── Character detail overlay ── */
+    .cd-overlay{position:fixed;inset:0;z-index:800;display:flex;pointer-events:none;visibility:hidden;transition:visibility 0s .3s}
+    .cd-overlay.open{pointer-events:auto;visibility:visible;transition:visibility 0s}
+    .cd-backdrop{flex:1;background:rgba(8,13,26,.55);opacity:0;transition:opacity .25s;cursor:pointer}
+    body.light .cd-backdrop{background:rgba(15,23,42,.4)}
+    .cd-overlay.open .cd-backdrop{opacity:1}
+    .cd-panel{width:26vw;min-width:290px;max-width:380px;background:var(--bg-card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);flex-shrink:0}
+    .cd-overlay.open .cd-panel{transform:translateX(0)}
+    .cd-panel-img{width:100%;height:170px;overflow:hidden;flex-shrink:0;position:relative}
+    .cd-panel-img img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+    .cd-panel-img .cc-img-fb{width:100%;height:100%}
+    .cd-panel-body{flex:1;overflow-y:auto;padding:.75rem .8rem;display:flex;flex-direction:column;gap:.55rem}
+    .cd-panel-name{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;color:var(--gold);line-height:1.2}
+    .cd-panel-badges{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;margin-top:-.05rem}
+    .cd-tier-chip{font-size:.58rem;padding:.1rem .38rem;border-radius:4px;font-weight:700;letter-spacing:.06em;border:1px solid}
+    .cd-fit-label{display:flex;justify-content:space-between;align-items:center;font-size:.65rem;color:var(--muted);margin-bottom:.22rem}
+    .cd-stat-rows{display:flex;flex-direction:column;gap:.3rem}
+    .cd-stat-row{display:flex;align-items:center;gap:.4rem}
+    .cd-stat-icon{width:14px;text-align:center;flex-shrink:0;font-size:.7rem}
+    .cd-stat-name{width:68px;color:var(--muted);flex-shrink:0;font-size:.62rem}
+    .cd-stat-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+    .cd-stat-fill{height:100%;border-radius:2px;transition:width .5s .1s}
+    .cd-stat-val{width:22px;text-align:right;color:var(--text);font-size:.62rem;font-weight:700;flex-shrink:0}
+    .cd-panel-cta{padding:.7rem .8rem;border-top:1px solid var(--border);flex-shrink:0}
+    .cd-pick-btn{width:100%;padding:.55rem;border-radius:7px;border:none;background:var(--gold);color:var(--btn-primary-fg);font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .15s,opacity .15s;letter-spacing:.04em}
+    .cd-pick-btn:hover:not(:disabled){background:var(--gold-light)}
+    .cd-pick-btn:disabled{opacity:.38;cursor:not-allowed;background:var(--muted)}
 
     /* ─── RESULTS ────────────────────────────────────── */
     .results-page{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;width:100%}
@@ -598,6 +629,23 @@
         <div id="p2-picks" class="pick-slots"></div>
         <div id="p2-synergies"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Character detail overlay (shared, toggled via JS) -->
+<div id="char-detail-overlay" class="cd-overlay">
+  <div class="cd-backdrop" id="cd-backdrop"></div>
+  <div class="cd-panel" id="cd-panel">
+    <div class="cd-panel-img" id="cd-panel-img"></div>
+    <div class="cd-panel-body">
+      <div class="cd-panel-name" id="cd-panel-name"></div>
+      <div class="cd-panel-badges" id="cd-panel-badges"></div>
+      <div class="cd-panel-fit" id="cd-panel-fit"></div>
+      <div class="cd-stat-rows" id="cd-panel-stats"></div>
+    </div>
+    <div class="cd-panel-cta">
+      <button class="cd-pick-btn" id="cd-pick-btn">Draft</button>
     </div>
   </div>
 </div>
@@ -1649,32 +1697,100 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
   const costBadgeHtml=budgetMode?`<div class="${costBadgeClass}">${cost}₿</div>`:'';
   const isConqueror=CONQUERORS.has(c.name);
   const slotFullBadge=isCapped?`<span class="cc-badge badge-full">⛔ Slot Full</span>`:'';
+  const fitScore=Math.round(scenarioFitScore(c,selectedScenario));
+  const grpColor=POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)';
   card.innerHTML=`
-    <div class="cc-img">${avatarHtml(c,128,82,false)}${costBadgeHtml}</div>
+    <div class="cc-img">
+      ${avatarHtml(c,128,82,false)}${costBadgeHtml}
+      <button class="cc-info-btn" title="View full stats">i</button>
+    </div>
     <div class="cc-body">
       <div class="cc-name">${c.name}</div>
       ${affiliationBadge(c)}${slotFullBadge}
       ${bf?`<div class="cc-meta">💰 ${bf}</div>`:''}
       <div class="cc-bar-row" title="Scenario fit score for current battleground">
-        <div class="cc-bar"><div class="cc-bar-fill" style="width:${Math.round(scenarioFitScore(c,selectedScenario))}%;background:linear-gradient(90deg,${POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)'},var(--gold-light))"></div></div>
-        <span class="cc-pwr" style="color:${POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)'}">
-          ${Math.round(scenarioFitScore(c,selectedScenario))}
-        </span>
-      </div>
-      <div class="cc-attrs">
-        <div class="cc-attr"><span class="cc-attr-icon">⚔️</span><div class="cc-attr-bar"><div style="width:${c.stats.combat}%;--ac:#f87171"></div></div><span class="cc-attr-val">${c.stats.combat}</span></div>
-        <div class="cc-attr"><span class="cc-attr-icon">✨</span><div class="cc-attr-bar"><div style="width:${c.stats.haki}%;--ac:#c084fc"></div></div><span class="cc-attr-val">${c.stats.haki}</span></div>
-        <div class="cc-attr"><span class="cc-attr-icon">🧠</span><div class="cc-attr-bar"><div style="width:${c.stats.strategy}%;--ac:#fbbf24"></div></div><span class="cc-attr-val">${c.stats.strategy}</span></div>
-        <div class="cc-attr"><span class="cc-attr-icon">👑</span><div class="cc-attr-bar"><div style="width:${c.stats.leadership}%;--ac:#34d399"></div></div><span class="cc-attr-val">${c.stats.leadership}</span></div>
-        <div class="cc-attr"><span class="cc-attr-icon">🧭</span><div class="cc-attr-bar"><div style="width:${c.stats.navigation}%;--ac:#38bdf8"></div></div><span class="cc-attr-val">${c.stats.navigation}</span></div>
-        <div class="cc-attr"><span class="cc-attr-icon">🛡️</span><div class="cc-attr-bar"><div style="width:${c.stats.support}%;--ac:#fb923c"></div></div><span class="cc-attr-val">${c.stats.support}</span></div>
+        <div class="cc-bar"><div class="cc-bar-fill" style="width:${fitScore}%;background:linear-gradient(90deg,${grpColor},var(--gold-light))"></div></div>
+        <span class="cc-pwr" style="color:${grpColor}">${fitScore}</span>
       </div>
     </div>`;
   if(tb===null&&!cantAfford&&!isCapped)card.addEventListener('click',()=>onPick(c));
+  // Info button — opens detail overlay, does not trigger pick
+  card.querySelector('.cc-info-btn').addEventListener('click',e=>{
+    e.stopPropagation();
+    const canPick=tb===null&&!cantAfford&&!isCapped;
+    openCharDetail(c,onPick,canPick);
+  });
   grid.appendChild(card);
 }
 
 function pickedBy(d,id){for(let p=0;p<2;p++)if(d.teams[p].some(c=>c.id===id))return p;return null}
+
+// ─── Character detail overlay ─────────────────────────────────────────────────
+const CD_STATS=[
+  {key:'combat',   icon:'⚔️', label:'Combat',     color:'#f87171'},
+  {key:'haki',     icon:'✨', label:'Haki',       color:'#c084fc'},
+  {key:'strategy', icon:'🧠', label:'Strategy',   color:'#fbbf24'},
+  {key:'leadership',icon:'👑',label:'Leadership', color:'#34d399'},
+  {key:'navigation',icon:'🧭',label:'Navigation', color:'#38bdf8'},
+  {key:'support',  icon:'🛡️', label:'Support',    color:'#fb923c'},
+];
+const TIER_CHIP_STYLE={
+  'S+':'color:#fbbf24;border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.1)',
+  'S' :'color:#60a5fa;border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.1)',
+  'A' :'color:#34d399;border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.1)',
+  'B' :'color:#94a3b8;border-color:rgba(148,163,184,.4);background:rgba(148,163,184,.1)',
+  'C' :'color:#6b7fa0;border-color:rgba(107,127,160,.3);background:rgba(107,127,160,.08)',
+};
+
+function openCharDetail(c,onPick,canPick){
+  const sc=selectedScenario;
+  const fitScore=Math.round(scenarioFitScore(c,sc));
+  const grpColor=POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)';
+  // Image
+  document.getElementById('cd-panel-img').innerHTML=avatarHtml(c,380,170,false);
+  // Name
+  document.getElementById('cd-panel-name').textContent=c.name;
+  // Badges: affiliation + tier
+  const tierStyle=TIER_CHIP_STYLE[c.tier]||TIER_CHIP_STYLE['C'];
+  document.getElementById('cd-panel-badges').innerHTML=
+    affiliationBadge(c)+
+    `<span class="cd-tier-chip" style="${tierStyle}">${c.tier} Tier</span>`;
+  // Scenario fit bar
+  document.getElementById('cd-panel-fit').innerHTML=`
+    <div class="cd-fit-label">
+      <span style="color:var(--muted);font-size:.62rem">Scenario Fit — ${sc?sc.shortName:''}</span>
+      <span style="color:${grpColor};font-weight:700;font-size:.7rem">${fitScore}</span>
+    </div>
+    <div class="cc-bar" style="height:5px">
+      <div class="cc-bar-fill" style="width:${fitScore}%;background:linear-gradient(90deg,${grpColor},var(--gold-light))"></div>
+    </div>`;
+  // Stat rows
+  document.getElementById('cd-panel-stats').innerHTML=CD_STATS.map(s=>`
+    <div class="cd-stat-row">
+      <span class="cd-stat-icon">${s.icon}</span>
+      <span class="cd-stat-name">${s.label}</span>
+      <div class="cd-stat-bar"><div class="cd-stat-fill" style="width:${c.stats[s.key]||0}%;background:${s.color}"></div></div>
+      <span class="cd-stat-val">${c.stats[s.key]||0}</span>
+    </div>`).join('');
+  // CTA
+  const btn=document.getElementById('cd-pick-btn');
+  if(canPick){
+    btn.textContent=`Draft ${c.name}`;
+    btn.disabled=false;
+    btn.onclick=()=>{onPick(c);closeCharDetail();};
+  }else{
+    btn.textContent='Already Drafted';
+    btn.disabled=true;
+    btn.onclick=null;
+  }
+  document.getElementById('char-detail-overlay').classList.add('open');
+}
+
+function closeCharDetail(){
+  document.getElementById('char-detail-overlay').classList.remove('open');
+}
+
+document.getElementById('cd-backdrop').addEventListener('click',closeCharDetail);
 
 function updatePoolCounter(pool,pickedIds,budgetMode){
   const rem=pool.filter(c=>!pickedIds.has(c.id)).length;

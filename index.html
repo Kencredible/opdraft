@@ -238,6 +238,7 @@
     .badge-swordsman{background:rgba(74,222,128,.12);color:#86efac;border:1px solid rgba(74,222,128,.25)}
     .badge-default{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}
     .badge-haki{background:rgba(192,132,252,.15);color:#e879f9;border:1px solid rgba(192,132,252,.35)}
+    .cc-affil{display:inline-block;font-size:.54rem;padding:.08rem .35rem;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;width:fit-content;border:1px solid}
     .cc-meta{font-size:.6rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .cc-fruit{font-size:.58rem;color:var(--fruit);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .cc-bar-row{display:flex;align-items:center;gap:.28rem;margin-top:.08rem}
@@ -1362,6 +1363,44 @@ function fmtBounty(n){if(n>=1e9)return(n/1e9).toFixed(2).replace(/\.?0+$/,'')+'B
 const BADGE_CLASS={emperor:'badge-emperor',captain:'badge-captain',marine:'badge-marine',revolutionary:'badge-revolutionary',swordsman:'badge-swordsman'};
 function roleBadge(r){return`<span class="cc-badge ${BADGE_CLASS[r]||'badge-default'}">${r.charAt(0).toUpperCase()+r.slice(1)}</span>`}
 
+// ─── AFFILIATION SYSTEM ──────────────────────────────────────────────────────
+// Override crew field for display; null = no affiliation shown
+const AFFIL_OVERRIDE={
+  'Kid':'Worst Generation','Killer':'Worst Generation','Apoo':'Worst Generation',
+  'Hawkins':'Worst Generation','Urouge':'Worst Generation','Capone Bege':'Worst Generation',
+  'X Drake':'Worst Generation',
+  'Enel':null,
+};
+// Colour palette per faction
+const AFFIL_STYLE={
+  'Straw Hats':         {color:'#22d3ee', bg:'rgba(34,211,238,.12)'},
+  'Marines':            {color:'#60a5fa', bg:'rgba(96,165,250,.12)'},
+  'Revolutionary Army': {color:'#a78bfa', bg:'rgba(167,139,250,.12)'},
+  'Blackbeard Pirates': {color:'#f87171', bg:'rgba(248,113,113,.12)'},
+  'Big Mom Pirates':    {color:'#f9a8d4', bg:'rgba(249,168,212,.12)'},
+  'Beasts Pirates':     {color:'#fb923c', bg:'rgba(251,146,60,.12)'},
+  'Red-Haired Pirates': {color:'#fca5a5', bg:'rgba(252,165,165,.12)'},
+  'Whitebeard Pirates': {color:'#e2e8f0', bg:'rgba(226,232,240,.08)'},
+  'Heart Pirates':      {color:'#34d399', bg:'rgba(52,211,153,.12)'},
+  'Cross Guild':        {color:'#c9a227', bg:'rgba(201,162,39,.12)'},
+  'Donquixote Pirates': {color:'#e879f9', bg:'rgba(232,121,249,.12)'},
+  'CP0':                {color:'#94a3b8', bg:'rgba(148,163,184,.10)'},
+  'Kuja Pirates':       {color:'#f472b6', bg:'rgba(244,114,182,.12)'},
+  'Worst Generation':   {color:'#fbbf24', bg:'rgba(251,191,36,.12)'},
+  'SWORD':              {color:'#38bdf8', bg:'rgba(56,189,248,.12)'},
+  'Impel Down':         {color:'#94a3b8', bg:'rgba(148,163,184,.10)'},
+};
+function getAffiliation(c){
+  if(Object.prototype.hasOwnProperty.call(AFFIL_OVERRIDE,c.name))return AFFIL_OVERRIDE[c.name];
+  return c.crew||null;
+}
+function affiliationBadge(c){
+  const af=getAffiliation(c);
+  if(!af)return'';
+  const s=AFFIL_STYLE[af]||{color:'var(--muted)',bg:'rgba(255,255,255,.06)'};
+  return`<span class="cc-affil" style="color:${s.color};background:${s.bg};border-color:${s.color}">${af}</span>`;
+}
+
 function renderCrewManifest(pid,team){
   const el=document.getElementById(`p${pid+1}-manifest`);
   if(!el)return;
@@ -1471,14 +1510,12 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
   const costBadgeClass=(cantAfford&&!isCapped)?'cost-badge unaffordable':'cost-badge';
   const costBadgeHtml=budgetMode?`<div class="${costBadgeClass}">${cost}₿</div>`:'';
   const isConqueror=CONQUERORS.has(c.name);
-  const roleDisplay=isCapped
-    ?`<span class="cc-badge badge-full">⛔ Slot Full</span>`
-    :roleBadge(c.stats.roleType);
+  const slotFullBadge=isCapped?`<span class="cc-badge badge-full">⛔ Slot Full</span>`:'';
   card.innerHTML=`
     <div class="cc-img">${avatarHtml(c,128,82,false)}${costBadgeHtml}</div>
     <div class="cc-body">
       <div class="cc-name">${c.name}</div>
-      ${roleDisplay}
+      ${affiliationBadge(c)}${slotFullBadge}
       ${isConqueror?'<span class="cc-badge badge-haki">🔥 Haoshoku</span>':''}
       ${bf?`<div class="cc-meta">💰 ${bf}</div>`:''}
       ${c.fruit?`<div class="cc-fruit">🍎 ${c.fruit.name}</div>`:''}

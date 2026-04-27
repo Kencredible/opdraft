@@ -513,6 +513,44 @@
 
     ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
 
+    /* ─── HOW TO PLAY MODAL ─────────────────────────────── */
+    .htp-overlay{position:fixed;inset:0;z-index:900;background:rgba(8,13,26,.78);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .25s}
+    .htp-overlay.open{opacity:1;pointer-events:auto}
+    body.light .htp-overlay{background:rgba(15,23,42,.62)}
+    .htp-modal{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:660px;max-height:88vh;display:flex;flex-direction:column;transform:translateY(18px);transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:0 24px 64px rgba(0,0,0,.45)}
+    .htp-overlay.open .htp-modal{transform:translateY(0)}
+    .htp-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.15rem;border-bottom:1px solid var(--border);flex-shrink:0}
+    .htp-modal-title{font-family:'Cinzel',serif;font-size:1.05rem;color:var(--gold);letter-spacing:.04em}
+    .htp-modal-sub{font-size:.62rem;color:var(--muted);margin-top:.1rem}
+    .htp-close-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+    .htp-close-btn:hover{background:var(--bg-hover);color:var(--text);border-color:var(--muted)}
+    .htp-modal-body{overflow-y:auto;padding:1rem 1.15rem 1.25rem;display:flex;flex-direction:column;gap:.95rem}
+    .htp-step{display:flex;gap:.75rem;align-items:flex-start}
+    .htp-step-num{width:28px;height:28px;border-radius:50%;background:var(--gold-dim);border:1px solid rgba(201,162,39,.35);color:var(--gold);font-size:.7rem;font-weight:700;font-family:'Cinzel',serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.06rem;line-height:1}
+    .htp-step-body{flex:1;min-width:0}
+    .htp-step-title{font-family:'Cinzel',serif;font-size:.83rem;color:var(--text);font-weight:700;margin-bottom:.28rem;line-height:1.3}
+    .htp-step-desc{font-size:.67rem;color:var(--muted);line-height:1.65}
+    .htp-step-desc strong{color:var(--text)}
+    .htp-highlight{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:.6rem .75rem;margin-top:.42rem;font-size:.65rem;color:var(--muted);line-height:1.7}
+    .htp-highlight strong{color:var(--text)}
+    .htp-chips{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.38rem}
+    .htp-chip{font-size:.6rem;padding:.1rem .38rem;border-radius:4px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,162,39,.3);white-space:nowrap}
+    .htp-chip-blue{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
+    .htp-snake{display:flex;gap:.22rem;flex-wrap:wrap;margin-top:.42rem;align-items:center}
+    .htp-snake-pick{width:30px;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;flex-shrink:0}
+    .htp-snake-p1{background:var(--p1-dim);color:var(--p1);border:1px solid rgba(59,130,246,.3)}
+    .htp-snake-p2{background:var(--p2-dim);color:var(--p2);border:1px solid rgba(239,68,68,.3)}
+    .htp-divider{height:1px;background:var(--border)}
+    .htp-stage-list{display:flex;flex-direction:column;gap:.32rem;margin-top:.4rem}
+    .htp-stage-row{display:flex;align-items:center;gap:.45rem;font-size:.65rem}
+    .htp-stage-num{width:20px;height:20px;border-radius:50%;background:var(--bg);border:1px solid var(--border);color:var(--muted);font-size:.56rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .htp-stage-label{color:var(--text);font-weight:600;white-space:nowrap}
+    .htp-stage-sep{color:var(--border);margin:0 .1rem}
+    .htp-stage-desc{color:var(--muted)}
+    .htp-modal-footer{padding:.75rem 1.15rem;border-top:1px solid var(--border);flex-shrink:0;display:flex;justify-content:flex-end;gap:.6rem;align-items:center}
+    .htp-footer-hint{font-size:.6rem;color:var(--muted);font-style:italic}
+    .htp-got-it{background:var(--gold);color:var(--btn-primary-fg);border:none;border-radius:7px;padding:.5rem 1.5rem;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .15s;letter-spacing:.04em}
+    .htp-got-it:hover{background:var(--gold-light)}
     /* ─── THEME TOGGLE ───────────────────────────────── */
     #theme-toggle{position:fixed;bottom:1rem;right:1rem;z-index:500;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg-card);color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.25)}
     #theme-toggle:hover{border-color:var(--gold);color:var(--gold)}
@@ -538,7 +576,10 @@
     <div class="skull">☠</div>
     <h1 class="title">ONE PIECE<br><span>DRAFT</span></h1>
     <p class="subtitle">Assemble your crew. Conquer the seas.</p>
-    <button class="btn btn-ghost" id="btn-glossary" style="font-size:.75rem;padding:.38rem .9rem;opacity:.75">📖 Glossary</button>
+    <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="btn-how-to-play" style="font-size:.75rem;padding:.38rem .9rem;opacity:.75">❓ How to Play</button>
+      <button class="btn btn-ghost" id="btn-glossary" style="font-size:.75rem;padding:.38rem .9rem;opacity:.75">📖 Glossary</button>
+    </div>
 
     <!-- Step 1: Opponent -->
     <div class="step-section" id="step-opponent">
@@ -2760,6 +2801,193 @@ document.getElementById('tab-synergies').addEventListener('click',()=>switchGlos
 document.getElementById('glos-search').addEventListener('input',e=>{
   renderGlossaryChars(e.target.value.trim().toLowerCase());
 });
+
+// ─── How to Play modal ────────────────────────────────────────────────────────
+function openHtp(){document.getElementById('htp-overlay').classList.add('open');}
+function closeHtp(){document.getElementById('htp-overlay').classList.remove('open');}
+document.getElementById('btn-how-to-play').addEventListener('click',openHtp);
+document.getElementById('htp-close').addEventListener('click',closeHtp);
+document.getElementById('htp-got-it').addEventListener('click',closeHtp);
+document.getElementById('htp-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeHtp();});
 </script>
+
+<!-- ═══ HOW TO PLAY MODAL ═══════════════════════════════════════════════════ -->
+<div id="htp-overlay" class="htp-overlay">
+  <div class="htp-modal">
+    <div class="htp-modal-hdr">
+      <div>
+        <div class="htp-modal-title">☠️ How to Play</div>
+        <div class="htp-modal-sub">One Piece Draft — complete guide</div>
+      </div>
+      <button class="htp-close-btn" id="htp-close">✕</button>
+    </div>
+
+    <div class="htp-modal-body">
+
+      <!-- Step 1 -->
+      <div class="htp-step">
+        <div class="htp-step-num">1</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">⚔️ Choose Your Opponent</div>
+          <div class="htp-step-desc">Decide who you're facing. <strong>vs AI</strong> lets you draft solo — the computer picks for the opposing crew using a scenario-aware strategy. <strong>vs Player</strong> puts two humans at the same screen, trading picks in real time.</div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="htp-step">
+        <div class="htp-step-num">2</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">🏴‍☠️ Choose a Draft Mode</div>
+          <div class="htp-step-desc">Two modes, two completely different strategies:</div>
+          <div class="htp-highlight">
+            <strong>♾️ Unlimited Draft</strong> — Pick any 6 characters from the shared pool. No budget, pure decision-making. Every character is available.<br><br>
+            <strong>💰 Budget Draft</strong> — You have <strong>5,000₿</strong> and a pool of 20 characters. Stronger characters cost more Berri — spend wisely or you'll run out of room.
+          </div>
+          <div class="htp-chips">
+            <span class="htp-chip">S Tier — 1,800₿</span>
+            <span class="htp-chip">A Tier — 900₿</span>
+            <span class="htp-chip">B Tier — 450₿</span>
+            <span class="htp-chip">C Tier — 200₿</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="htp-step">
+        <div class="htp-step-num">3</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">🗺️ Select a Battleground</div>
+          <div class="htp-step-desc">Choose from 10 iconic arcs — Alabasta to Marineford. Each battleground <strong>demands different crew skills</strong>. A navigation-heavy arc punishes combat-only teams; a combat-heavy arc exposes strategists. Study the demand bars before locking in.</div>
+          <div class="htp-highlight">
+            🎲 Use <strong>Randomize</strong> for a surprise arc — great for keeping veteran players off their script.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="htp-step">
+        <div class="htp-step-num">4</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">🪙 The Coin Toss</div>
+          <div class="htp-step-desc">Before the draft begins, a coin flip decides who picks first. The first pick is a genuine advantage — but the snake order is designed to balance it out by giving the second player two consecutive picks immediately after.</div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="htp-step">
+        <div class="htp-step-num">5</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">🐍 The Snake Draft</div>
+          <div class="htp-step-desc">12 total picks — 6 per player — in a snake order. The direction reverses after each end so no player ever picks more than twice in a row.</div>
+          <div class="htp-snake">
+            <div class="htp-snake-pick htp-snake-p1">P1</div>
+            <div class="htp-snake-pick htp-snake-p2">P2</div>
+            <div class="htp-snake-pick htp-snake-p2">P2</div>
+            <div class="htp-snake-pick htp-snake-p1">P1</div>
+            <div class="htp-snake-pick htp-snake-p1">P1</div>
+            <div class="htp-snake-pick htp-snake-p2">P2</div>
+            <div class="htp-snake-pick htp-snake-p2">P2</div>
+            <div class="htp-snake-pick htp-snake-p1">P1</div>
+            <div class="htp-snake-pick htp-snake-p1">P1</div>
+            <div class="htp-snake-pick htp-snake-p2">P2</div>
+            <div class="htp-snake-pick htp-snake-p2">P2</div>
+            <div class="htp-snake-pick htp-snake-p1">P1</div>
+          </div>
+          <div class="htp-step-desc" style="margin-top:.5rem"><strong>Boss characters are always excluded from the pool</strong> — they cannot be drafted by either player.</div>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="htp-step">
+        <div class="htp-step-num">6</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">ℹ️ Inspecting Characters</div>
+          <div class="htp-step-desc">Every card shows a <strong>scenario fit score</strong> — how well that character's stats match the active battleground. Tap the <strong>i button</strong> on any card to open a full stat breakdown with all 6 attributes before committing to a pick.</div>
+          <div class="htp-chips">
+            <span class="htp-chip">⚔️ Combat</span>
+            <span class="htp-chip">✨ Haki</span>
+            <span class="htp-chip">🧠 Strategy</span>
+            <span class="htp-chip">👑 Leadership</span>
+            <span class="htp-chip">🧭 Navigation</span>
+            <span class="htp-chip">🛡️ Support</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7 -->
+      <div class="htp-step">
+        <div class="htp-step-num">7</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">⚡ Synergies</div>
+          <div class="htp-step-desc">Certain character combinations unlock <strong>synergy bonuses</strong> that are applied to your final score. Some boost multiple stats at once. Others have trade-offs — the Monster Trio rockets combat but tanks strategy. There are <strong>28 synergies</strong> in total. Check <strong>Glossary → Synergies</strong> to plan ahead.</div>
+        </div>
+      </div>
+
+      <div class="htp-divider"></div>
+
+      <!-- Scoring breakdown -->
+      <div class="htp-step">
+        <div class="htp-step-num" style="font-size:.8rem;background:rgba(201,162,39,.15);border-color:rgba(201,162,39,.4)">📊</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">How Scores Are Calculated</div>
+          <div class="htp-step-desc">After both crews are locked in, a 5-stage reveal builds each player's final percentage:</div>
+          <div class="htp-stage-list">
+            <div class="htp-stage-row">
+              <div class="htp-stage-num">1</div>
+              <span class="htp-stage-label">👥 Crew Power</span>
+              <span class="htp-stage-sep">—</span>
+              <span class="htp-stage-desc">raw stat match against the battleground's weighted demands</span>
+            </div>
+            <div class="htp-stage-row">
+              <div class="htp-stage-num">2</div>
+              <span class="htp-stage-label">✨ After Bonuses</span>
+              <span class="htp-stage-sep">—</span>
+              <span class="htp-stage-desc">role diversity, Devil Fruits, Haki depth, synergy combos</span>
+            </div>
+            <div class="htp-stage-row">
+              <div class="htp-stage-num">3</div>
+              <span class="htp-stage-label">🌊 Battleground Deduction</span>
+              <span class="htp-stage-sep">—</span>
+              <span class="htp-stage-desc">difficulty modifier × crew mismatch penalty for wrong stat coverage</span>
+            </div>
+            <div class="htp-stage-row">
+              <div class="htp-stage-num">4</div>
+              <span class="htp-stage-label">☠️ Boss Threat</span>
+              <span class="htp-stage-sep">—</span>
+              <span class="htp-stage-desc">penalty if your crew's average falls below the boss's stat requirements</span>
+            </div>
+            <div class="htp-stage-row">
+              <div class="htp-stage-num">5</div>
+              <span class="htp-stage-label">⚡ Final Score</span>
+              <span class="htp-stage-sep">—</span>
+              <span class="htp-stage-desc">the higher percentage wins. Tied scores go to the more rounded crew</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="htp-step">
+        <div class="htp-step-num" style="font-size:.8rem;background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.35);color:#34d399">💡</div>
+        <div class="htp-step-body">
+          <div class="htp-step-title">Pro Tips</div>
+          <div class="htp-highlight">
+            🗺️ <strong>Draft for the battleground, not just raw power.</strong> A well-tuned average crew beats a powerful but mismatched one every time.<br><br>
+            ☠️ <strong>Check the boss before you draft.</strong> Every arc has a boss with specific stat requirements. Failing those tests costs you heavily at Stage 4. See <strong>Glossary → Bosses</strong> for full details.<br><br>
+            ⚡ <strong>Hunt synergies strategically.</strong> A single well-timed synergy pick can swing the score by several points — but telegraphing your combo lets the opponent block it.<br><br>
+            🧭 <strong>Don't neglect support and navigation roles.</strong> They unlock diversity bonuses, fill synergy slots, and cover gaps that pure fighters leave wide open.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="htp-modal-footer">
+      <span class="htp-footer-hint">Click outside or press Set Sail to close</span>
+      <button class="htp-got-it" id="htp-got-it">Set Sail ⚓</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

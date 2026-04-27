@@ -2102,7 +2102,7 @@ const GLOS_STATS=[
 ];
 const TIER_CLS={'S+':'glos-tier-sp','S':'glos-tier-s','A':'glos-tier-a','B':'glos-tier-b','C':'glos-tier-c'};
 
-function openGlossary(){
+async function openGlossary(){
   showScreen('screen-glossary');
   // Switch back to characters tab state
   document.getElementById('glos-chars-panel').style.display='';
@@ -2110,6 +2110,12 @@ function openGlossary(){
   document.getElementById('tab-chars').classList.add('active');
   document.getElementById('tab-bgs').classList.remove('active');
   document.getElementById('glos-search').value='';
+  // Load roster if not yet populated (glossary can be opened before any draft)
+  if(!allChars.length){
+    document.getElementById('glos-chars-grid').innerHTML='<div class="loading-msg">⚓ Loading roster…</div>';
+    const raw=await fetchCharacters();
+    allChars=raw.filter(c=>c.name).map(c=>({...c,stats:computeStats(c)})).sort((a,b)=>b.stats.overall-a.stats.overall);
+  }
   renderGlossaryChars('');
 }
 

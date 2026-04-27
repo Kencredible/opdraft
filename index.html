@@ -60,7 +60,9 @@
     #step-mode.show,#step-proceed.show{display:block}
 
     /* ─── SCENARIO ───────────────────────────────────── */
-    #screen-scenario{background:var(--bg)}
+    #screen-scenario{background:var(--bg);height:100vh;overflow:hidden;align-items:stretch}
+    .sc-page{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 0;width:100%}
+    .sc-cta{flex-shrink:0;background:rgba(8,13,26,.96);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1rem;width:100%}
     /* ── Coin Toss Overlay ── */
     #cointoss-overlay{position:fixed;inset:0;z-index:200;background:rgba(8,13,26,.82);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1rem}
     #cointoss-overlay.open{display:flex}
@@ -278,11 +280,11 @@
     .synergy-chip.syn-pos{background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.3);color:#6ee7b7}
     .synergy-chip.syn-neg{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.3);color:#fca5a5}
     .synergy-chip.syn-mix{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.3);color:#fde68a}
-    .syn-icon{font-size:.9rem;flex-shrink:0;margin-top:-.05rem}
-    .syn-body{display:flex;flex-direction:column;gap:.1rem}
-    .syn-name{font-weight:700;font-size:.67rem}
-    .syn-desc{font-size:.58rem;opacity:.8}
-    .syn-delta{font-size:.6rem;font-weight:700;opacity:.9;white-space:nowrap}
+    .syn-icon{font-size:.9rem;flex-shrink:0;margin-top:.05rem}
+    .syn-body{display:flex;flex-direction:column;gap:.1rem;min-width:0;flex:1}
+    .syn-name{font-weight:700;font-size:.67rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .syn-desc{font-size:.58rem;opacity:.8;line-height:1.4;word-break:break-word}
+    .syn-delta{font-size:.6rem;font-weight:700;opacity:.9;flex-wrap:wrap;display:flex;gap:.15rem}
     /* results page synergy chips */
     .rp-synergies{margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--border)}
     .rp-syn-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.32rem}
@@ -465,10 +467,10 @@
       <button class="btn btn-ghost" id="btn-randomize">🎲 Randomize</button>
     </div>
     <div id="scenario-grid" class="scenario-grid"></div>
-    <div class="sc-cta">
-      <span class="sc-sel-label" id="sc-sel-label">No arc selected yet</span>
-      <button class="btn btn-primary" id="btn-begin-draft" disabled>Begin Draft →</button>
-    </div>
+  </div>
+  <div class="sc-cta">
+    <span class="sc-sel-label" id="sc-sel-label">No arc selected yet</span>
+    <button class="btn btn-primary" id="btn-begin-draft" disabled>Begin Draft →</button>
   </div>
 </div>
 
@@ -891,13 +893,14 @@ function renderSynergies(pid,team,weights){
     const delta=synDelta([s],weights||{});
     const hasBothSigns=Object.values(s.bonus).some(v=>v>0)&&Object.values(s.bonus).some(v=>v<0);
     const cls=hasBothSigns?'syn-mix':delta>=0?'syn-pos':'syn-neg';
-    const statStr=Object.entries(s.bonus).filter(([,v])=>v!==0).map(([k,v])=>`${v>0?'+':''}${v} ${k}`).join(' · ');
+    const statPills=Object.entries(s.bonus).filter(([,v])=>v!==0)
+      .map(([k,v])=>`<span style="white-space:nowrap">${v>0?'+':''}${v} ${k}</span>`).join('<span style="opacity:.4">·</span>');
     return`<div class="synergy-chip ${cls}">
       <span class="syn-icon">${s.icon}</span>
       <div class="syn-body">
         <span class="syn-name">${s.name}</span>
         <span class="syn-desc">${s.desc}</span>
-        <span class="syn-delta">${statStr}</span>
+        <span class="syn-delta">${statPills}</span>
       </div>
     </div>`;
   }).join('');

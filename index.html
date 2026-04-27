@@ -301,6 +301,20 @@
     .cd-pick-btn{width:100%;padding:.55rem;border-radius:7px;border:none;background:var(--gold);color:var(--btn-primary-fg);font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .15s,opacity .15s;letter-spacing:.04em}
     .cd-pick-btn:hover:not(:disabled){background:var(--gold-light)}
     .cd-pick-btn:disabled{opacity:.38;cursor:not-allowed;background:var(--muted)}
+    .cd-section-hdr{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;font-weight:700;padding-top:.55rem;border-top:1px solid var(--border)}
+    .cd-partners{display:flex;flex-direction:column;gap:.3rem;margin-top:.18rem}
+    .cd-partner-card{display:flex;align-items:center;gap:.45rem;padding:.32rem .4rem;border-radius:6px;border:1px solid var(--border);background:var(--bg);transition:border-color .15s}
+    .cd-partner-card.is-team{border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.04)}
+    .cd-partner-avatar{width:34px;height:34px;border-radius:5px;overflow:hidden;flex-shrink:0}
+    .cd-partner-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+    .cd-partner-avatar .cc-img-fb{width:100%;height:100%}
+    .cd-partner-info{flex:1;min-width:0}
+    .cd-partner-name{font-size:.68rem;font-weight:700;color:var(--text);line-height:1.2}
+    .cd-partner-syn{font-size:.58rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.06rem}
+    .cd-partner-bonus{font-size:.56rem;color:var(--muted);margin-top:.04rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cd-partner-status{font-size:.55rem;padding:.06rem .28rem;border-radius:3px;font-weight:700;flex-shrink:0;white-space:nowrap}
+    .cd-partner-status.st-team{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.28)}
+    .cd-partner-status.st-avail{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,162,39,.3)}
 
     /* ─── RESULTS ────────────────────────────────────── */
     .results-page{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;width:100%}
@@ -725,6 +739,8 @@
       <div class="cd-panel-badges" id="cd-panel-badges"></div>
       <div class="cd-panel-fit" id="cd-panel-fit"></div>
       <div class="cd-stat-rows" id="cd-panel-stats"></div>
+      <div class="cd-section-hdr" id="cd-partners-hdr" style="display:none">⚡ Synergy Partners</div>
+      <div id="cd-panel-partners"></div>
     </div>
     <div class="cd-panel-cta">
       <button class="cd-pick-btn" id="cd-pick-btn">Draft</button>
@@ -2010,6 +2026,37 @@ const TIER_CHIP_STYLE={
   'C' :'color:#6b7fa0;border-color:rgba(107,127,160,.3);background:rgba(107,127,160,.08)',
 };
 
+function getSuggestedPartners(c){
+  if(!draft||!allChars.length)return[];
+  const myName=c.name;
+  const curPid=draftCurrentPlayer(draft);
+  const myTeamNames=new Set(draft.teams[curPid].map(t=>t.name));
+  const allDraftedNames=new Set([...draft.teams[0],...draft.teams[1]].map(t=>t.name));
+  const poolNames=new Set((poolChars||[]).map(p=>p.name));
+
+  const seen=new Map(); // partnerName → best entry
+  for(const syn of SYNERGIES){
+    if(!syn.members.includes(myName))continue;
+    for(const partnerName of syn.members){
+      if(partnerName===myName)continue;
+      const inMyTeam=myTeamNames.has(partnerName);
+      const available=poolNames.has(partnerName)&&!allDraftedNames.has(partnerName);
+      if(!inMyTeam&&!available)continue; // drafted by opponent — skip
+      const partnerChar=allChars.find(ch=>ch.name===partnerName);
+      if(!partnerChar)continue;
+      const existing=seen.get(partnerName);
+      // Prefer entry where partner is already in team, tiebreak by synergy bonus magnitude
+      const mag=Object.values(syn.bonus).reduce((s,v)=>s+Math.abs(v),0);
+      if(!existing||(inMyTeam&&!existing.inMyTeam)||(inMyTeam===existing.inMyTeam&&mag>existing.mag)){
+        seen.set(partnerName,{char:partnerChar,syn,inMyTeam,available,mag});
+      }
+    }
+  }
+  return[...seen.values()]
+    .sort((a,b)=>(b.inMyTeam-a.inMyTeam)||b.mag-a.mag)
+    .slice(0,3);
+}
+
 function openCharDetail(c,onPick,canPick){
   const sc=selectedScenario;
   const fitScore=Math.round(scenarioFitScore(c,sc));
@@ -2040,6 +2087,33 @@ function openCharDetail(c,onPick,canPick){
       <div class="cd-stat-bar"><div class="cd-stat-fill" style="width:${c.stats[s.key]||0}%;background:${s.color}"></div></div>
       <span class="cd-stat-val">${c.stats[s.key]||0}</span>
     </div>`).join('');
+  // Synergy partners
+  const partners=getSuggestedPartners(c);
+  const partnersHdr=document.getElementById('cd-partners-hdr');
+  const partnersEl=document.getElementById('cd-panel-partners');
+  if(partners.length){
+    partnersHdr.style.display='';
+    partnersEl.innerHTML=`<div class="cd-partners">${partners.map(p=>{
+      const teamCls=p.inMyTeam?'is-team':'';
+      const statusCls=p.inMyTeam?'st-team':'st-avail';
+      const statusTxt=p.inMyTeam?'✓ In Crew':'Available';
+      const bonusParts=Object.entries(p.syn.bonus).slice(0,3).map(([k,v])=>{
+        const info=STAT_INFO[k];return`${info?info.icon:k}${v>0?'+':''}${v}`;
+      }).join('  ');
+      return`<div class="cd-partner-card ${teamCls}">
+        <div class="cd-partner-avatar">${avatarHtml(p.char,34,34,false)}</div>
+        <div class="cd-partner-info">
+          <div class="cd-partner-name">${p.char.name}</div>
+          <div class="cd-partner-syn">${p.syn.icon} ${p.syn.name}</div>
+          <div class="cd-partner-bonus">${bonusParts}</div>
+        </div>
+        <span class="cd-partner-status ${statusCls}">${statusTxt}</span>
+      </div>`;
+    }).join('')}</div>`;
+  }else{
+    partnersHdr.style.display='none';
+    partnersEl.innerHTML='';
+  }
   // CTA
   const btn=document.getElementById('cd-pick-btn');
   if(canPick){

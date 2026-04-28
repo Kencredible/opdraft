@@ -2110,7 +2110,7 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
   else if(cantAfford)cls+=' cant-afford';
   card.className=cls;
   const bf=fmtBounty(c.stats.bounty);
-  const costBadgeClass=(cantAfford&&!isCapped)?'cost-badge unaffordable':'cost-badge';
+  const costBadgeClass=cantAfford?'cost-badge unaffordable':'cost-badge';
   const costBadgeHtml=budgetMode?`<div class="${costBadgeClass}">${cost}₿</div>`:'';
   const isConqueror=CONQUERORS.has(c.name);
   const[_cbg,_cfg]=ROLE_COLORS[c.stats.roleType]||['#1e2f48','#94a3b8'];

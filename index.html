@@ -2847,22 +2847,6 @@ function showResults(){
             <span class="stage-score bground-col" id="bg-score-${prefix}">—</span>
           </div>
           <div class="stage-subbar"><div class="stage-subbar-fill" id="bg-bar-${prefix}" style="background:#fbbf24"></div></div>
-          <div class="mismatch-detail">${KEY_DEMAND_STATS.map(k=>{
-            const demand=selectedScenario.weights[k]||0;
-            const avgStat=team.reduce((s,c)=>s+(c.stats[k]||0),0)/team.length;
-            const dLevel=getDemandLevel(demand);
-            const sLevel=getSupplyLevel(avgStat);
-            const gap=Math.max(0,dLevel-sLevel);
-            const dStep=getDemandStep(demand);
-            const sStep=DEMAND_STEPS[sLevel]||DEMAND_STEPS[0];
-            const info=STAT_INFO[k];
-            return`<div class="mismatch-row">
-              <span>${info.icon} ${info.label}</span>
-              <span>Needs <strong style="color:${dStep.color}">${dStep.label}</strong></span>
-              <span>· Team <strong style="color:${sStep.color}">${sStep.label}</strong> (avg ${Math.round(avgStat)})</span>
-              <span class="mismatch-gap ${gap===0?'gap-0':'gap-bad'}">${gap===0?'✓ Match':`−${gap} lvl → ×${MISMATCH_FACTORS[gap]*100|0}%`}</span>
-            </div>`;
-          }).join('')}</div>
         </div>
       </div>
 

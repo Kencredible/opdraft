@@ -380,42 +380,62 @@
     .rp-syn-chip.syn-neg{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:#fca5a5}
     .rp-syn-chip.syn-mix{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3);color:#fde68a}
     .rp-score-num{display:inline-block;min-width:2.2ch;text-align:right}
-    .rp-verdict{margin-top:.8rem;padding:.7rem .85rem;background:rgba(255,255,255,.035);border-left:2px solid var(--gold);border-radius:0 6px 6px 0;font-size:.74rem;line-height:1.7;color:var(--muted);opacity:0;transition:opacity .7s ease .1s}
-    .rp-verdict.visible{opacity:1}
-    .rp-verdict strong{color:var(--text)}
+    .rp-verdict{display:none}
     /* ── Score stages (breakdown reveal) ── */
     .score-stage{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease;pointer-events:none}
     .score-stage.revealed{opacity:1;transform:none;pointer-events:auto}
-    .stage-block{margin-top:.7rem;padding:.6rem .7rem;border-radius:8px;border:1px solid}
+    .stage-block{margin-top:.7rem;padding:.65rem .75rem;border-radius:8px;border:1px solid}
     .stage-block.stage-crew{background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.25)}
     .stage-block.stage-bonus{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.25)}
     .stage-block.stage-bground{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.25)}
     .stage-block.stage-boss{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.25)}
     .stage-block.stage-final{background:rgba(201,162,39,.09);border-color:rgba(201,162,39,.45);margin-top:.85rem}
-    .stage-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.22rem}
-    .stage-label-txt{font-size:.7rem;font-weight:700;letter-spacing:.03em;display:flex;align-items:center;gap:.35rem}
+    .stage-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.28rem}
+    .stage-label-txt{font-size:.72rem;font-weight:700;letter-spacing:.03em;display:flex;align-items:center;gap:.35rem}
+    .stage-delta{font-size:.65rem;font-weight:700;padding:.06rem .38rem;border-radius:4px;margin-left:.25rem;white-space:nowrap}
+    .stage-delta.pos{background:rgba(52,211,153,.13);color:#34d399;border:1px solid rgba(52,211,153,.28)}
+    .stage-delta.neg{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.28)}
+    .stage-delta.neu{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}
     .stage-score{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;white-space:nowrap}
     .stage-score.crew-col{color:#60a5fa}
     .stage-score.bonus-col{color:#34d399}
     .stage-score.bground-col{color:#fbbf24}
     .stage-score.boss-col{color:#f87171}
     .stage-score.final-col{color:var(--gold);font-size:1.35rem}
-    .stage-subbar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:.4rem}
+    .stage-subbar{height:5px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:.5rem}
     .stage-subbar-fill{height:100%;border-radius:2px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
-    .stage-detail-txt{font-size:.63rem;color:var(--muted);line-height:1.55}
-    .stage-connector{text-align:center;font-size:.7rem;color:var(--muted);margin:.18rem 0;letter-spacing:.04em}
-    .stage-bonus-chips{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.3rem}
-    .stage-bonus-chip{font-size:.6rem;padding:.1rem .35rem;border-radius:3px;background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.25)}
-    .boss-debuff-entry{margin-top:.4rem;padding:.35rem .4rem;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.18);border-radius:5px}
-    .boss-debuff-entry+.boss-debuff-entry{margin-top:.3rem}
-    .boss-debuff-hdr{display:flex;align-items:baseline;gap:.4rem;margin-bottom:.15rem}
-    .boss-debuff-name{font-size:.68rem;font-weight:700;color:var(--text)}
-    .boss-debuff-label{font-size:.58rem;color:#f87171;text-transform:uppercase;letter-spacing:.06em}
-    .boss-debuff-desc{font-size:.59rem;color:var(--muted);line-height:1.45;margin-bottom:.25rem}
-    .boss-debuff-stats{display:flex;flex-wrap:wrap;gap:.2rem}
-    .boss-stat-chip{font-size:.58rem;padding:.1rem .3rem;border-radius:3px;white-space:nowrap}
-    .boss-stat-chip.exploited{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.28)}
-    .boss-stat-chip.matched{background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.22)}
+    .stage-detail-txt{font-size:.65rem;color:var(--muted);line-height:1.6}
+    .stage-connector{text-align:center;font-size:.65rem;color:var(--muted);margin:.22rem 0;letter-spacing:.03em;opacity:.7}
+    .stage-bonus-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}
+    .stage-bonus-chip{font-size:.66rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.25);font-weight:600}
+    /* Battleground demand rows */
+    .bg-demand-rows{display:flex;flex-direction:column;gap:.28rem;margin-top:.4rem}
+    .bg-demand-row{display:flex;align-items:center;gap:.4rem;font-size:.65rem}
+    .bg-demand-label{width:76px;color:var(--muted);flex-shrink:0}
+    .bg-demand-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+    .bg-demand-bar-fill{height:100%;border-radius:2px}
+    .bg-demand-avg{font-size:.62rem;font-weight:700;white-space:nowrap}
+    /* Boss debuff */
+    .boss-debuff-entry{margin-top:.45rem;padding:.45rem .5rem;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.18);border-radius:6px}
+    .boss-debuff-entry+.boss-debuff-entry{margin-top:.35rem}
+    .boss-debuff-hdr{display:flex;align-items:baseline;gap:.4rem;margin-bottom:.18rem}
+    .boss-debuff-name{font-size:.7rem;font-weight:700;color:var(--text)}
+    .boss-debuff-label{font-size:.6rem;color:#f87171;text-transform:uppercase;letter-spacing:.06em}
+    .boss-debuff-desc{font-size:.62rem;color:var(--muted);line-height:1.5;margin-bottom:.3rem}
+    .boss-debuff-stats{display:flex;flex-direction:column;gap:.22rem}
+    .boss-stat-row{display:flex;align-items:center;gap:.45rem;font-size:.64rem}
+    .boss-stat-icon{width:14px;text-align:center;flex-shrink:0}
+    .boss-stat-name{width:68px;color:var(--text);font-weight:600;flex-shrink:0}
+    .boss-stat-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;position:relative}
+    .boss-stat-bar-fill{height:100%;border-radius:2px}
+    .boss-stat-verdict{font-size:.6rem;font-weight:700;padding:.05rem .28rem;border-radius:3px;white-space:nowrap;flex-shrink:0}
+    .boss-stat-verdict.exploited{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.28)}
+    .boss-stat-verdict.matched{background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.22)}
+    /* Verdict */
+    .rp-verdict-wrap{margin-top:.9rem;padding:.8rem .9rem;background:rgba(201,162,39,.07);border:1px solid rgba(201,162,39,.28);border-radius:8px;opacity:0;transition:opacity .7s ease .1s}
+    .rp-verdict-wrap.visible{opacity:1}
+    .rp-verdict-lbl{font-size:.56rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);font-weight:700;margin-bottom:.3rem}
+    .rp-verdict-txt{font-size:.75rem;line-height:1.72;color:var(--text)}
 
     /* ─── REVEAL SCREEN ──────────────────────────────── */
     #screen-reveal{background:var(--reveal-grad);justify-content:center}
@@ -2768,7 +2788,7 @@ function showResults(){
     const color=`var(--${prefix})`;
     if(!team.length)return`<div class="result-panel ${isWinner?'is-winner':''}"><div class="rp-hdr"><span class="rp-player" style="color:${color}">${name}</span><span class="rp-score" style="color:${color}">—%</span></div><p style="color:var(--muted);font-size:.8rem;padding:.5rem 0">No characters drafted.</p></div>`;
 
-    // Character list (for stage 1)
+    // ── Stage 1: character list ───────────────────────────────────────────────
     const chars=result.breakdown.map(item=>`
       <div class="rp-char">
         <div class="rp-char-img">${avatarHtml(item.character,28,28,true)}</div>
@@ -2776,33 +2796,72 @@ function showResults(){
         <div class="rp-char-score">+${item.score}</div>
       </div>`).join('');
 
-    // Bonus chips (for stage 2)
+    // ── Stage 2: bonus chips ──────────────────────────────────────────────────
     const bonusChips=[];
-    if(result.bonuses.diversity>0)bonusChips.push(`🤝 Diversity +${result.bonuses.diversity}%`);
-    if(result.bonuses.leader>0)bonusChips.push(`👑 Captain +${result.bonuses.leader}%`);
-    if(result.bonuses.fruit>0)bonusChips.push(`🍎 Fruits +${result.bonuses.fruit}%`);
-    if(result.bonuses.haki>0)bonusChips.push(`🔥 Haki +${result.bonuses.haki}%`);
+    if(result.bonuses.diversity>0)bonusChips.push(`🤝 Role Diversity +${result.bonuses.diversity}%`);
+    if(result.bonuses.leader>0)bonusChips.push(`👑 Captain Bonus +${result.bonuses.leader}%`);
+    if(result.bonuses.fruit>0)bonusChips.push(`🍎 Devil Fruits +${result.bonuses.fruit}%`);
+    if(result.bonuses.haki>0)bonusChips.push(`🔥 Conquerors +${result.bonuses.haki}%`);
     if(result.bonuses.crew<0)bonusChips.push(`👥 Small Crew ${result.bonuses.crew}%`);
     const synChips=(result.synergies||[]).map(s=>{
       const delta=synDelta([s],selectedScenario?.weights||{});
       const sign=delta>=0?'+':'';
-      return`${s.icon} ${s.name} (${sign}${Math.round(delta)}pts)`;
+      return`${s.icon} ${s.name} ${sign}${Math.round(delta)}pts`;
     });
     const allBonusChips=[...bonusChips,...synChips];
     const bonusChipsHtml=allBonusChips.map(b=>`<span class="stage-bonus-chip">${b}</span>`).join('');
     const bonusDelta=result.afterBonuses-result.crewScore;
-    const bonusDeltaStr=bonusDelta>=0?`+${bonusDelta}`:`${bonusDelta}`;
+    const bonusDeltaCls=bonusDelta>0?'pos':bonusDelta<0?'neg':'neu';
+    const bonusDeltaStr=bonusDelta>=0?`+${bonusDelta} pts`:`${bonusDelta} pts`;
 
-    // Battleground info
-    const diffPct=Math.round(result.difficultyMod*100);
+    // ── Stage 3: battleground demand rows ────────────────────────────────────
+    const sc=selectedScenario;
     const bgDelta=result.afterDifficulty-result.afterBonuses;
+    const bgDeltaCls=bgDelta>=0?'pos':'neg';
+    const bgDeltaStr=bgDelta>=0?`+${bgDelta} pts`:`${bgDelta} pts`;
+    const bgDemandRows=KEY_DEMAND_STATS.map(k=>{
+      const info=STAT_INFO[k];
+      const step=getDemandStep(sc.weights[k]||0);
+      const avg=Math.round(team.reduce((s,c)=>s+(c.stats[k]||0),0)/team.length);
+      const barPct=Math.min(100,avg);
+      const demandPct=Math.min(100,Math.round((sc.weights[k]||0)/0.44*100));
+      return`<div class="bg-demand-row">
+        <span class="bg-demand-label">${info.icon} ${info.label}</span>
+        <div class="bg-demand-bar"><div class="bg-demand-bar-fill" style="width:${barPct}%;background:${info.color}"></div></div>
+        <span class="bg-demand-avg" style="color:${info.color}">${avg}</span>
+        <span class="stage-delta neu" style="font-size:.58rem;padding:.04rem .28rem">${step.label} demand</span>
+      </div>`;
+    }).join('');
 
-    // Boss info
-    const bossMod=result.bossMod;
-    const bossPct=Math.round(bossMod*100);
-    const bossNames=result.bossNames.length?result.bossNames.join(', '):'None';
+    // ── Stage 4: boss threat ──────────────────────────────────────────────────
     const bossDelta=result.percentage-result.afterDifficulty;
+    const bossDeltaCls=bossDelta>=0?'pos':'neg';
+    const bossDeltaStr=bossDelta>=0?`+${bossDelta} pts`:`${bossDelta} pts`;
+    const bossDebuffHtml=result.bossDebuffs&&result.bossDebuffs.length
+      ? result.bossDebuffs.map(b=>`
+        <div class="boss-debuff-entry">
+          <div class="boss-debuff-hdr">
+            <span class="boss-debuff-name">☠️ ${b.boss}</span>
+            <span class="boss-debuff-label">${b.label}</span>
+          </div>
+          <div class="boss-debuff-desc">${b.desc}</div>
+          <div class="boss-debuff-stats">
+            ${b.details.map(d=>{
+              const inf=STAT_INFO[d.stat]||{icon:'',label:d.stat,color:'#6b7fa0'};
+              const fillPct=Math.min(100,Math.round(d.avg/d.required*100));
+              return`<div class="boss-stat-row">
+                <span class="boss-stat-icon">${inf.icon}</span>
+                <span class="boss-stat-name">${inf.label}</span>
+                <div class="boss-stat-bar"><div class="boss-stat-bar-fill" style="width:${fillPct}%;background:${d.exploited?'#f87171':inf.color}"></div></div>
+                <span style="font-size:.6rem;color:var(--muted);white-space:nowrap">${d.avg} / ${d.required}</span>
+                <span class="boss-stat-verdict ${d.exploited?'exploited':'matched'}">${d.exploited?'✗ Gap':'✓ Safe'}</span>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`).join('')
+      : `<div class="stage-detail-txt" style="margin-top:.3rem">No boss penalties for this battleground</div>`;
 
+    // ── Verdict ───────────────────────────────────────────────────────────────
     const verdict=generateVerdict(team,result,selectedScenario,isWinner,isWinner?Math.min(p1.percentage,p2.percentage):Math.max(p1.percentage,p2.percentage));
 
     return`<div class="result-panel ${isWinner?'is-winner':''}">
@@ -2827,58 +2886,53 @@ function showResults(){
 
       <!-- Stage 2: Bonuses -->
       <div class="score-stage" id="st2-${prefix}">
-        <div class="stage-connector">↓ team bonuses applied</div>
+        <div class="stage-connector">✦ synergies &amp; team bonuses</div>
         <div class="stage-block stage-bonus">
           <div class="stage-row">
-            <span class="stage-label-txt">✨ After Bonuses <small style="font-weight:400;opacity:.7">(${bonusDeltaStr})</small></span>
-            <span class="stage-score bonus-col" id="bonus-score-${prefix}">—</span>
+            <span class="stage-label-txt">✨ Team Bonuses</span>
+            <span style="display:flex;align-items:center;gap:.4rem">
+              <span class="stage-delta ${bonusDeltaCls}">${bonusDeltaStr}</span>
+              <span class="stage-score bonus-col" id="bonus-score-${prefix}">—</span>
+            </span>
           </div>
           <div class="stage-subbar"><div class="stage-subbar-fill" id="bonus-bar-${prefix}" style="background:#34d399"></div></div>
-          ${allBonusChips.length?`<div class="stage-bonus-chips">${bonusChipsHtml}</div>`:'<div class="stage-detail-txt">No active bonuses</div>'}
+          ${allBonusChips.length?`<div class="stage-bonus-chips">${bonusChipsHtml}</div>`:'<div class="stage-detail-txt">No synergies or bonuses triggered</div>'}
         </div>
       </div>
 
-      <!-- Stage 3: Battleground Difficulty + Mismatch -->
+      <!-- Stage 3: Battleground -->
       <div class="score-stage" id="st3-${prefix}">
-        <div class="stage-connector">↓ battleground deduction applied</div>
+        <div class="stage-connector">✦ battleground conditions applied</div>
         <div class="stage-block stage-bground">
           <div class="stage-row">
-            <span class="stage-label-txt">🌊 Battleground Deduction <small style="font-weight:400;opacity:.7">(×${Math.round(result.difficultyMod*result.mismatchPenalty*100)}%)</small></span>
-            <span class="stage-score bground-col" id="bg-score-${prefix}">—</span>
+            <span class="stage-label-txt">🌊 Battleground</span>
+            <span style="display:flex;align-items:center;gap:.4rem">
+              <span class="stage-delta ${bgDeltaCls}">${bgDeltaStr}</span>
+              <span class="stage-score bground-col" id="bg-score-${prefix}">—</span>
+            </span>
           </div>
           <div class="stage-subbar"><div class="stage-subbar-fill" id="bg-bar-${prefix}" style="background:#fbbf24"></div></div>
+          <div class="bg-demand-rows">${bgDemandRows}</div>
         </div>
       </div>
 
       <!-- Stage 4: Boss Threat -->
       <div class="score-stage" id="st4-${prefix}">
-        <div class="stage-connector">↓ boss threat factored in</div>
+        <div class="stage-connector">✦ boss threat evaluated</div>
         <div class="stage-block stage-boss">
           <div class="stage-row">
-            <span class="stage-label-txt">☠️ Boss Threat <small style="font-weight:400;opacity:.7">(×${bossPct}%${bossDelta<0?' / −'+Math.abs(bossDelta)+'pts':''})</small></span>
-            <span class="stage-score boss-col" id="boss-score-${prefix}">—</span>
+            <span class="stage-label-txt">☠️ Boss Threat</span>
+            <span style="display:flex;align-items:center;gap:.4rem">
+              <span class="stage-delta ${bossDeltaCls}">${bossDeltaStr}</span>
+              <span class="stage-score boss-col" id="boss-score-${prefix}">—</span>
+            </span>
           </div>
           <div class="stage-subbar"><div class="stage-subbar-fill" id="boss-bar-${prefix}" style="background:#f87171"></div></div>
-          ${result.bossDebuffs&&result.bossDebuffs.length
-            ? result.bossDebuffs.map(b=>`
-              <div class="boss-debuff-entry">
-                <div class="boss-debuff-hdr">
-                  <span class="boss-debuff-name">${b.boss}</span>
-                  <span class="boss-debuff-label">${b.label}</span>
-                </div>
-                <div class="boss-debuff-desc">${b.desc}</div>
-                <div class="boss-debuff-stats">
-                  ${b.details.map(d=>`<span class="boss-stat-chip ${d.exploited?'exploited':'matched'}">
-                    ${STAT_INFO[d.stat]?STAT_INFO[d.stat].icon+' ':''}<strong>${d.stat}</strong> ${d.avg}/${d.required} ${d.exploited?'✗':'✓'}
-                  </span>`).join('')}
-                </div>
-              </div>`).join('')
-            : `<div class="stage-detail-txt">No bosses for this battleground</div>`
-          }
+          ${bossDebuffHtml}
         </div>
       </div>
 
-      <!-- Stage 5: Final Score -->
+      <!-- Stage 5: Final Score + Verdict -->
       <div class="score-stage" id="st5-${prefix}">
         <div class="stage-block stage-final">
           <div class="stage-row">
@@ -2886,7 +2940,10 @@ function showResults(){
             <span class="stage-score final-col" id="final-score-${prefix}">—</span>
           </div>
         </div>
-        <div class="rp-verdict" id="verdict-${prefix}">${verdict}</div>
+        <div class="rp-verdict-wrap" id="verdict-${prefix}">
+          <div class="rp-verdict-lbl">Crew Assessment</div>
+          <div class="rp-verdict-txt">${verdict}</div>
+        </div>
       </div>
     </div>`;
   }

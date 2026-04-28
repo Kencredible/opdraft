@@ -1877,7 +1877,26 @@ const PORTRAITS={
   'Bepo':            'assets/Characters/Bepo_Portrait.webp',
   'Buggy':           'assets/Characters/Buggy_Portrait.webp',
   'Mr 1':            'assets/Characters/Daz_Bonez_Portrait.webp',
+  'Mr 2':            'assets/Characters/Bentham_Impel_Down_Prisoner_Portrait.webp',
   'Mr 3':            'assets/Characters/Galdino_Portrait.webp',
+  // ── Wano ────────────────────────────────────────────
+  'Yamato':          'assets/Characters/Yamato_Portrait.webp',
+  // ── Whitebeard Pirates ──────────────────────────────
+  'Marco':           'assets/Characters/Marco_Portrait.webp',
+  'Ace':             'assets/Characters/Portgas_D._Ace_Portrait.webp',
+  // ── Marines (extended) ──────────────────────────────
+  'Garp':            'assets/Characters/Monkey_D._Garp_Portrait.webp',
+  'Smoker':          'assets/Characters/Smoker_Portrait.webp',
+  'Tashigi':         'assets/Characters/Tashigi_Portrait.webp',
+  'Sentomaru':       'assets/Characters/Sentomaru_Portrait.webp',
+  'Koby':            'assets/Characters/Koby_Portrait.webp',
+  'Lucci':           'assets/Characters/Rob_Lucci_Portrait.webp',
+  // ── Villains ────────────────────────────────────────
+  'Enel':            'assets/Characters/Enel_Portrait.webp',
+  'Magellan':        'assets/Characters/Magellan_Portrait.webp',
+  'Caesar Clown':    'assets/Characters/Caesar_Clown_Portrait.webp',
+  'Arlong':          'assets/Characters/Arlong_Sun_Pirates_Portrait.webp',
+  'Hody Jones':      'assets/Characters/Hody_Jones_Pirate_Portrait.webp',
 };
 function getImgUrl(c){return PORTRAITS[c.name]||c.avatarSrc||c.image||c.portrait||c.picture||c.img||null}
 function initials(name){return name.split(/\s+/).map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase()}

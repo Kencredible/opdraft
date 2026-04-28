@@ -2847,10 +2847,6 @@ function showResults(){
             <span class="stage-score bground-col" id="bg-score-${prefix}">—</span>
           </div>
           <div class="stage-subbar"><div class="stage-subbar-fill" id="bg-bar-${prefix}" style="background:#fbbf24"></div></div>
-          <div class="stage-detail-txt">
-            <span>${selectedScenario.name} — <em>${selectedScenario.difficulty}</em> difficulty ×${diffPct}%</span>
-            ${result.mismatchPenalty<0.98?`<span style="color:#f87171;font-weight:700"> · ⚠️ Crew mismatch ×${Math.round(result.mismatchPenalty*100)}%</span>`:''}
-          </div>
           <div class="mismatch-detail">${KEY_DEMAND_STATS.map(k=>{
             const demand=selectedScenario.weights[k]||0;
             const avgStat=team.reduce((s,c)=>s+(c.stats[k]||0),0)/team.length;

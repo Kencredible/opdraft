@@ -1446,20 +1446,21 @@ function roleCount(team,rt){return team.filter(c=>c.stats.roleType===rt).length}
 function roleFull(team,rt){const cap=ROLE_CAPS[rt];return cap!==undefined&&roleCount(team,rt)>=cap}
 
 // ═══ COST TIERS ══════════════════════════════════════════════════════════════
-const BUDGET_AMOUNT = 5000;
-// Costs are calibrated to 5,000₿ budget / 5 picks.
-// Tier thresholds tightened so each band holds a meaningful number of characters:
-//   S  (GLCQ ≥ 930):       5 chars  — true Yonko (checked via GLCQ, not overall)
-//   A  (overall ≥ 90):    19 chars  — Mihawk → Katakuri  (GLCQ ~845–929)
-//   B  (overall ≥ 78):    32 chars  — Crocodile → Page One (GLCQ ~730–844)
-//   C  (overall ≥ 60):    44 chars  — Ivankov → Helmeppo  (GLCQ ~550–729)
-//   D  (overall  < 60):   48 chars  — the rest
+const BUDGET_AMOUNT = 10000;
+// Costs are calibrated to 10,000₿ budget — each pick carries real weight.
+// Building a full 6-man crew of S-tier characters exceeds the budget,
+// forcing every player to make meaningful trade-offs across tiers.
+//   S+ (tier 'S+'): Yonko — 3,600₿  (≤2 before budget collapses)
+//   S  (tier 'S'):  Commander — 1,800₿
+//   A  (tier 'A'):  Supernova — 900₿
+//   B  (tier 'B'):  Officer   — 400₿
+//   C  (tier 'C'):  Crew      — 150₿
 const TIERS = [
-  {min:90, cost:1800, label:'Tier S', sublabel:'Yonko Class',     icon:'👑', color:'#f87171'},
-  {min:90, cost: 900, label:'Tier A', sublabel:'Commander Class', icon:'⭐', color:'#fb923c'},
-  {min:78, cost: 450, label:'Tier B', sublabel:'Supernova Class', icon:'🔥', color:'#a78bfa'},
-  {min:60, cost: 200, label:'Tier C', sublabel:'Officer Class',   icon:'⚡', color:'#60a5fa'},
-  {min:0,  cost:  75, label:'Tier D', sublabel:'Crew Class',      icon:'🌊', color:'#6b7fa0'},
+  {min:90, cost:3600, label:'Tier S', sublabel:'Yonko Class',     icon:'👑', color:'#f87171'},
+  {min:90, cost:1800, label:'Tier A', sublabel:'Commander Class', icon:'⭐', color:'#fb923c'},
+  {min:78, cost: 900, label:'Tier B', sublabel:'Supernova Class', icon:'🔥', color:'#a78bfa'},
+  {min:60, cost: 400, label:'Tier C', sublabel:'Officer Class',   icon:'⚡', color:'#60a5fa'},
+  {min:0,  cost: 150, label:'Tier D', sublabel:'Crew Class',      icon:'🌊', color:'#6b7fa0'},
 ];
 // Tier is stored directly on each character as c.tier ('S+','S','A','B','C')
 // Legacy characters (glcq-based) fall back to power-score threshold lookup
@@ -2500,7 +2501,7 @@ async function startDraft(){
     allChars=raw.filter(c=>c.name).map(c=>({...c,stats:computeStats(c)})).sort((a,b)=>b.stats.overall-a.stats.overall);
   }
   const bossNames=new Set(BOSSES[selectedScenario?.id]||[]);
-  const poolSize=budgetMode?20:30;
+  const poolSize=budgetMode?20:15;
   poolChars=generatePool(allChars.filter(c=>!bossNames.has(c.name)),poolSize);
   updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
   document.getElementById('char-search').value='';

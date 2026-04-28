@@ -238,9 +238,9 @@
     .cm-pill{font-size:.56rem;padding:.1rem .32rem;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);white-space:nowrap;transition:all .15s}
     .cm-pill.at-cap{background:rgba(201,162,39,.1);border-color:rgba(201,162,39,.35);color:var(--gold)}
     /* Card image */
-    .cc-img{width:100%;height:82px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
-    .cc-img img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
-    .cc-img-fb{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+    .cc-img{width:100%;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;flex-shrink:0;position:relative;background:var(--bg)}
+    .cc-img img{width:100%;height:auto;display:block;object-fit:contain;object-position:top center}
+    .cc-img-fb{width:100%;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
     .cc-initials{font-family:'Cinzel',serif;font-size:1.2rem;font-weight:900;line-height:1}
     /* Cost badge overlaid on image */
     .cost-badge{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.82);border-radius:4px;padding:.12rem .32rem;font-size:.6rem;font-weight:700;font-family:'Cinzel',serif;color:var(--gold);border:1px solid rgba(201,162,39,.3);z-index:1}
@@ -282,8 +282,8 @@
     .cd-overlay.open .cd-backdrop{opacity:1}
     .cd-panel{width:26vw;min-width:290px;max-width:380px;background:var(--bg-card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);flex-shrink:0}
     .cd-overlay.open .cd-panel{transform:translateX(0)}
-    .cd-panel-img{width:100%;height:170px;overflow:hidden;flex-shrink:0;position:relative}
-    .cd-panel-img img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+    .cd-panel-img{width:100%;overflow:hidden;flex-shrink:0;position:relative;background:var(--bg);display:flex;align-items:flex-start;justify-content:center}
+    .cd-panel-img img{width:100%;height:auto;display:block;object-fit:contain;object-position:top center}
     .cd-panel-img .cc-img-fb{width:100%;height:100%}
     .cd-panel-body{flex:1;overflow-y:auto;padding:.75rem .8rem;display:flex;flex-direction:column;gap:.55rem}
     .cd-panel-name{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;color:var(--gold);line-height:1.2}
@@ -2054,9 +2054,16 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
   const slotFullBadge=isCapped?`<span class="cc-badge badge-full">⛔ Slot Full</span>`:'';
   const fitScore=Math.round(scenarioFitScore(c,selectedScenario));
   const grpColor=POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)';
+  const[_cbg,_cfg]=ROLE_COLORS[c.stats.roleType]||['#1e2f48','#94a3b8'];
+  const _cIcon=ROLE_ICON[c.stats.roleType]||'•';const _cInit=initials(c.name);
+  const _cImg=getImgUrl(c);
+  const _cPortrait=_cImg
+    ?`<img src="${_cImg}" alt="${c.name}" loading="lazy" style="width:100%;height:auto;display:block;object-fit:contain;object-position:top center" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`+
+      `<div class="cc-img-fb" style="display:none;background:${_cbg}"><span style="font-size:.9rem">${_cIcon}</span><span class="cc-initials" style="font-size:.82rem;color:${_cfg}">${_cInit}</span></div>`
+    :`<div class="cc-img-fb" style="background:${_cbg}"><span style="font-size:.9rem">${_cIcon}</span><span class="cc-initials" style="font-size:.82rem;color:${_cfg}">${_cInit}</span></div>`;
   card.innerHTML=`
     <div class="cc-img">
-      ${avatarHtml(c,128,82,false)}${costBadgeHtml}
+      ${_cPortrait}${costBadgeHtml}
       <button class="cc-info-btn" title="View full stats">i</button>
     </div>
     <div class="cc-body">
@@ -2133,7 +2140,13 @@ function openCharDetail(c,onPick,canPick){
   const fitScore=Math.round(scenarioFitScore(c,sc));
   const grpColor=POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)';
   // Image
-  document.getElementById('cd-panel-img').innerHTML=avatarHtml(c,380,170,false);
+  const[_dpBg,_dpFg]=ROLE_COLORS[c.stats.roleType]||['#1e2f48','#94a3b8'];
+  const _dpIcon=ROLE_ICON[c.stats.roleType]||'•';const _dpInit=initials(c.name);
+  const _dpImg=getImgUrl(c);
+  document.getElementById('cd-panel-img').innerHTML=_dpImg
+    ?`<img src="${_dpImg}" alt="${c.name}" loading="lazy" style="width:100%;height:auto;display:block;object-fit:contain;object-position:top center" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`+
+      `<div class="cc-img-fb" style="display:none;background:${_dpBg};width:100%;height:170px"><span style="font-size:1.4rem">${_dpIcon}</span><span class="cc-initials" style="font-size:1rem;color:${_dpFg}">${_dpInit}</span></div>`
+    :`<div class="cc-img-fb" style="background:${_dpBg};width:100%;height:170px"><span style="font-size:1.4rem">${_dpIcon}</span><span class="cc-initials" style="font-size:1rem;color:${_dpFg}">${_dpInit}</span></div>`;
   // Name
   document.getElementById('cd-panel-name').textContent=c.name;
   // Badges: affiliation + tier

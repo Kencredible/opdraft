@@ -228,7 +228,7 @@
     .char-card:hover{background:var(--bg-hover);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 14px rgba(201,162,39,.12)}
     .char-card.taken-p1{border-color:var(--p1);opacity:.28;pointer-events:none}
     .char-card.taken-p2{border-color:var(--p2);opacity:.28;pointer-events:none}
-    .char-card.cant-afford{opacity:.38;pointer-events:none;border-color:rgba(239,68,68,.3)}
+    .char-card.cant-afford{opacity:.38;cursor:not-allowed;border-color:rgba(239,68,68,.3)}
     .char-card.role-capped{opacity:.28;pointer-events:none;border-color:rgba(239,68,68,.18)}
     .badge-full{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
     /* Crew manifest */
@@ -2130,7 +2130,7 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
       ${affiliationBadge(c)}
       ${bf?`<div class="cc-meta">💰 ${bf}</div>`:''}
     </div>`;
-  if(tb===null&&!cantAfford)card.addEventListener('click',()=>onPick(c));
+  card.addEventListener('click',()=>{if(tb===null&&!cantAfford&&!draftLocked)onPick(c)});
   // Info button — opens detail overlay, does not trigger pick
   card.querySelector('.cc-info-btn').addEventListener('click',e=>{
     e.stopPropagation();
@@ -2621,23 +2621,26 @@ function afterPick(){
 async function doAiPick(){
   if(!draft||draft.complete||draftCurrentPlayer(draft)!==1)return;
   draftLocked=true;
-  await showAiThinking();
-  const pick=aiPick(poolChars,draft,selectedScenario);
-  if(pick){
-    draftPick(draft,pick,1,poolChars);
-    renderPickSlots(0,draft.teams[0],budgetMode,draft.budgets[0]);
-    renderPickSlots(1,draft.teams[1],budgetMode,draft.budgets[1]);
-    const p0=draftTeamPower(draft,0),p1=draftTeamPower(draft,1);
-    document.getElementById('p1-power').textContent=p0>0?`${p0} PWR`:'— PWR';
-    document.getElementById('p2-power').textContent=p1>0?`${p1} PWR`:'— PWR';
-    updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
-    setTurnStatus();refreshGrid();
-    await showAiPicked(pick);
-  }else if(budgetMode){
-    draftPass(draft,1,poolChars);
-    setTurnStatus();refreshGrid();
+  try{
+    await showAiThinking();
+    const pick=aiPick(poolChars,draft,selectedScenario);
+    if(pick){
+      draftPick(draft,pick,1,poolChars);
+      renderPickSlots(0,draft.teams[0],budgetMode,draft.budgets[0]);
+      renderPickSlots(1,draft.teams[1],budgetMode,draft.budgets[1]);
+      const p0=draftTeamPower(draft,0),p1=draftTeamPower(draft,1);
+      document.getElementById('p1-power').textContent=p0>0?`${p0} PWR`:'— PWR';
+      document.getElementById('p2-power').textContent=p1>0?`${p1} PWR`:'— PWR';
+      updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
+      setTurnStatus();refreshGrid();
+      await showAiPicked(pick);
+    }else if(budgetMode){
+      draftPass(draft,1,poolChars);
+      setTurnStatus();refreshGrid();
+    }
+  }finally{
+    draftLocked=false;
   }
-  draftLocked=false;
   if(draft.complete){setTimeout(isBlindScenario?showReveal:showResults,700);return}
   if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1){
     // AI picks again (budget mode back-to-back)

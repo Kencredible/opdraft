@@ -2501,7 +2501,7 @@ async function startDraft(){
     allChars=raw.filter(c=>c.name).map(c=>({...c,stats:computeStats(c)})).sort((a,b)=>b.stats.overall-a.stats.overall);
   }
   const bossNames=new Set(BOSSES[selectedScenario?.id]||[]);
-  const poolSize=budgetMode?20:15;
+  const poolSize=budgetMode?20:20;
   poolChars=generatePool(allChars.filter(c=>!bossNames.has(c.name)),poolSize);
   updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
   document.getElementById('char-search').value='';

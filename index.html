@@ -316,6 +316,27 @@
     .cd-partner-status.st-team{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.28)}
     .cd-partner-status.st-avail{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,162,39,.3)}
 
+    /* ─── TURN ANNOUNCEMENT OVERLAY ─────────────────── */
+    #turn-overlay{position:fixed;inset:0;z-index:1100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,26,.9);opacity:0;pointer-events:none;transition:opacity .3s ease}
+    #turn-overlay.visible{opacity:1;pointer-events:auto}
+    body.light #turn-overlay{background:rgba(15,23,42,.88)}
+    .turn-ov-inner{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.5rem;padding:2rem}
+    .turn-ov-portrait{width:130px;height:auto;border-radius:10px;object-fit:contain;margin-bottom:.6rem;filter:drop-shadow(0 8px 24px rgba(0,0,0,.6))}
+    .turn-ov-portrait-fb{width:110px;height:110px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;margin-bottom:.6rem}
+    .turn-ov-eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}
+    .turn-ov-title{font-family:'Cinzel',serif;font-size:clamp(1.3rem,3vw,1.8rem);font-weight:900;color:var(--gold);letter-spacing:.06em;text-shadow:0 0 40px rgba(201,162,39,.45);line-height:1.2}
+    .turn-ov-title.is-player{color:#60a5fa}
+    body.light .turn-ov-title.is-player{color:#2563eb}
+    .turn-ov-sub{font-size:.82rem;color:var(--muted);margin-top:.1rem}
+    .turn-ov-charname{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-top:.2rem}
+    .turn-ov-dots{display:flex;gap:7px;margin-top:1.1rem}
+    .turn-ov-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);animation:tov-bounce .9s ease-in-out infinite}
+    .turn-ov-dot:nth-child(2){animation-delay:.18s}
+    .turn-ov-dot:nth-child(3){animation-delay:.36s}
+    @keyframes tov-bounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-9px);opacity:1}}
+    .turn-ov-pulse{animation:tov-pulse .5s ease-out}
+    @keyframes tov-pulse{0%{transform:scale(.88);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+
     /* ─── RESULTS ────────────────────────────────────── */
     .results-page{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;width:100%}
     .winner-banner{font-family:'Cinzel',serif;font-size:clamp(1rem,2.5vw,1.35rem);color:var(--gold);text-align:center;margin-bottom:1.1rem;padding:.65rem 2rem;background:var(--gold-dim);border:1px solid rgba(201,162,39,.3);border-radius:10px;opacity:0;transition:opacity .6s ease}
@@ -750,6 +771,11 @@
       <button class="cd-pick-btn" id="cd-pick-btn">Draft</button>
     </div>
   </div>
+</div>
+
+<!-- Turn announcement overlay -->
+<div id="turn-overlay">
+  <div class="turn-ov-inner" id="turn-ov-inner"></div>
 </div>
 
 <!-- ═══ RESULTS ═══════════════════════════════════════════════════════════════ -->
@@ -2485,7 +2511,7 @@ async function startDraft(){
 
   // If AI won the coin toss and goes first, trigger its opening pick
   if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1&&!draft.complete){
-    setTimeout(doAiPick,1200);
+    setTimeout(doAiPick,600); // brief pause so screen renders before overlay appears
   }
 }
 
@@ -2515,8 +2541,60 @@ function setTurnStatus(){
   syncPassButton();
 }
 
+// ─── Turn overlay helpers ─────────────────────────────────────────────────────
+let draftLocked=false;
+
+function showTurnOverlay(html,durationMs){
+  return new Promise(resolve=>{
+    const ov=document.getElementById('turn-overlay');
+    const inner=document.getElementById('turn-ov-inner');
+    inner.innerHTML=html;
+    // trigger entrance animation on inner
+    inner.classList.remove('turn-ov-pulse');
+    void inner.offsetWidth;
+    inner.classList.add('turn-ov-pulse');
+    ov.classList.add('visible');
+    setTimeout(()=>{
+      ov.classList.remove('visible');
+      setTimeout(resolve,320);
+    },durationMs);
+  });
+}
+
+function showAiThinking(){
+  return showTurnOverlay(`
+    <div class="turn-ov-eyebrow">Opponent</div>
+    <div class="turn-ov-title">Choosing...</div>
+    <div class="turn-ov-sub">The AI is analyzing the battlefield</div>
+    <div class="turn-ov-dots">
+      <div class="turn-ov-dot"></div>
+      <div class="turn-ov-dot"></div>
+      <div class="turn-ov-dot"></div>
+    </div>`,1800);
+}
+
+function showAiPicked(char){
+  const imgUrl=getImgUrl(char);
+  const[bg]=ROLE_COLORS[char.stats.roleType]||['#1e2f48','#94a3b8'];
+  const icon=ROLE_ICON[char.stats.roleType]||'•';
+  const portraitHtml=imgUrl
+    ?`<img class="turn-ov-portrait" src="${imgUrl}" alt="${char.name}">`
+    :`<div class="turn-ov-portrait-fb" style="background:${bg}">${icon}</div>`;
+  return showTurnOverlay(`
+    ${portraitHtml}
+    <div class="turn-ov-eyebrow">Opponent drafted</div>
+    <div class="turn-ov-charname">${char.name}</div>
+    <div class="turn-ov-sub">${char.stats.roleType} · ${char.tier} Tier</div>`,2400);
+}
+
+function showPlayerTurn(){
+  return showTurnOverlay(`
+    <div class="turn-ov-title is-player">Your Turn, Captain!</div>
+    <div class="turn-ov-sub">Choose your next crew member wisely</div>`,1500);
+}
+
 function handlePick(c){
-  if(!draft||draft.complete)return;
+  if(!draft||draft.complete||draftLocked)return;
   const curPid=draftCurrentPlayer(draft);
   if(gameMode==='vs-ai'&&curPid===1)return;
   if(draftPick(draft,c,curPid,poolChars))afterPick();
@@ -2533,16 +2611,35 @@ function afterPick(){
   if(draft.complete){setTurnStatus();refreshGrid();setTimeout(isBlindScenario?showReveal:showResults,700);return}
 
   setTurnStatus();refreshGrid();
-  if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1&&!draft.complete)setTimeout(doAiPick,900);
+  if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1&&!draft.complete)doAiPick();
 }
 
-function doAiPick(){
+async function doAiPick(){
   if(!draft||draft.complete||draftCurrentPlayer(draft)!==1)return;
+  draftLocked=true;
+  await showAiThinking();
   const pick=aiPick(poolChars,draft,selectedScenario);
-  if(pick){draftPick(draft,pick,1,poolChars);afterPick()}
-  else{
-    // AI has nothing affordable → auto-pass
-    if(budgetMode){draftPass(draft,1,poolChars);afterPick()}
+  if(pick){
+    draftPick(draft,pick,1,poolChars);
+    renderPickSlots(0,draft.teams[0],budgetMode,draft.budgets[0]);
+    renderPickSlots(1,draft.teams[1],budgetMode,draft.budgets[1]);
+    const p0=draftTeamPower(draft,0),p1=draftTeamPower(draft,1);
+    document.getElementById('p1-power').textContent=p0>0?`${p0} PWR`:'— PWR';
+    document.getElementById('p2-power').textContent=p1>0?`${p1} PWR`:'— PWR';
+    updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
+    setTurnStatus();refreshGrid();
+    await showAiPicked(pick);
+  }else if(budgetMode){
+    draftPass(draft,1,poolChars);
+    setTurnStatus();refreshGrid();
+  }
+  draftLocked=false;
+  if(draft.complete){setTimeout(isBlindScenario?showReveal:showResults,700);return}
+  if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1){
+    // AI picks again (budget mode back-to-back)
+    await doAiPick();
+  }else{
+    await showPlayerTurn();
   }
 }
 

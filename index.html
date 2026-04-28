@@ -1804,7 +1804,6 @@ function draftCanAfford(d,char,pid){
 
 function draftPick(d,char,pid,pool){
   if(d.complete||draftCurrentPlayer(d)!==pid||d.pickedIds.has(char.id))return false;
-  if(roleFull(d.teams[pid],char.stats.roleType))return false; // role cap enforced for both modes
   if(d.mode==='budget'){
     if(!draftCanAfford(d,char,pid)||d.teams[pid].length>=6)return false;
     d.teams[pid].push(char);d.pickedIds.add(char.id);d.budgets[pid]-=getCharCost(char);
@@ -1824,7 +1823,7 @@ function draftPass(d,pid,pool){
 function canStillPick(d,pool,pid){
   if(d.done[pid])return false;
   if(d.teams[pid].length>=6){d.done[pid]=true;return false}
-  const available=pool.some(c=>!d.pickedIds.has(c.id)&&d.budgets[pid]>=getCharCost(c)&&!roleFull(d.teams[pid],c.stats.roleType));
+  const available=pool.some(c=>!d.pickedIds.has(c.id)&&d.budgets[pid]>=getCharCost(c));
   if(!available){d.done[pid]=true;return false}
   return true;
 }
@@ -1844,8 +1843,7 @@ function aiPick(pool,draft,sc){
   const pid=1,budget=draft.mode==='budget'?draft.budgets[pid]:Infinity;
   const avail=pool.filter(c=>
     !draft.pickedIds.has(c.id)&&
-    (draft.mode!=='budget'||getCharCost(c)<=budget)&&
-    !roleFull(draft.teams[pid],c.stats.roleType)
+    (draft.mode!=='budget'||getCharCost(c)<=budget)
   );
   if(!avail.length)return null;
   const scored=avail.map(c=>{let s=c.stats.overall*.4;for(const[k,w]of Object.entries(sc.weights))s+=(c.stats[k]||0)*w*.6;return{c,s}}).sort((a,b)=>b.s-a.s);
@@ -2012,12 +2010,11 @@ function affiliationBadge(c){
 function renderCrewManifest(pid,team){
   const el=document.getElementById(`p${pid+1}-manifest`);
   if(!el)return;
-  const pills=Object.entries(ROLE_CAPS).map(([rt,cap])=>{
+  const pills=Object.keys(ROLE_CAPS).map(rt=>{
     const used=roleCount(team,rt);
+    if(!used)return'';
     const icon=ROLE_ICON[rt]||'•';
-    const atCap=used>=cap;
-    const label=cap===1?`${icon} ${used}/${cap}`:`${icon} ${used}/${cap}`;
-    return`<span class="cm-pill${atCap?' at-cap':''}" title="${rt} (${used}/${cap})">${label}</span>`;
+    return`<span class="cm-pill" title="${rt}: ${used}">${icon} ${used}</span>`;
   }).join('');
   el.innerHTML=`<div class="cm-label">Crew Roster</div><div class="cm-grid">${pills}</div>`;
 }
@@ -2106,21 +2103,16 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
   const tb=pickedBy(draft,c.id);
   const cost=getCharCost(c);
   const cantAfford=budgetMode&&humanBudget!==null&&humanBudget<cost&&tb===null;
-  const isCapped=tb===null&&humanTeam&&roleFull(humanTeam,c.stats.roleType);
   const card=document.createElement('div');
   let cls='char-card';
   if(tb===0)cls+=' taken-p1';
   else if(tb===1)cls+=' taken-p2';
-  else if(isCapped)cls+=' role-capped';
   else if(cantAfford)cls+=' cant-afford';
   card.className=cls;
   const bf=fmtBounty(c.stats.bounty);
   const costBadgeClass=(cantAfford&&!isCapped)?'cost-badge unaffordable':'cost-badge';
   const costBadgeHtml=budgetMode?`<div class="${costBadgeClass}">${cost}₿</div>`:'';
   const isConqueror=CONQUERORS.has(c.name);
-  const slotFullBadge=isCapped?`<span class="cc-badge badge-full">⛔ Slot Full</span>`:'';
-  const fitScore=Math.round(scenarioFitScore(c,selectedScenario));
-  const grpColor=POOL_GROUPS.find(g=>g.id===charSpecialty(c))?.color??'var(--gold)';
   const[_cbg,_cfg]=ROLE_COLORS[c.stats.roleType]||['#1e2f48','#94a3b8'];
   const _cIcon=ROLE_ICON[c.stats.roleType]||'•';const _cInit=initials(c.name);
   const _cImg=getImgUrl(c);
@@ -2135,18 +2127,14 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
     </div>
     <div class="cc-body">
       <div class="cc-name">${c.name}</div>
-      ${affiliationBadge(c)}${slotFullBadge}
+      ${affiliationBadge(c)}
       ${bf?`<div class="cc-meta">💰 ${bf}</div>`:''}
-      <div class="cc-bar-row" title="Scenario fit score for current battleground">
-        <div class="cc-bar"><div class="cc-bar-fill" style="width:${fitScore}%;background:linear-gradient(90deg,${grpColor},var(--gold-light))"></div></div>
-        <span class="cc-pwr" style="color:${grpColor}">${fitScore}</span>
-      </div>
     </div>`;
-  if(tb===null&&!cantAfford&&!isCapped)card.addEventListener('click',()=>onPick(c));
+  if(tb===null&&!cantAfford)card.addEventListener('click',()=>onPick(c));
   // Info button — opens detail overlay, does not trigger pick
   card.querySelector('.cc-info-btn').addEventListener('click',e=>{
     e.stopPropagation();
-    const canPick=tb===null&&!cantAfford&&!isCapped;
+    const canPick=tb===null&&!cantAfford;
     openCharDetail(c,onPick,canPick);
   });
   grid.appendChild(card);
@@ -2221,15 +2209,8 @@ function openCharDetail(c,onPick,canPick){
   document.getElementById('cd-panel-badges').innerHTML=
     affiliationBadge(c)+
     `<span class="cd-tier-chip" style="${tierStyle}">${c.tier} Tier</span>`;
-  // Scenario fit bar
-  document.getElementById('cd-panel-fit').innerHTML=`
-    <div class="cd-fit-label">
-      <span style="color:var(--muted);font-size:.62rem">Scenario Fit — ${sc?sc.shortName:''}</span>
-      <span style="color:${grpColor};font-weight:700;font-size:.7rem">${fitScore}</span>
-    </div>
-    <div class="cc-bar" style="height:5px">
-      <div class="cc-bar-fill" style="width:${fitScore}%;background:linear-gradient(90deg,${grpColor},var(--gold-light))"></div>
-    </div>`;
+  // Scenario fit bar hidden
+  document.getElementById('cd-panel-fit').innerHTML='';
   // Stat rows
   document.getElementById('cd-panel-stats').innerHTML=CD_STATS.map(s=>`
     <div class="cd-stat-row">

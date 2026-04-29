@@ -452,12 +452,18 @@
     .stage-bonus-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}
     .stage-bonus-chip{font-size:.66rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.25);font-weight:600}
     /* Battleground demand rows */
-    .bg-demand-rows{display:flex;flex-direction:column;gap:.28rem;margin-top:.4rem}
-    .bg-demand-row{display:flex;align-items:center;gap:.4rem;font-size:.65rem}
-    .bg-demand-label{width:76px;color:var(--muted);flex-shrink:0}
-    .bg-demand-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
-    .bg-demand-bar-fill{height:100%;border-radius:2px}
-    .bg-demand-avg{font-size:.62rem;font-weight:700;white-space:nowrap}
+    .bg-demand-rows{display:flex;flex-direction:column;gap:.32rem;margin-top:.45rem}
+    .bg-demand-row{display:flex;align-items:center;gap:.38rem;font-size:.65rem}
+    .bg-demand-label{width:76px;color:var(--muted);flex-shrink:0;white-space:nowrap}
+    .bg-demand-need{font-size:.57rem;font-weight:600;padding:.05rem .28rem;border-radius:4px;border:1px solid;flex-shrink:0;white-space:nowrap}
+    .bg-demand-crew{display:flex;align-items:center;gap:.28rem;flex:1;min-width:0}
+    .bg-demand-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;min-width:30px}
+    .bg-demand-bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
+    .bg-demand-avg{font-size:.62rem;font-weight:700;white-space:nowrap;min-width:20px;text-align:right}
+    .bg-demand-verdict{font-size:.6rem;font-weight:700;padding:.06rem .3rem;border-radius:4px;flex-shrink:0;white-space:nowrap}
+    .bgv-met{background:rgba(52,211,153,.12);color:#6ee7b7;border:1px solid rgba(52,211,153,.25)}
+    .bgv-warn{background:rgba(251,146,60,.12);color:#fdba74;border:1px solid rgba(251,146,60,.3)}
+    .bgv-fail{background:rgba(248,113,113,.12);color:#fca5a5;border:1px solid rgba(248,113,113,.3)}
     /* Boss debuff */
     .boss-debuff-entry{margin-top:.45rem;padding:.45rem .5rem;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.18);border-radius:6px}
     .boss-debuff-entry+.boss-debuff-entry{margin-top:.35rem}
@@ -1723,7 +1729,7 @@ function getCharTier(c){
 }
 function getCharCost(c){ return getCharTier(c).cost }
 
-// ═══ ROSTER — 66 characters, tier+power from fighting-game scale ═════════════
+// ═══ ROSTER — 80 characters, tier+power from fighting-game scale ═════════════
 // tier: S+=Yonko, S=Commander, A=Supernova, B=Officer, C=Crew
 const FALLBACK=[
   // ── S+ Tier ──────────────────────────────────────────────────────────────
@@ -1800,6 +1806,19 @@ const FALLBACK=[
   {id:64, name:"Mr 3",           job:"Fighter",             power:780, tier:"C",  crew:"Cross Guild",         fruit:{name:"Doru Doru no Mi"},                    attrs:{combat:50,strategy:65,haki:18,leadership:38,navigation:28,support:48}},
   {id:65, name:"Arlong",         job:"Pirate Captain",      power:750, tier:"C",  crew:"Arlong Pirates",      fruit:null,                                        attrs:{combat:62,strategy:50,haki:28,leadership:55,navigation:78,support:28}},
   {id:66, name:"Hody Jones",     job:"Pirate Captain",      power:780, tier:"C",  crew:"Fishman Pirates",     fruit:null,                                        attrs:{combat:65,strategy:48,haki:32,leadership:55,navigation:82,support:22}},
+  // ── Vinsmoke Family ─────────────────────────────────────────────────────────
+  {id:70, name:"Judge",          job:"Army Commander",      power:855, tier:"B",  crew:"Germa 66",            fruit:null,                                        attrs:{combat:72,strategy:80,haki:8,  leadership:85,navigation:45,support:52}},
+  {id:71, name:"Reiju",          job:"Doctor",              power:830, tier:"B",  crew:"Germa 66",            fruit:null,                                        attrs:{combat:68,strategy:68,haki:10, leadership:50,navigation:48,support:80}},
+  {id:72, name:"Ichiji",         job:"Fighter",             power:870, tier:"B",  crew:"Germa 66",            fruit:null,                                        attrs:{combat:76,strategy:58,haki:8,  leadership:55,navigation:32,support:22}},
+  {id:73, name:"Niji",           job:"Fighter",             power:855, tier:"B",  crew:"Germa 66",            fruit:null,                                        attrs:{combat:74,strategy:55,haki:8,  leadership:45,navigation:38,support:22}},
+  {id:74, name:"Yonji",          job:"Fighter",             power:840, tier:"B",  crew:"Germa 66",            fruit:null,                                        attrs:{combat:70,strategy:52,haki:8,  leadership:42,navigation:35,support:25}},
+  // ── CP9 / CP0 ────────────────────────────────────────────────────────────────
+  {id:75, name:"Kaku",           job:"Swordsman",           power:875, tier:"B",  crew:"CP0",                 fruit:{name:"Ushi Ushi no Mi, Model: Giraffe"},    attrs:{combat:75,strategy:68,haki:65, leadership:48,navigation:52,support:35}},
+  {id:76, name:"Jabra",          job:"Fighter",             power:860, tier:"B",  crew:"CP9",                 fruit:{name:"Inu Inu no Mi, Model: Wolf"},          attrs:{combat:72,strategy:60,haki:62, leadership:42,navigation:40,support:28}},
+  {id:77, name:"Blueno",         job:"Fighter",             power:845, tier:"B",  crew:"CP9",                 fruit:{name:"Doa Doa no Mi"},                       attrs:{combat:68,strategy:62,haki:55, leadership:45,navigation:55,support:30}},
+  {id:78, name:"Kumadori",       job:"Fighter",             power:830, tier:"C",  crew:"CP9",                 fruit:null,                                        attrs:{combat:66,strategy:52,haki:55, leadership:38,navigation:35,support:38}},
+  {id:79, name:"Fukurou",        job:"Fighter",             power:820, tier:"C",  crew:"CP9",                 fruit:null,                                        attrs:{combat:62,strategy:55,haki:50, leadership:38,navigation:42,support:40}},
+  {id:80, name:"Kalifa",         job:"Fighter",             power:840, tier:"B",  crew:"CP9",                 fruit:{name:"Awa Awa no Mi"},                       attrs:{combat:62,strategy:72,haki:48, leadership:42,navigation:40,support:62}},
 ];
 
 // ═══ ENGINE ══════════════════════════════════════════════════════════════════
@@ -2262,6 +2281,19 @@ const PORTRAITS={
   'Caesar Clown':    'assets/Characters/Caesar_Clown_Portrait.webp',
   'Arlong':          'assets/Characters/Arlong_Sun_Pirates_Portrait.webp',
   'Hody Jones':      'assets/Characters/Hody_Jones_Pirate_Portrait.webp',
+  // ── Vinsmoke Family ─────────────────────────────────────────────────────────
+  'Judge':           'assets/Characters/Vinsmoke_Judge_Portrait.webp',
+  'Reiju':           'assets/Characters/Vinsmoke_Reiju_Portrait.webp',
+  'Ichiji':          'assets/Characters/Vinsmoke_Ichiji_Portrait.webp',
+  'Niji':            'assets/Characters/Vinsmoke_Niji_Portrait.webp',
+  'Yonji':           'assets/Characters/Vinsmoke_Yonji_Portrait.webp',
+  // ── CP9 / CP0 ───────────────────────────────────────────────────────────────
+  'Kaku':            'assets/Characters/Kaku_CP9_Portrait.webp',
+  'Jabra':           'assets/Characters/Jabra_Portrait.webp',
+  'Blueno':          'assets/Characters/Blueno_Portrait.webp',
+  'Kumadori':        'assets/Characters/Kumadori_CP9_Portrait.webp',
+  'Fukurou':         'assets/Characters/Fukurou_CP9_Portrait.webp',
+  'Kalifa':          'assets/Characters/Kalifa_Portrait.webp',
 };
 function getImgUrl(c){return PORTRAITS[c.name]||c.avatarSrc||c.image||c.portrait||c.picture||c.img||null}
 function initials(name){return name.split(/\s+/).map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase()}
@@ -3256,15 +3288,24 @@ function showResults(){
     const bgDeltaStr=bgDelta>=0?`+${bgDelta} pts`:`${bgDelta} pts`;
     const bgDemandRows=KEY_DEMAND_STATS.map(k=>{
       const info=STAT_INFO[k];
-      const step=getDemandStep(sc.weights[k]||0);
+      const demand=sc.weights[k]||0;
+      const step=getDemandStep(demand);
       const avg=Math.round(team.reduce((s,c)=>s+(c.stats[k]||0),0)/team.length);
       const barPct=Math.min(100,avg);
-      const demandPct=Math.min(100,Math.round((sc.weights[k]||0)/0.44*100));
+      const dLevel=getDemandLevel(demand);
+      const sLevel=getSupplyLevel(avg);
+      const gap=Math.max(0,dLevel-sLevel);
+      const penaltyPct=Math.round((1-MISMATCH_FACTORS[gap])*100);
+      const verdictCls=gap===0?'bgv-met':gap<=2?'bgv-warn':'bgv-fail';
+      const verdictTxt=gap===0?'✅ Met':`${gap<=2?'⚠️':'❌'} −${penaltyPct}%`;
       return`<div class="bg-demand-row">
         <span class="bg-demand-label">${info.icon} ${info.label}</span>
-        <div class="bg-demand-bar"><div class="bg-demand-bar-fill" style="width:${barPct}%;background:${info.color}"></div></div>
-        <span class="bg-demand-avg" style="color:${info.color}">${avg}</span>
-        <span class="stage-delta neu" style="font-size:.58rem;padding:.04rem .28rem">${step.label} demand</span>
+        <span class="bg-demand-need" style="color:${step.color};background:${step.bg};border-color:${step.color}55">${step.label}</span>
+        <div class="bg-demand-crew">
+          <div class="bg-demand-bar"><div class="bg-demand-bar-fill" style="width:${barPct}%;background:${info.color}"></div></div>
+          <span class="bg-demand-avg" style="color:${info.color}">${avg}</span>
+        </div>
+        <span class="bg-demand-verdict ${verdictCls}">${verdictTxt}</span>
       </div>`;
     }).join('');
 

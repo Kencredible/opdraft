@@ -1499,6 +1499,19 @@ const SYNERGIES=[
    group:'worst_gen', tier:3,
    bonus:{combat:16,haki:12,leadership:-6},
    desc:"The full Worst Generation — they didn't just survive the New World, they conquered it"},
+  // ── Germa 66 ─────────────────────────────────────────────────────────────
+  {id:'germa_advance',
+   icon:'⚡', name:'Germa 66',
+   required:['Judge'], anyOf:['Reiju','Ichiji','Niji','Yonji'], minAnyOf:2,
+   group:'germa', tier:1,
+   bonus:{combat:10,leadership:12,strategy:8},
+   desc:"Germa's genetic warriors march — Judge's command and his children's Raid Suits make them an unstoppable military force"},
+  {id:'germa_full',
+   icon:'⚡', name:'Germa 66 Full Assembly',
+   required:['Judge'], anyOf:['Reiju','Ichiji','Niji','Yonji'], minAnyOf:4,
+   group:'germa', tier:2,
+   bonus:{combat:16,leadership:16,strategy:12,support:8},
+   desc:"The entire Vinsmoke family united — when all five Raid Suits deploy together, no fortress can stand"},
 ];
 
 function getActiveSynergies(team){
@@ -1561,15 +1574,16 @@ function renderSynergies(pid,team,weights){
 
 // ═══ BOSSES — per-battleground antagonists (excluded from draft pool) ════════
 const BOSSES={
-  wano:        ['Kaido'],
-  marineford:  ['Akainu','Kizaru','Sengoku','Garp','Ace'],
-  enies_lobby: ['Lucci'],
-  whole_cake:  ['Big Mom','Katakuri'],
-  impel_down:  ['Magellan'],
-  dressrosa:   ['Doflamingo'],
-  sabaody:     ['Kizaru'],
-  skypiea:     ['Enel'],
-  alabasta:    ['Crocodile'],
+  wano:          ['Kaido'],
+  marineford:    ['Akainu','Kizaru','Sengoku','Garp','Ace'],
+  enies_lobby:   ['Lucci'],
+  whole_cake:    ['Big Mom','Katakuri'],
+  impel_down:    ['Magellan'],
+  dressrosa:     ['Doflamingo'],
+  sabaody:       ['Kizaru'],
+  skypiea:       ['Enel'],
+  alabasta:      ['Crocodile'],
+  thriller_bark: ['Moria'],
 };
 
 // For multi-boss battlegrounds, one boss is randomly chosen per session at draft start.
@@ -1639,6 +1653,11 @@ const BOSS_DEBUFFS={
     label:'The Grand Tactician',
     desc:"The Fleet Admiral's battlefield mastery — poor strategists and leaders are outclassed entirely",
     tests:[{stat:'strategy',required:65,severity:.38},{stat:'leadership',required:70,severity:.32}],
+  },
+  'Moria':{
+    label:'Shadow Sovereign',
+    desc:"His shadow army rises endlessly — only crews with sufficient Haki can strike his shadow constructs, and overwhelming combat power is needed to topple the zombie giant Oars",
+    tests:[{stat:'haki',required:58,severity:.45},{stat:'combat',required:65,severity:.38},{stat:'support',required:52,severity:.20}],
   },
 };
 
@@ -3791,6 +3810,7 @@ const SYNERGY_GROUPS=[
   {label:'🩸 Rival Crews',        ids:['kid_killer','law_bepo']},
   {label:'🐟 Fishmen',            ids:['fishman_core','fishman_contrast']},
   {label:'🌟 Worst Generation',   ids:['wg_3','wg_4','wg_5']},
+  {label:'🧬 Germa 66',           ids:['germa_advance','germa_full']},
 ];
 
 function renderGlossarySynergies(){

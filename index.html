@@ -1499,6 +1499,19 @@ const SYNERGIES=[
    group:'worst_gen', tier:3,
    bonus:{combat:16,haki:12,leadership:-6},
    desc:"The full Worst Generation — they didn't just survive the New World, they conquered it"},
+  // ── CP9 / CP0 ────────────────────────────────────────────────────────────
+  {id:'cp9_unit',
+   icon:'🕵️', name:'CP9 Assassination Unit',
+   required:['Lucci'], anyOf:['Kaku','Jabra','Blueno','Kumadori','Fukurou','Kalifa'], minAnyOf:2,
+   group:'cp9', tier:1,
+   bonus:{combat:12,strategy:10,navigation:6},
+   desc:"Rokushiki masters operating in the shadows — Lucci leads and his agents strike from every angle"},
+  {id:'cp9_full',
+   icon:'🕵️', name:'CP9 Full Force',
+   required:['Lucci'], anyOf:['Kaku','Jabra','Blueno','Kumadori','Fukurou','Kalifa'], minAnyOf:4,
+   group:'cp9', tier:2,
+   bonus:{combat:16,strategy:14,navigation:10,haki:6},
+   desc:"The complete CP9 roster deployed — each agent a weapon, every Rokushiki technique at its peak"},
   // ── Germa 66 ─────────────────────────────────────────────────────────────
   {id:'germa_advance',
    icon:'⚡', name:'Germa 66',
@@ -3810,6 +3823,7 @@ const SYNERGY_GROUPS=[
   {label:'🩸 Rival Crews',        ids:['kid_killer','law_bepo']},
   {label:'🐟 Fishmen',            ids:['fishman_core','fishman_contrast']},
   {label:'🌟 Worst Generation',   ids:['wg_3','wg_4','wg_5']},
+  {label:'🕵️ CP9 / CP0',           ids:['cp9_unit','cp9_full']},
   {label:'🧬 Germa 66',           ids:['germa_advance','germa_full']},
 ];
 

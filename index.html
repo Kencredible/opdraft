@@ -172,13 +172,42 @@
     .chip-budget{background:rgba(201,162,39,.15);color:var(--gold);border:1px solid rgba(201,162,39,.3)}
     .chip-unlimited{background:rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.25)}
 
+    /* Team palette — p1=blue, p2=red, p3=green, p4=purple */
+    :root{--p3:#22c55e;--p3-dim:rgba(34,197,94,.15);--p4:#a78bfa;--p4-dim:rgba(167,139,250,.15)}
+    body.light{--p3:#16a34a;--p3-dim:rgba(22,163,74,.1);--p4:#7c3aed;--p4-dim:rgba(124,58,237,.1)}
+    /* AI count step */
+    .ai-count-btn{display:flex;flex-direction:column;align-items:center;gap:.15rem;min-width:90px}
+    .ai-count-sub{font-size:.6rem;opacity:.7;font-weight:400;letter-spacing:.02em}
     .draft-wrap{flex:1;display:flex;width:100%;max-width:1080px;overflow:hidden}
     .draft-grid{display:grid;grid-template-columns:195px 1fr 195px;width:100%;overflow:hidden}
-    .side-panel{display:flex;flex-direction:column;padding:.65rem;background:#0b1220;overflow-y:auto}
-    .side-p1{border-right:1px solid var(--border)}.side-p2{border-left:1px solid var(--border)}
+    /* For 3+ players the right column widens slightly */
+    .draft-grid.multi-ai{grid-template-columns:195px 1fr 210px}
+    .draft-side{display:flex;flex-direction:column;overflow:hidden}
+    .draft-side-left{border-right:1px solid var(--border)}
+    .draft-side-right{border-left:1px solid var(--border)}
+    .side-panel{display:flex;flex-direction:column;padding:.65rem;background:#0b1220;overflow-y:auto;flex:1}
+    /* When multiple AI panels stacked on right, each shrinks */
+    .multi-ai .draft-side-right .side-panel{flex:1;min-height:0;border-top:1px solid var(--border)}
+    .multi-ai .draft-side-right .side-panel:first-child{border-top:none}
+    /* 4-player watch bar — AI 2 & AI 3 horizontal strip above char grid */
+    .ai-watch-bar{display:none;flex-direction:row;gap:.55rem;padding:.45rem .65rem;border-bottom:1px solid var(--border);background:#0b1220}
+    .ai-watch-bar.active{display:flex}
+    .ai-watch-panel{flex:1;min-width:0;display:flex;flex-direction:column;gap:.25rem;padding:.3rem .45rem;background:var(--bg-card);border-radius:8px;border:1px solid var(--border)}
+    .awp-hdr{display:flex;justify-content:space-between;align-items:center;padding:.18rem .45rem;border-radius:5px;font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;margin-bottom:.1rem}
+    /* Horizontal pick slots in watch bar */
+    .awp-picks.pick-slots{flex-direction:row;gap:.25rem;flex-wrap:nowrap}
+    .awp-picks .pick-slot{flex:1;min-width:0;min-height:36px;padding:.18rem .25rem;gap:.28rem}
+    .awp-picks .pick-slot .slot-role,.awp-picks .pick-slot .slot-pwr{display:none}
+    .awp-picks .pick-slot .slot-name{font-size:.6rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .awp-picks .slot-img{width:28px;height:28px;flex-shrink:0}
+    /* Compact synergy chips in watch bar */
+    .awp-synergies .syn-section-label,.awp-synergies .syn-group-hdr{display:none}
+    .awp-synergies{margin-top:.1rem}
     .panel-hdr{display:flex;justify-content:space-between;align-items:center;padding:.4rem .65rem;border-radius:7px;margin-bottom:.5rem;font-family:'Cinzel',serif;font-size:.78rem}
     .p1-hdr{background:var(--p1-dim);border:1px solid var(--p1);color:var(--p1)}
     .p2-hdr{background:var(--p2-dim);border:1px solid var(--p2);color:var(--p2)}
+    .p3-hdr{background:var(--p3-dim);border:1px solid var(--p3);color:var(--p3)}
+    .p4-hdr{background:var(--p4-dim);border:1px solid var(--p4);color:var(--p4)}
     .panel-pwr{font-size:.68rem;opacity:.8}
     /* Budget bar in side panel */
     .budget-display{margin-bottom:.5rem;padding:.4rem .5rem;background:var(--bg-card);border-radius:6px;border:1px solid var(--border)}
@@ -188,11 +217,15 @@
     .budget-bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
     .p1-budget-fill{background:linear-gradient(90deg,var(--p1),#93c5fd)}
     .p2-budget-fill{background:linear-gradient(90deg,var(--p2),#fca5a5)}
+    .p3-budget-fill{background:linear-gradient(90deg,var(--p3),#86efac)}
+    .p4-budget-fill{background:linear-gradient(90deg,var(--p4),#c4b5fd)}
     .pick-slots{display:flex;flex-direction:column;gap:.4rem}
     .pick-slot{background:var(--bg-card);border:1px dashed var(--border);border-radius:8px;padding:.45rem .6rem;min-height:52px;display:flex;align-items:center;color:var(--muted);font-size:.7rem;gap:.45rem}
     .pick-slot.filled{border-style:solid;border-color:var(--border)}
     .pick-slot.filled.p1-pick{border-left:3px solid var(--p1)}
     .pick-slot.filled.p2-pick{border-left:3px solid var(--p2)}
+    .pick-slot.filled.p3-pick{border-left:3px solid var(--p3)}
+    .pick-slot.filled.p4-pick{border-left:3px solid var(--p4)}
     .slot-img{width:34px;height:34px;border-radius:5px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;font-family:'Cinzel',serif}
     .slot-img img{width:100%;height:100%;object-fit:cover;object-position:top center}
     .slot-info{display:flex;flex-direction:column;gap:.06rem;min-width:0}
@@ -228,6 +261,8 @@
     .char-card:hover{background:var(--bg-hover);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 14px rgba(201,162,39,.12)}
     .char-card.taken-p1{border-color:var(--p1);opacity:.28;pointer-events:none}
     .char-card.taken-p2{border-color:var(--p2);opacity:.28;pointer-events:none}
+    .char-card.taken-p3{border-color:var(--p3);opacity:.28;pointer-events:none}
+    .char-card.taken-p4{border-color:var(--p4);opacity:.28;pointer-events:none}
     .char-card.cant-afford{opacity:.38;cursor:not-allowed;border-color:rgba(239,68,68,.3)}
     .char-card.role-capped{opacity:.28;pointer-events:none;border-color:rgba(239,68,68,.18)}
     .badge-full{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
@@ -340,16 +375,18 @@
     /* ─── RESULTS ────────────────────────────────────── */
     .results-page{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;width:100%}
     .winner-banner{font-family:'Cinzel',serif;font-size:clamp(1rem,2.5vw,1.35rem);color:var(--gold);text-align:center;margin-bottom:1.1rem;padding:.65rem 2rem;background:var(--gold-dim);border:1px solid rgba(201,162,39,.3);border-radius:10px;opacity:0;transition:opacity .6s ease}
-    .results-panels{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;width:100%;max-width:940px;margin-bottom:1.5rem}
+    .results-panels{display:flex;flex-wrap:wrap;gap:1.1rem;width:100%;max-width:1200px;margin-bottom:1.5rem;justify-content:center}
+    .result-panel{flex:1;min-width:260px;max-width:420px}
     .result-panel{background:var(--bg-card);border:2px solid var(--border);border-radius:12px;padding:1.1rem}
-    .result-panel.is-winner{border-color:var(--gold);box-shadow:0 0 24px rgba(201,162,39,.15)}
+    .result-panel{transition:border-color .5s ease,box-shadow .5s ease}
+    .result-panel.is-winner{border-color:var(--gold);box-shadow:0 0 28px rgba(201,162,39,.22)}
     .rp-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.65rem}
     .rp-player{font-family:'Cinzel',serif;font-size:.9rem}
     .rp-score{font-family:'Cinzel',serif;font-size:2rem;font-weight:700}
     .rp-sub{font-size:.7rem;color:var(--muted);margin-bottom:.6rem}
     .rp-bar-wrap{height:9px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:.9rem}
     .rp-bar-fill{height:100%;border-radius:5px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
-    .fill-p1{background:linear-gradient(90deg,var(--p1),#60a5fa)}.fill-p2{background:linear-gradient(90deg,var(--p2),#f87171)}
+    .fill-p1{background:linear-gradient(90deg,var(--p1),#60a5fa)}.fill-p2{background:linear-gradient(90deg,var(--p2),#f87171)}.fill-p3{background:linear-gradient(90deg,var(--p3),#86efac)}.fill-p4{background:linear-gradient(90deg,var(--p4),#c4b5fd)}
     .rp-chars{display:flex;flex-direction:column;gap:.32rem}
     .rp-char{display:flex;align-items:center;gap:.5rem;padding:.32rem .5rem;background:rgba(255,255,255,.03);border-radius:6px}
     .rp-char-img{width:28px;height:28px;border-radius:4px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.48rem;font-weight:700;font-family:'Cinzel',serif}
@@ -431,6 +468,21 @@
     .boss-stat-verdict{font-size:.6rem;font-weight:700;padding:.05rem .28rem;border-radius:3px;white-space:nowrap;flex-shrink:0}
     .boss-stat-verdict.exploited{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.28)}
     .boss-stat-verdict.matched{background:rgba(52,211,153,.1);color:#6ee7b7;border:1px solid rgba(52,211,153,.22)}
+    /* MVP Stage */
+    .stage-mvp{border:1px solid rgba(201,162,39,.45);background:rgba(201,162,39,.06);border-radius:10px;padding:.75rem .85rem;display:flex;flex-direction:column;gap:.45rem}
+    .mvp-hdr{display:flex;align-items:center;gap:.55rem}
+    .mvp-icon{font-size:1.5rem;flex-shrink:0;filter:drop-shadow(0 0 6px rgba(201,162,39,.5))}
+    .mvp-title{display:flex;flex-direction:column;gap:.1rem}
+    .mvp-eyebrow{font-size:.52rem;text-transform:uppercase;letter-spacing:.14em;color:var(--gold);font-weight:700}
+    .mvp-name{font-family:'Cinzel',serif;font-size:.95rem;color:var(--gold-light);font-weight:700}
+    .mvp-effect-label{font-size:.7rem;font-weight:700;color:var(--text);margin-top:.05rem}
+    .mvp-effect-desc{font-size:.65rem;color:var(--muted);line-height:1.55;font-style:italic}
+    .mvp-delta-row{display:flex;align-items:center;gap:.5rem;margin-top:.1rem}
+    .mvp-delta-badge{font-size:.72rem;font-weight:700;padding:.12rem .45rem;border-radius:5px;background:rgba(201,162,39,.18);color:var(--gold-light);border:1px solid rgba(201,162,39,.4)}
+    .mvp-delta-label{font-size:.62rem;color:var(--muted)}
+    /* MVP character highlight in Stage 1 char list */
+    .rp-char.is-mvp{background:rgba(201,162,39,.09);border:1px solid rgba(201,162,39,.35);border-radius:8px;padding:.2rem .35rem .2rem .2rem;position:relative}
+    .rp-char.is-mvp::before{content:'⭐ MVP';position:absolute;top:-.55rem;left:.4rem;font-size:.5rem;font-weight:700;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;background:var(--bg-card);padding:0 .25rem}
     /* Verdict */
     .rp-verdict-wrap{margin-top:.9rem;padding:.8rem .9rem;background:rgba(201,162,39,.07);border:1px solid rgba(201,162,39,.28);border-radius:8px;opacity:0;transition:opacity .7s ease .1s}
     .rp-verdict-wrap.visible{opacity:1}
@@ -565,6 +617,8 @@
     .glos-syn-members-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
     .glos-syn-members{display:flex;flex-wrap:wrap;gap:.2rem}
     .glos-syn-member{font-size:.58rem;padding:.07rem .3rem;border-radius:4px;background:rgba(201,162,39,.08);color:var(--gold);border:1px solid rgba(201,162,39,.22)}
+    .glos-syn-member-any{background:rgba(96,165,250,.07);color:#60a5fa;border-color:rgba(96,165,250,.28)}
+    .glos-syn-tier-badge{font-size:.54rem;color:var(--muted);font-style:italic;margin-top:.1rem}
     .glos-syn-bonuses{display:flex;flex-wrap:wrap;gap:.2rem}
     .glos-syn-bonus{font-size:.6rem;padding:.08rem .32rem;border-radius:4px;font-weight:700}
     .glos-syn-bonus-pos{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.25)}
@@ -613,14 +667,99 @@
     /* ─── THEME TOGGLE ───────────────────────────────── */
     #theme-toggle{position:fixed;bottom:1rem;right:1rem;z-index:500;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg-card);color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.25)}
     #theme-toggle:hover{border-color:var(--gold);color:var(--gold)}
-    @media(max-width:820px){
-      .draft-grid{grid-template-columns:1fr}.side-panel{flex-direction:row;flex-wrap:wrap;border:none;border-bottom:1px solid var(--border)}
-      .pick-slots{flex-direction:row;flex:1}.pick-slot{min-width:70px}
-      .results-panels{grid-template-columns:1fr}.mode-cards{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}
+    /* Mobile tabs hidden by default; shown only via @media query */
+    .mobile-tabs{display:none}
+
+    /* ─── MOBILE PANEL OVERLAY (always in DOM, active class shows it) ─── */
+    .mobile-panel-overlay{display:none;position:fixed;inset:0;z-index:500;flex-direction:column;align-items:stretch}
+    .mobile-panel-overlay.active{display:flex}
+    .mpo-backdrop{position:absolute;inset:0;background:rgba(4,8,20,.82);backdrop-filter:blur(3px)}
+    .mpo-sheet{position:relative;z-index:1;display:flex;flex-direction:column;margin-top:auto;max-height:88vh;background:#0b1220;border-radius:16px 16px 0 0;overflow:hidden;border-top:2px solid var(--border);box-shadow:0 -8px 32px rgba(0,0,0,.5)}
+    .mpo-dragbar{width:40px;height:4px;background:var(--border);border-radius:2px;margin:.65rem auto .15rem;flex-shrink:0}
+    .mpo-header{display:flex;align-items:center;justify-content:space-between;padding:.45rem 1rem .35rem;flex-shrink:0;border-bottom:1px solid var(--border)}
+    .mpo-title{font-family:'Cinzel',serif;font-size:.92rem;font-weight:700;color:var(--gold)}
+    .mpo-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--bg-card);color:var(--muted);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,color .15s}
+    .mpo-close:hover{border-color:var(--gold);color:var(--gold)}
+    .mpo-body{overflow-y:auto;flex:1;padding:.65rem .85rem;-webkit-overflow-scrolling:touch}
+    /* Restore full panel style inside overlay */
+    .mpo-body .side-panel{flex:1;overflow:visible;background:transparent;padding:0;border:none}
+    .mpo-body .ai-watch-panel{flex:1;overflow:visible;background:transparent;padding:0;border:none;gap:.5rem}
+    .mpo-body .awp-picks.pick-slots{flex-direction:column!important}
+    .mpo-body .awp-picks .pick-slot{min-height:52px!important;padding:.45rem .6rem!important}
+    .mpo-body .awp-picks .pick-slot .slot-role,.mpo-body .awp-picks .pick-slot .slot-pwr{display:flex!important}
+    .mpo-body .awp-picks .pick-slot .slot-name{font-size:.7rem!important;white-space:normal!important;max-width:none!important;overflow:visible!important}
+    .mpo-body .awp-picks .slot-img{width:34px!important;height:34px!important}
+    .mpo-body .awp-synergies .syn-section-label,.mpo-body .awp-synergies .syn-group-hdr{display:flex!important}
+    .mpo-body .crew-manifest{display:none}
+
+    /* ─── MOBILE RESPONSIVE (≤ 767px) ─── */
+    @media(max-width:767px){
+      /* === HOME === */
+      .home-content{padding:1.25rem 1rem;gap:.55rem}
+      .home-title{font-size:1.5rem}
+      .page-sub{font-size:.76rem}
+      .mode-cards{grid-template-columns:1fr!important;gap:.6rem}
+      .scenario-grid{grid-template-columns:1fr 1fr!important;gap:.6rem}
+      .scenario-card{padding:.7rem .85rem}
+
+      /* === SCENARIO INFO BAR === */
+      .dsb-banner{display:none!important}
+      .dsb-content{padding:.35rem .65rem}
+      .dsb-name{font-size:.8rem}
+      .dsb-stats{grid-template-columns:repeat(2,1fr)!important}
+      .dsb-bosses{display:none}
+      .dsb-pool{display:none}
+
+      /* === DRAFT LAYOUT === */
+      .draft-wrap{height:auto;overflow:visible;max-width:100%}
+      .draft-grid{display:flex!important;flex-direction:column;overflow:visible}
+      .draft-side{display:none!important}
+      .draft-center{padding:.4rem;overflow:visible;min-width:0}
+      /* Watch bar replaced by mobile tabs on mobile */
+      .ai-watch-bar.active{display:none!important}
+      /* ai-left-panel also hidden (panel accessed via tabs) */
+      .ai-left-panel{display:none!important}
+
+      /* === MOBILE TABS STRIP === */
+      .mobile-tabs{display:flex!important;gap:.3rem;padding:.4rem .5rem;border-bottom:1px solid var(--border);background:#0b1220;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+      .mobile-tabs::-webkit-scrollbar{display:none}
+      .mobile-tab{flex:1;min-width:50px;padding:.3rem .35rem;border-radius:7px;border:1px solid var(--border);background:var(--bg-card);color:var(--muted);font-size:.7rem;font-family:'Cinzel',serif;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap;line-height:1.2;transition:all .15s}
+      .mobile-tab.mt-p1{background:var(--p1-dim);border-color:var(--p1);color:var(--p1)}
+      .mobile-tab.mt-p2{background:var(--p2-dim);border-color:var(--p2);color:var(--p2)}
+      .mobile-tab.mt-p3{background:var(--p3-dim);border-color:var(--p3);color:var(--p3)}
+      .mobile-tab.mt-p4{background:var(--p4-dim);border-color:var(--p4);color:var(--p4)}
+      .mob-tab-name{display:block;font-size:.68rem}
+      .mob-tab-count{display:block;font-size:.56rem;opacity:.75;font-weight:400;font-family:'Open Sans',sans-serif;margin-top:.05rem}
+
+      /* === TURN BAR === */
+      .turn-bar{padding:.38rem .55rem;margin-bottom:.35rem}
+      .turn-text{font-size:.78rem}
+      .pick-num{font-size:.64rem}
+      .btn-danger{font-size:.72rem;padding:.3rem .65rem}
+
+      /* === SEARCH + FILTERS === */
+      #char-search{font-size:.78rem;padding:.32rem .55rem}
+      .filter-pills{gap:.22rem;flex-wrap:wrap}
+      .filter-pill{font-size:.62rem;padding:.2rem .42rem}
+
+      /* === CHARACTER GRID (3 columns) === */
+      .char-grid{grid-template-columns:repeat(3,1fr)!important;gap:.3rem!important;padding-right:0}
+      .char-card{border-radius:7px}
+      .char-name{font-size:.64rem}
+      .char-role-badge{font-size:.52rem}
+      .stat-bar-label{font-size:.57rem}
+      .char-stats-row{padding:.3rem .4rem .35rem}
+
+      /* === RESULTS === */
+      .results-panels{flex-direction:column!important}
+      .result-panel{min-width:unset!important;max-width:unset!important}
+
+      /* === GLOSSARY === */
       .glos-bg-layout{flex-direction:column}
       .glos-bg-sidenav{width:100%;max-height:none;position:relative;flex-direction:row;flex-wrap:wrap;gap:.25rem}
-      .glos-bg-nav-item{width:auto;flex:1;min-width:100px}
+      .glos-bg-nav-item{width:auto;flex:1;min-width:90px}
       .glos-recs{grid-template-columns:1fr 1fr}
+      .glos-chars{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))!important}
     }
   </style>
 </head>
@@ -646,6 +785,16 @@
       <div class="opp-buttons">
         <button class="btn btn-secondary" id="btn-vs-ai">⚔️ vs AI</button>
         <button class="btn btn-secondary" id="btn-vs-player">👥 vs Player</button>
+      </div>
+    </div>
+
+    <!-- Step 1b: AI Count (hidden until vs-AI chosen) -->
+    <div class="step-section" id="step-ai-count" style="display:none">
+      <p class="step-label">How many AI opponents?</p>
+      <div class="opp-buttons">
+        <button class="btn btn-secondary ai-count-btn" data-count="1">1 AI<span class="ai-count-sub">2 players · 20 pool</span></button>
+        <button class="btn btn-secondary ai-count-btn" data-count="2">2 AI<span class="ai-count-sub">3 players · 30 pool</span></button>
+        <button class="btn btn-secondary ai-count-btn" data-count="3">3 AI<span class="ai-count-sub">4 players · 36 pool</span></button>
       </div>
     </div>
 
@@ -725,20 +874,26 @@
     </div>
   </div>
   <div class="draft-wrap">
-    <div class="draft-grid">
-      <!-- P1 -->
-      <div class="side-panel side-p1">
-        <div class="panel-hdr p1-hdr"><span>Player 1</span><span class="panel-pwr" id="p1-power">— PWR</span></div>
-        <div class="budget-display" id="p1-budget-display" style="display:none">
-          <div class="budget-label"><span>💰 Berri Budget</span><strong id="p1-budget-left">5,000</strong></div>
-          <div class="budget-bar-wrap"><div class="budget-bar-fill p1-budget-fill" id="p1-budget-bar" style="width:100%"></div></div>
+    <div class="draft-grid" id="draft-grid">
+      <!-- Left side: Player 1 (always static) -->
+      <div class="draft-side draft-side-left" id="draft-left">
+        <div class="side-panel" id="p1-panel">
+          <div class="panel-hdr p1-hdr"><span>Player 1</span><span class="panel-pwr" id="p1-power">— PWR</span></div>
+          <div class="budget-display" id="p1-budget-display" style="display:none">
+            <div class="budget-label"><span>💰 Berri Budget</span><strong id="p1-budget-left">5,000</strong></div>
+            <div class="budget-bar-wrap"><div class="budget-bar-fill p1-budget-fill" id="p1-budget-bar" style="width:100%"></div></div>
+          </div>
+          <div class="crew-manifest" id="p1-manifest"></div>
+          <div id="p1-picks" class="pick-slots"></div>
+          <div id="p1-synergies"></div>
         </div>
-        <div class="crew-manifest" id="p1-manifest"></div>
-        <div id="p1-picks" class="pick-slots"></div>
-        <div id="p1-synergies"></div>
       </div>
       <!-- Center -->
       <div class="draft-center">
+        <!-- Mobile: player tab switcher (hidden on desktop) -->
+        <div id="mobile-tabs" class="mobile-tabs"></div>
+        <!-- Watch bar: AI 2 + AI 3 shown here in 4-player mode (desktop) -->
+        <div id="ai-watch-bar" class="ai-watch-bar"></div>
         <div class="turn-bar">
           <div class="turn-bar-left">
             <div class="turn-text" id="draft-turn-text">Loading...</div>
@@ -759,17 +914,8 @@
         </div>
         <div id="char-grid" class="char-grid"><div class="loading-msg">⚓ Loading crew manifest...</div></div>
       </div>
-      <!-- P2 -->
-      <div class="side-panel side-p2">
-        <div class="panel-hdr p2-hdr"><span id="p2-label">Player 2</span><span class="panel-pwr" id="p2-power">— PWR</span></div>
-        <div class="budget-display" id="p2-budget-display" style="display:none">
-          <div class="budget-label"><span>💰 Berri Budget</span><strong id="p2-budget-left">5,000</strong></div>
-          <div class="budget-bar-wrap"><div class="budget-bar-fill p2-budget-fill" id="p2-budget-bar" style="width:100%"></div></div>
-        </div>
-        <div class="crew-manifest" id="p2-manifest"></div>
-        <div id="p2-picks" class="pick-slots"></div>
-        <div id="p2-synergies"></div>
-      </div>
+      <!-- Right side: AI panels — injected by startDraft() -->
+      <div class="draft-side draft-side-right" id="draft-right"></div>
     </div>
   </div>
 </div>
@@ -1033,11 +1179,11 @@
 <script>
 // ═══ SCENARIOS ════════════════════════════════════════════════════════════════
 const SCENARIOS=[
-  {id:'marineford', arc:'Marineford Arc',          banner:'assets/Marineford.png',         name:'⚔️ Battle of Marineford', shortName:'Marineford',       desc:"Full-scale war between Marines and Whitebeard Pirates. Overwhelming numbers, Admiral-class enemies, fate of the world at stake.",             difficulty:'Extreme',difficultyMod:.72,weights:{combat:.38,strategy:.27,navigation:.25,haki:.10},tags:['Combat','War','Navigation']},
-  {id:'enies_lobby',arc:'Enies Lobby Arc',         banner:'assets/EniesLobby.png',         name:"🏛️ Siege of Enies Lobby",shortName:'Enies Lobby',      desc:"Infiltrate the World Government's judicial stronghold, defeat CP9, and rescue Robin before she's lost forever.",                            difficulty:'Hard',   difficultyMod:.84,weights:{combat:.42,strategy:.30,navigation:.18,haki:.10},tags:['Combat','Infiltration','Strategy']},
-  {id:'wano',       arc:'Wano Country Arc',        banner:'assets/Onigashima.png',         name:'🗡️ Onigashima Raid',      shortName:'Wano',             desc:"Storm Kaido's fortress and topple the strongest creature in the world. Haki mastery and raw power determine survival.",                     difficulty:'Extreme',difficultyMod:.68,weights:{combat:.44,strategy:.28,haki:.14,leadership:.08,navigation:.06},tags:['Combat','Haki','Raid']},
-  {id:'whole_cake', arc:'Whole Cake Island Arc',   banner:'assets/TottoLand.png',          name:'🎂 Totto Land Escape',    shortName:'Whole Cake Island',desc:"Navigate Big Mom's territory, survive her legendary crew, and escape while being hunted by a Yonko.",                                    difficulty:'Hard',   difficultyMod:.80,weights:{navigation:.30,strategy:.28,support:.18,haki:.12,combat:.12},tags:['Navigation','Strategy','Survival']},
-  {id:'impel_down', arc:'Impel Down Arc',          banner:'assets/ImpelDown.png',          name:'🔒 Impel Down Breakout',  shortName:'Impel Down',       desc:"Infiltrate the world's most impenetrable prison and escape from Level 6. Cunning and endurance above all.",                              difficulty:'Hard',   difficultyMod:.78,weights:{navigation:.42,strategy:.30,combat:.18,support:.10},tags:['Navigation','Infiltration','Strategy']},
+  {id:'marineford', arc:'Marineford Arc',          banner:'assets/Marineford.png',         name:'⚔️ Battle of Marineford', shortName:'Marineford',       desc:"Full-scale war between Marines and Whitebeard Pirates. Overwhelming numbers, Admiral-class enemies, fate of the world at stake.",             difficulty:'Extreme',difficultyMod:.72,weights:{combat:.50,leadership:.30,strategy:.15,support:.05},tags:['Combat','War','Navigation']},
+  {id:'enies_lobby',arc:'Enies Lobby Arc',         banner:'assets/EniesLobby.png',         name:"🏛️ Siege of Enies Lobby",shortName:'Enies Lobby',      desc:"Infiltrate the World Government's judicial stronghold, defeat CP9, and rescue Robin before she's lost forever.",                            difficulty:'Hard',   difficultyMod:.84,weights:{combat:.40,strategy:.32,leadership:.18,navigation:.12},tags:['Combat','Infiltration','Strategy']},
+  {id:'wano',       arc:'Wano Country Arc',        banner:'assets/Onigashima.png',         name:'🗡️ Onigashima Raid',      shortName:'Wano',             desc:"Storm Kaido's fortress and topple the strongest creature in the world. Haki mastery and raw power determine survival.",                     difficulty:'Extreme',difficultyMod:.68,weights:{combat:.58,leadership:.25,strategy:.17},tags:['Combat','Haki','Raid']},
+  {id:'whole_cake', arc:'Whole Cake Island Arc',   banner:'assets/TottoLand.png',          name:'🎂 Totto Land Escape',    shortName:'Whole Cake Island',desc:"Navigate Big Mom's territory, survive her legendary crew, and escape while being hunted by a Yonko.",                                    difficulty:'Hard',   difficultyMod:.80,weights:{strategy:.45,combat:.32,navigation:.23},tags:['Navigation','Strategy','Survival']},
+  {id:'impel_down', arc:'Impel Down Arc',          banner:'assets/ImpelDown.png',          name:'🔒 Impel Down Breakout',  shortName:'Impel Down',       desc:"Infiltrate the world's most impenetrable prison and escape from Level 6. Cunning and endurance above all.",                              difficulty:'Hard',   difficultyMod:.78,weights:{strategy:.40,combat:.35,support:.25},tags:['Navigation','Infiltration','Strategy']},
   {id:'dressrosa',  arc:'Dressrosa Arc',           banner:'assets/Dressrosa.png',          name:'🌹 Dressrosa Liberation', shortName:'Dressrosa',        desc:"Dismantle Doflamingo's empire across the island, managing multiple battles simultaneously and protecting civilians.",                    difficulty:'Hard',   difficultyMod:.82,weights:{strategy:.38,combat:.32,navigation:.18,leadership:.12},tags:['Strategy','Combat','Multi-front']},
   {id:'sabaody',    arc:'Sabaody Archipelago Arc', banner:'assets/SabaodyArchipelago.png', name:'⚡ Sabaody Escape',       shortName:'Sabaody',          desc:"Outmaneuver Admiral Kizaru and Pacifistas — escape before the entire crew is captured.",                                               difficulty:'Medium', difficultyMod:.88,weights:{navigation:.44,strategy:.30,leadership:.08,support:.08,combat:.10},tags:['Navigation','Escape','Strategy']},
   {id:'skypiea',    arc:'Skypiea Arc',             banner:'assets/Skypiea.png',            name:'☁️ Sky Island Conquest',  shortName:'Skypiea',          desc:"Explore the enigmatic sky island, uncover ancient mysteries, and face the self-proclaimed god Enel.",                                    difficulty:'Medium', difficultyMod:.90,weights:{strategy:.32,combat:.30,navigation:.28,haki:.10},tags:['Exploration','Combat','Strategy']},
@@ -1153,136 +1299,211 @@ function scenarioFitScore(c,sc){
 
 // Known Haoshoku (Conqueror's) Haki users — receive haki stat bonus
 const CONQUERORS=new Set([
-  'Luffy','Shanks','Kaido','Big Mom','Blackbeard',
-  'Boa Hancock','Mihawk','Zoro','Kid','Yamato','Katakuri',
+  'Luffy','Shanks','Kaido','Big Mom',
+  'Boa Hancock','Zoro','Kid','Yamato','Katakuri',
+  'Garp','Sengoku','Doflamingo','Ace',
 ]);
 
 // ═══ SYNERGIES ═══════════════════════════════════════════════════════════════
 // Each entry: members[] must ALL be on the same team to activate.
 // bonus{} values are additive stat deltas (0-100 scale, can be negative).
 // synergyDelta applied to final score = sum(bonus[k]*scenarioWeight[k]).
+// Flexible synergies use: required[] (must-have) + anyOf[] + minAnyOf (count threshold).
+// Tiered synergies share a group string — only the highest-tier match fires.
 const SYNERGIES=[
   // ── Straw Hat Synergies ──────────────────────────────────────────────────
-  {id:'monster_trio',        icon:'🔥', name:'Monster Trio',
+  {id:'monster_trio',
+   icon:'🔥', name:'Monster Trio',
    members:['Luffy','Zoro','Sanji'],
-   bonus:{combat:18,strategy:-10},
-   desc:'Unstoppable in battle, catastrophic in planning'},
-  {id:'straw_hat_core',      icon:'🏴‍☠️', name:'Straw Hat Spirit',
-   members:['Luffy','Nami','Usopp','Sanji','Zoro'],
-   bonus:{combat:10,leadership:12,navigation:8,strategy:-6},
-   desc:'The original five — raw heart over tactics'},
-  {id:'straw_hat_full',      icon:'⚓', name:'Grand Fleet Assembled',
-   members:['Luffy','Zoro','Sanji','Nami','Robin','Chopper','Franky','Brook','Usopp','Jinbe'],
-   bonus:{combat:12,leadership:15,navigation:15,strategy:6,support:10},
-   desc:'Every Straw Hat together — the crew at its absolute peak'},
-  {id:'navigator_duo',       icon:'🗺️', name:"Navigator's Bond",
+   bonus:{combat:18,strategy:-4,haki:6},
+   desc:'The three pillars of the Straw Hats — raw power without strategy'},
+  {id:'straw_hat_core',
+   icon:'🏴‍☠️', name:'Straw Hat Core',
+   required:['Luffy','Zoro','Sanji'], anyOf:['Nami','Usopp'], minAnyOf:1,
+   bonus:{combat:10,leadership:10,navigation:6},
+   desc:'Luffy leads, Zoro cuts, Sanji kicks — anchored by a navigator or sniper'},
+  {id:'straw_hat_crew',
+   icon:'⚓', name:'Straw Hat Crew',
+   required:['Luffy','Zoro','Sanji','Nami','Usopp'], anyOf:['Robin','Chopper','Franky','Brook','Jinbe'], minAnyOf:1,
+   bonus:{combat:12,leadership:12,navigation:12,strategy:6,support:6},
+   desc:'The full crew assembled — every role covered, morale through the roof'},
+  {id:'navigator_duo',
+   icon:'🗺️', name:'Intellectual Core',
    members:['Nami','Robin'],
-   bonus:{navigation:12,strategy:10,support:6},
-   desc:'The brains behind the crew — maps, history, and cunning'},
-  {id:'ship_doctors',        icon:'💊', name:'Ship Doctors',
+   bonus:{navigation:10,strategy:14,support:8},
+   desc:'The Navigator and the Archaeologist — knowledge, maps, and ancient secrets'},
+  {id:'ship_doctors',
+   icon:'💊', name:'Knowledge & Care',
    members:['Chopper','Robin'],
-   bonus:{support:15,strategy:8},
-   desc:"The Sunny's finest support duo — medicine and ancient knowledge"},
-  {id:'jinbe_luffy',         icon:'🌊', name:'Captain & Helmsman',
+   bonus:{support:14,strategy:10},
+   desc:'The historian and the doctor — support and strategy in equal measure'},
+  {id:'jinbe_luffy',
+   icon:'🌊', name:'Captain & Helmsman',
    members:['Luffy','Jinbe'],
-   bonus:{navigation:14,combat:8,leadership:10},
-   desc:'The captain and his helmsman — unbeatable at sea'},
-  {id:'zoro_mihawk',         icon:'⚔️', name:'Student & Grandmaster',
+   bonus:{navigation:16,combat:10,leadership:10},
+   desc:'The Straw Hat captain and his helmsman — the sea bends to their will'},
+  {id:'zoro_mihawk',
+   icon:'⚔️', name:'Student & Grandmaster',
    members:['Zoro','Mihawk'],
-   bonus:{combat:14,haki:12,strategy:6},
-   desc:"The world's greatest swordsman and his greatest challenger"},
-  {id:'sanji_nami',          icon:'🍽️', name:'Head Chef & Navigator',
+   bonus:{combat:16,haki:14,strategy:2},
+   desc:"The world's greatest swordsman and his eternal rival"},
+  {id:'sanji_nami',
+   icon:'🍽️', name:'Head Chef & Navigator',
    members:['Sanji','Nami'],
    bonus:{navigation:8,support:10,strategy:5},
-   desc:'When the cook and navigator work together, the ship runs perfectly'},
+   desc:'When the cook and navigator work in sync, the ship runs perfectly'},
   // ── Marine Synergies ─────────────────────────────────────────────────────
-  {id:'marine_legends',      icon:'🏛️', name:'Marine Legends',
+  {id:'marine_legends',
+   icon:'🏛️', name:'Marine Legends',
    members:['Garp','Sengoku'],
    bonus:{leadership:18,strategy:14,haki:8},
    desc:'The two greatest Marines of their era — unshakeable authority'},
-  {id:'smoker_tashigi',      icon:'🌫️', name:'G-5 Pursuit',
+  {id:'smoker_tashigi',
+   icon:'🌫️', name:'G-5 Pursuit',
    members:['Smoker','Tashigi'],
    bonus:{combat:8,strategy:10,leadership:6},
    desc:'A relentless duo — shared justice and tightly coordinated tactics'},
-  {id:'garp_koby',           icon:'🥊', name:"Hero's Legacy",
+  {id:'garp_koby',
+   icon:'🥊', name:"Hero's Legacy",
    members:['Garp','Koby'],
    bonus:{leadership:10,combat:8,haki:6},
    desc:'The fist-fighting hero passing the torch to the next generation'},
-  {id:'admiral_pair',        icon:'🌋', name:'Admiral Pressure',
+  {id:'admiral_conflict',
+   icon:'🌋', name:'Admiral Conflict',
    members:['Akainu','Aokiji'],
-   bonus:{combat:12,haki:10,strategy:8},
-   desc:'Fire and ice — the two admirals whose clash reshaped the world'},
-  {id:'triple_admiral',      icon:'🏅', name:'Three Admirals',
+   bonus:{combat:10,haki:10,strategy:-6,leadership:-8},
+   desc:'Fire and ice — two admirals whose clash reshaped the world, now at each other\'s throats'},
+  {id:'triple_admiral',
+   icon:'🏅', name:'Three Admirals',
    members:['Akainu','Kizaru','Fujitora'],
-   bonus:{combat:15,haki:12,leadership:10,strategy:8},
+   bonus:{combat:16,haki:14,leadership:10,strategy:10},
    desc:'The full might of Marine Admiral power unleashed'},
   // ── Alliance Synergies ───────────────────────────────────────────────────
-  {id:'flsmp_alliance',      icon:'🤝', name:'Pirate Alliance',
+  {id:'pirate_alliance',
+   icon:'🤝', name:'Pirate Alliance',
    members:['Luffy','Law'],
-   bonus:{strategy:12,combat:10,leadership:8},
+   bonus:{strategy:14,combat:10,leadership:8},
    desc:'Two captains, one shared goal — the alliance that toppled Dressrosa'},
-  {id:'shanks_beckman',      icon:'⭐', name:'Red-Haired Command',
+  {id:'shanks_beckman',
+   icon:'⭐', name:'Red-Haired Command',
    members:['Shanks','Benn Beckman'],
    bonus:{strategy:14,leadership:12,haki:8,combat:6},
    desc:"The emperor and his right hand — tactically untouchable"},
-  {id:'revolutionary_duo',   icon:'✊', name:'Revolutionary Flame',
+  {id:'revolutionary_duo',
+   icon:'✊', name:'Revolutionary Flame',
    members:['Dragon','Sabo'],
    bonus:{leadership:12,strategy:10,combat:8},
-   desc:"Father and son-in-arms — the revolution's finest"},
-  {id:'whitebeard_sons',     icon:'🐋', name:'Sons of Whitebeard',
+   desc:"Father and son-in-arms — the revolution's finest warriors"},
+  {id:'whitebeard_sons',
+   icon:'🐋', name:'Sons of Whitebeard',
    members:['Marco','Ace'],
-   bonus:{combat:12,leadership:10,support:8,haki:6},
-   desc:"Marco's healing and Ace's fire — the Whitebeard legacy lives on"},
-  {id:'shanks_luffy',        icon:'🎩', name:'Straw Hat Lineage',
+   bonus:{combat:12,support:12,leadership:8,haki:6},
+   desc:"Marco's rebirth and Ace's fire — the Whitebeard legacy lives on"},
+  {id:'shanks_luffy',
+   icon:'🎩', name:'Straw Hat Lineage',
    members:['Shanks','Luffy'],
    bonus:{haki:14,leadership:12,combat:10},
    desc:'The emperor who gave his arm, and the boy who inherited his will'},
-  // ── Villain / Faction Synergies ──────────────────────────────────────────
-  {id:'blackbeard_core',     icon:'💀', name:"Blackbeard's Ambition",
-   members:['Blackbeard','Van Augur','Jesus Burgess'],
-   bonus:{combat:10,strategy:8,haki:6},
-   desc:'The core of the crew that shook heaven itself at Marineford'},
-  {id:'blackbeard_full',     icon:'☠️', name:'Ten Titanic Captains',
-   members:['Blackbeard','Shiryu','Van Augur','Jesus Burgess','Lafitte','Catarina Devon'],
-   bonus:{combat:14,strategy:10,haki:8,navigation:6},
-   desc:"Blackbeard's full arsenal of stolen devil fruit powers"},
-  {id:'warlords_gambit',     icon:'🎭', name:"Warlords' Gambit",
+  // ── Blackbeard Crew ──────────────────────────────────────────────────────
+  {id:'blackbeard_command',
+   icon:'💀', name:'Blackbeard Command',
+   required:['Blackbeard'], anyOf:['Shiryu','Van Augur','Jesus Burgess','Lafitte','Catarina Devon'], minAnyOf:2,
+   group:'blackbeard', tier:1,
+   bonus:{combat:14,strategy:8,haki:10,leadership:-4},
+   desc:'Blackbeard anchored by his core crew — ambition backed by brute force'},
+  {id:'blackbeard_extended',
+   icon:'☠️', name:'Blackbeard Command (Extended)',
+   required:['Blackbeard'], anyOf:['Shiryu','Van Augur','Jesus Burgess','Lafitte','Catarina Devon'], minAnyOf:4,
+   group:'blackbeard', tier:2,
+   bonus:{combat:16,haki:12,leadership:-6},
+   desc:"The full roster of Titanic Captains — overwhelming and unruly"},
+  // ── Warlords / Criminals ─────────────────────────────────────────────────
+  {id:'warlords_gambit',
+   icon:'🎭', name:"Warlords' Gambit",
    members:['Doflamingo','Crocodile'],
-   bonus:{strategy:16,leadership:10,combat:-4},
+   bonus:{strategy:16,leadership:10,combat:2},
    desc:'Two former Warlords who never truly followed anyone — pure scheming'},
-  {id:'big_mom_vanguard',    icon:'🍬', name:"Big Mom's Sweet Vanguard",
+  // ── Yonko Crews ──────────────────────────────────────────────────────────
+  {id:'big_mom_vanguard',
+   icon:'🍬', name:"Big Mom's Vanguard",
    members:['Big Mom','Katakuri','Cracker'],
-   bonus:{combat:12,leadership:14,strategy:8},
-   desc:'The Empress and her two most powerful Sweet Commanders'},
-  {id:'kaido_king',          icon:'🐉', name:'King of Beasts',
+   bonus:{combat:14,leadership:14,strategy:8,haki:10},
+   desc:'The Empress and her two most fearsome Sweet Commanders'},
+  {id:'kaido_king',
+   icon:'🐉', name:'King of Beasts',
    members:['Kaido','King'],
-   bonus:{combat:14,haki:10,leadership:8,strategy:-6},
+   bonus:{combat:16,haki:12,leadership:8,strategy:-4},
    desc:'Raw, overwhelming power — subtlety not included'},
-  {id:'kid_killer',          icon:'🩸', name:'Massacre Duo',
+  // ── Rival Crews ──────────────────────────────────────────────────────────
+  {id:'kid_killer',
+   icon:'🩸', name:'Massacre Duo',
    members:['Kid','Killer'],
-   bonus:{combat:14,navigation:6,strategy:-8},
+   bonus:{combat:14,strategy:-8},
    desc:'No plan, just destruction — savagery and precision in equal measure'},
-  {id:'law_bepo',            icon:'🐻', name:'Heart Pirates Core',
+  {id:'law_bepo',
+   icon:'🐻', name:'Heart Pirates Core',
    members:['Law','Bepo'],
-   bonus:{navigation:10,strategy:8,support:8},
+   bonus:{navigation:10,strategy:6,support:10},
    desc:'The surgeon and his loyal navigator — a crew built on trust'},
-  {id:'cross_guild',         icon:'💰', name:"Cross Guild's Council",
-   members:['Mihawk','Crocodile','Buggy'],
-   bonus:{combat:8,strategy:14,leadership:6,navigation:4},
-   desc:'An unlikely alliance of legends — cunning and experience over chaos'},
-  {id:'sea_dominance',       icon:'🐟', name:'Fishman Tide',
+  // ── Fishmen ──────────────────────────────────────────────────────────────
+  {id:'fishman_contrast',
+   icon:'🐟', name:'Fishman Contrast',
    members:['Jinbe','Arlong'],
-   bonus:{navigation:16,combat:8,strategy:-6},
-   desc:'Two fishman captains — absolute masters of the sea, bitter rivals on land'},
-  {id:'supernovas',          icon:'🌟', name:'Worst Generation',
-   members:['Luffy','Zoro','Kid','Killer','Law'],
-   bonus:{combat:12,haki:10,strategy:6,leadership:8},
-   desc:"The Worst Generation's finest — they reshaped the New World"},
+   group:'fishman', tier:2,
+   bonus:{navigation:14,combat:10,strategy:-8,leadership:-6},
+   desc:'Two fishman captains — undeniable sea supremacy, clashing loyalties'},
+  {id:'fishman_core',
+   icon:'🌊', name:'Fishman Core',
+   required:['Jinbe'], anyOf:['Arlong','Hody Jones'], minAnyOf:1,
+   group:'fishman', tier:1,
+   bonus:{navigation:12,combat:8,support:6},
+   desc:"Jinbe's wisdom anchors any fishman — the sea obeys"},
+  // ── Worst Generation (Scaling) ───────────────────────────────────────────
+  {id:'wg_3',
+   icon:'🌟', name:'Worst Generation (3)',
+   anyOf:['Luffy','Zoro','Kid','Killer','Law'], minAnyOf:3,
+   group:'worst_gen', tier:1,
+   bonus:{combat:12,haki:8,strategy:2,leadership:-4},
+   desc:"Three of the New World's most dangerous rookies — unstoppable momentum"},
+  {id:'wg_4',
+   icon:'🌟', name:'Worst Generation (4)',
+   anyOf:['Luffy','Zoro','Kid','Killer','Law'], minAnyOf:4,
+   group:'worst_gen', tier:2,
+   bonus:{combat:14,haki:10},
+   desc:'Four pillars of the Worst Generation — the sea shakes beneath them'},
+  {id:'wg_5',
+   icon:'🌟', name:'Worst Generation (5)',
+   anyOf:['Luffy','Zoro','Kid','Killer','Law'], minAnyOf:5,
+   group:'worst_gen', tier:3,
+   bonus:{combat:16,haki:12,leadership:-6},
+   desc:"The full Worst Generation — they didn't just survive the New World, they conquered it"},
 ];
 
 function getActiveSynergies(team){
   const names=new Set(team.map(c=>c.name));
-  return SYNERGIES.filter(s=>s.members.every(m=>names.has(m)));
+  const matches=SYNERGIES.filter(s=>{
+    // Classic format: all members required
+    if(s.members&&!s.required&&!s.anyOf){
+      return s.members.every(m=>names.has(m));
+    }
+    // Flexible format: required[] must all be present + anyOf[] needs minAnyOf matches
+    const reqOk=!s.required||s.required.every(m=>names.has(m));
+    if(!reqOk)return false;
+    const pool=s.anyOf||[];
+    if(pool.length===0)return true; // no anyOf constraint
+    const count=pool.filter(m=>names.has(m)).length;
+    const min=s.minAnyOf||pool.length;
+    return count>=min;
+  });
+  // For tiered groups, keep only the highest matching tier
+  const groupSeen=new Set();
+  const result=[];
+  const sorted=[...matches].sort((a,b)=>(b.tier||0)-(a.tier||0));
+  for(const s of sorted){
+    if(s.group){if(groupSeen.has(s.group))continue;groupSeen.add(s.group);}
+    result.push(s);
+  }
+  return result;
 }
 
 // Compute flat %-point delta a set of synergies adds to a scenario score.
@@ -1407,14 +1628,18 @@ function getScenarioBossData(sc){
 }
 
 // Team-aware boss modifier. Pass null team for generic threat-level estimate.
-function computeBossMod(sc,team){
+// skipBossNames: optional Set of boss names whose debuff tests are fully ignored (MVP effect).
+// skipStats: optional Set of stat keys whose debuff tests are ignored across all bosses (MVP effect).
+function computeBossMod(sc,team,{skipBossNames=null,skipStats=null}={}){
   const bosses=getScenarioBossData(sc);
   if(!bosses.length)return 1.0;
   let totalMod=1.0;
   for(const boss of bosses){
+    if(skipBossNames&&skipBossNames.has(boss.name))continue;
     const debuff=BOSS_DEBUFFS[boss.name];
     if(debuff&&team&&team.length){
       for(const{stat,required,severity}of debuff.tests){
+        if(skipStats&&skipStats.has(stat))continue;
         const avg=team.reduce((s,c)=>s+(c.stats[stat]||0),0)/team.length;
         if(avg<required){
           const gap=(required-avg)/required; // 0→1
@@ -1663,7 +1888,7 @@ function scoreTeam(team,sc){
   const lb=hasLeader?1.06:1;
   const fruits=team.filter(c=>c.stats.hasFruit).length;
   const fb=fruits>=4?1.08:fruits>=3?1.05:fruits>=2?1.02:1;
-  const crewBonus=team.length>=6?1:team.length>=5?.97:team.length>=4?.93:team.length>=3?.88:team.length>=2?.80:.65;
+  const crewBonus=1; // No small-crew penalty — crew size is fixed by game mode
   const conquerors=team.filter(c=>CONQUERORS.has(c.name)).length;
   const avgHaki=team.reduce((s,c)=>s+c.stats.haki,0)/team.length;
   const hakiMult=conquerors>=3?1.10:conquerors>=2?1.07:conquerors>=1?1.04:avgHaki>=70?1.02:1;
@@ -1682,6 +1907,74 @@ function scoreTeam(team,sc){
   const rs=breakdown.reduce((s,b)=>s+b.raw,0)||1;
   const scaledBreakdown=breakdown.map(b=>({character:b.character,score:Math.round((b.raw/rs)*crewScore)})).sort((a,b)=>b.score-a.score);
   return{percentage,crewScore,afterBonuses,afterDifficulty,breakdown:scaledBreakdown,bonuses:{diversity:Math.round((div-1)*100),leader:hasLeader?6:0,fruit:Math.round((fb-1)*100),crew:Math.round((crewBonus-1)*100),haki:Math.round((hakiMult-1)*100)},synergies:activeSynergies,difficultyMod,mismatchPenalty,bossMod,bossNames,bossDebuffs};
+}
+
+// ═══ SCENARIO MVPs ═══════════════════════════════════════════════════════════
+// Each entry defines a scenario-specific MVP that unlocks when its trigger
+// characters are both present on the same team. Only fires once per team.
+const SCENARIO_MVPS={
+  marineford:{
+    mvpName:'Mr. 3',
+    charName:'Mr 3',
+    trigger:['Mr 3','Luffy'],
+    icon:'🕯️',
+    effectLabel:'Seastone Candle — Execution Bypass',
+    effectDesc:"Mr. 3's wax seals the seastone shackles shut — the execution platform crumbles. Haki-based boss penalties are negated.",
+    // Returns the flat percentage-point delta to add to the final score
+    computeDelta(team,sc,result){
+      // Recalculate bossMod ignoring all haki-based debuff tests
+      const modWithoutHaki=computeBossMod(sc,team,{skipStats:new Set(['haki'])});
+      const recoveredPts=Math.round(result.afterDifficulty*modWithoutHaki)-Math.round(result.afterDifficulty*result.bossMod);
+      const flatBonus=5;
+      return Math.max(flatBonus,recoveredPts+flatBonus);
+    }
+  },
+  enies_lobby:{
+    mvpName:'Usopp',
+    charName:'Usopp',
+    trigger:['Usopp','Franky'],
+    icon:'🎯',
+    effectLabel:"Sogeking Protocol — Tactical Precision",
+    effectDesc:"Sogeking's shot sparks the revolution. 20% of team combat is reallocated as strategy, then +6 flat strategy applied.",
+    computeDelta(team,sc,result){
+      const avgCombat=team.reduce((s,c)=>s+(c.stats.combat||0),0)/team.length;
+      const stratW=sc.weights.strategy||0;
+      const combatW=sc.weights.combat||0;
+      // Combat → Strategy reallocation net raw delta (per crew-avg unit)
+      const rawDelta=(0.20*avgCombat*(stratW-combatW))+(6*stratW);
+      // Project from crewScore space through to percentage space
+      const scaleFactor=result.percentage/Math.max(1,result.crewScore);
+      return Math.max(2,Math.round(rawDelta*scaleFactor));
+    }
+  },
+  impel_down:{
+    mvpName:'Bentham',
+    charName:'Mr 2',
+    trigger:['Mr 2','Luffy'],
+    icon:'💃',
+    effectLabel:"Okama Way — Prison Break",
+    effectDesc:"Bentham holds every gate open and takes every guard on himself. Magellan's escape penalties are negated. +10 effective support.",
+    computeDelta(team,sc,result){
+      // Recover Magellan's boss penalty by recomputing without him
+      const modWithoutMagellan=computeBossMod(sc,team,{skipBossNames:new Set(['Magellan'])});
+      const recoveredPts=Math.round(result.afterDifficulty*modWithoutMagellan)-Math.round(result.afterDifficulty*result.bossMod);
+      // +10 support projected into percentage space
+      const supportW=sc.weights.support||0;
+      const supportPts=Math.round(10*supportW*(result.percentage/Math.max(1,result.crewScore)));
+      return Math.max(1,Math.round(recoveredPts+supportPts));
+    }
+  },
+};
+
+// Returns {mvp, delta, newPercentage} if MVP is triggered for team+scenario, else null
+function getMvpBonus(team,sc,result){
+  const entry=SCENARIO_MVPS[sc.id];
+  if(!entry)return null;
+  const names=new Set(team.map(c=>c.name));
+  if(!entry.trigger.every(n=>names.has(n)))return null;
+  const delta=entry.computeDelta(team,sc,result);
+  const newPercentage=Math.min(99,Math.max(3,result.percentage+delta));
+  return{mvp:entry,delta:newPercentage-result.percentage,newPercentage};
 }
 
 // ═══ POOL GENERATOR ══════════════════════════════════════════════════════════
@@ -1778,18 +2071,33 @@ async function fetchCharacters(){
 // ═══ DRAFT STATE ══════════════════════════════════════════════════════════════
 // coinTossWinner: 0 = P1 goes first, 1 = P2 goes first (set by coin toss screen)
 let coinTossWinner=0;
-const SNAKE_BASE=[0,1,1,0,0,1,1,0,0,1,1,0];
+// Picks per player by count: 2p→6, 3p→4, 4p→5
+function picksPerPlayer(){return numPlayers>=4?5:numPlayers===3?4:6;}
+
+// Builds a snake draft order for n players. One round = forward + backward = 2n picks.
+function buildSnakeOrder(n){
+  const forward=Array.from({length:n},(_,i)=>i);
+  const backward=[...forward].reverse();
+  const round=[...forward,...backward]; // 2n picks per round
+  const total=n*picksPerPlayer();
+  const result=[];
+  while(result.length<total)result.push(...round.slice(0,total-result.length));
+  return result;
+}
 function getSnakeOrder(){
-  // Flip all slots when P2 won the toss
-  return coinTossWinner===0?SNAKE_BASE:SNAKE_BASE.map(p=>1-p);
+  const base=buildSnakeOrder(numPlayers);
+  // Rotate all player slots so coinTossWinner gets pick 1
+  if(coinTossWinner===0)return base;
+  return base.map(p=>(p+coinTossWinner)%numPlayers);
 }
 
 function createDraft(mode){
-  return{mode,teams:[[],[]],pickedIds:new Set(),
-    // unlimited fields
+  const teams=Array.from({length:numPlayers},()=>[]);
+  const budgets=Array.from({length:numPlayers},()=>BUDGET_AMOUNT);
+  const done=Array.from({length:numPlayers},()=>false);
+  return{mode,teams,pickedIds:new Set(),
     pickIndex:0,
-    // budget fields
-    budgets:[BUDGET_AMOUNT,BUDGET_AMOUNT],done:[false,false],currentPlayer:coinTossWinner,
+    budgets,done,currentPlayer:coinTossWinner,
     complete:false};
 }
 
@@ -1805,12 +2113,12 @@ function draftCanAfford(d,char,pid){
 function draftPick(d,char,pid,pool){
   if(d.complete||draftCurrentPlayer(d)!==pid||d.pickedIds.has(char.id))return false;
   if(d.mode==='budget'){
-    if(!draftCanAfford(d,char,pid)||d.teams[pid].length>=6)return false;
+    if(!draftCanAfford(d,char,pid)||d.teams[pid].length>=picksPerPlayer())return false;
     d.teams[pid].push(char);d.pickedIds.add(char.id);d.budgets[pid]-=getCharCost(char);
     budgetAdvanceTurn(d,pool);
   }else{
     d.teams[pid].push(char);d.pickedIds.add(char.id);d.pickIndex++;
-    if(d.pickIndex>=SNAKE_BASE.length)d.complete=true;
+    if(d.pickIndex>=getSnakeOrder().length)d.complete=true;
   }
   return true;
 }
@@ -1822,16 +2130,21 @@ function draftPass(d,pid,pool){
 
 function canStillPick(d,pool,pid){
   if(d.done[pid])return false;
-  if(d.teams[pid].length>=6){d.done[pid]=true;return false}
+  if(d.teams[pid].length>=picksPerPlayer()){d.done[pid]=true;return false}
   const available=pool.some(c=>!d.pickedIds.has(c.id)&&d.budgets[pid]>=getCharCost(c));
   if(!available){d.done[pid]=true;return false}
   return true;
 }
 
 function budgetAdvanceTurn(d,pool){
-  const other=1-d.currentPlayer;
-  if(canStillPick(d,pool,other)){d.currentPlayer=other;return}
-  if(canStillPick(d,pool,d.currentPlayer))return; // stay
+  const n=numPlayers;
+  // Cycle forward through the other players looking for one who can still pick
+  for(let offset=1;offset<n;offset++){
+    const next=(d.currentPlayer+offset)%n;
+    if(canStillPick(d,pool,next)){d.currentPlayer=next;return;}
+  }
+  // No one else can; check if current player can still go
+  if(canStillPick(d,pool,d.currentPlayer))return;
   d.complete=true;
 }
 
@@ -1839,8 +2152,8 @@ function draftTeamPower(d,p){const t=d.teams[p];return t.length?Math.round(t.red
 function draftBudgetSpent(d,p){return BUDGET_AMOUNT-d.budgets[p]}
 
 // ═══ AI ═══════════════════════════════════════════════════════════════════════
-function aiPick(pool,draft,sc){
-  const pid=1,budget=draft.mode==='budget'?draft.budgets[pid]:Infinity;
+function aiPick(pool,draft,sc,pid=1){
+  const budget=draft.mode==='budget'?draft.budgets[pid]:Infinity;
   const avail=pool.filter(c=>
     !draft.pickedIds.has(c.id)&&
     (draft.mode!=='budget'||getCharCost(c)<=budget)
@@ -1964,7 +2277,7 @@ function avatarHtml(char,w,h,isSlot){
 }
 
 // ═══ UI ══════════════════════════════════════════════════════════════════════
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function showScreen(id){if(typeof closeMobilePanel==='function')closeMobilePanel(false);document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
 function fmtBounty(n){if(n>=1e9)return(n/1e9).toFixed(2).replace(/\.?0+$/,'')+'B';if(n>=1e6)return(n/1e6).toFixed(0)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return n>0?String(n):null}
 const BADGE_CLASS={emperor:'badge-emperor',captain:'badge-captain',marine:'badge-marine',revolutionary:'badge-revolutionary',swordsman:'badge-swordsman'};
 function roleBadge(r){return`<span class="cc-badge ${BADGE_CLASS[r]||'badge-default'}">${r.charAt(0).toUpperCase()+r.slice(1)}</span>`}
@@ -2020,8 +2333,10 @@ function renderCrewManifest(pid,team){
 }
 
 function renderPickSlots(pid,team,budgetMode,budget){
-  const el=document.getElementById(`p${pid+1}-picks`);el.innerHTML='';const cls=pid===0?'p1-pick':'p2-pick';
-  for(let i=0;i<6;i++){
+  const el=document.getElementById(`p${pid+1}-picks`);if(!el)return;el.innerHTML='';
+  const cls=(PLAYER_CONFIG[pid]?.cls||`p${pid+1}`)+'-pick';
+  const maxSlots=picksPerPlayer();
+  for(let i=0;i<maxSlots;i++){
     const c=team[i],slot=document.createElement('div');
     if(c){
       slot.className=`pick-slot filled ${cls}`;
@@ -2042,6 +2357,8 @@ function renderPickSlots(pid,team,budgetMode,budget){
       document.getElementById(`p${pid+1}-budget-bar`).style.width=pct+'%';
     }
   }
+  // Update mobile tab pick counts
+  if(typeof renderMobileTabs==='function')renderMobileTabs();
 }
 
 function renderCharGrid(pool,draft,onPick,budgetMode){
@@ -2105,8 +2422,7 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
   const cantAfford=budgetMode&&humanBudget!==null&&humanBudget<cost&&tb===null;
   const card=document.createElement('div');
   let cls='char-card';
-  if(tb===0)cls+=' taken-p1';
-  else if(tb===1)cls+=' taken-p2';
+  if(tb!==null)cls+=` taken-p${tb+1}`;
   else if(cantAfford)cls+=' cant-afford';
   card.className=cls;
   const bf=fmtBounty(c.stats.bounty);
@@ -2140,7 +2456,7 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
   grid.appendChild(card);
 }
 
-function pickedBy(d,id){for(let p=0;p<2;p++)if(d.teams[p].some(c=>c.id===id))return p;return null}
+function pickedBy(d,id){for(let p=0;p<d.teams.length;p++)if(d.teams[p].some(c=>c.id===id))return p;return null}
 
 // ─── Character detail overlay ─────────────────────────────────────────────────
 const CD_STATS=[
@@ -2159,6 +2475,12 @@ const TIER_CHIP_STYLE={
   'C' :'color:#6b7fa0;border-color:rgba(107,127,160,.3);background:rgba(107,127,160,.08)',
 };
 
+// Returns all character names involved in a synergy (members OR required+anyOf combined)
+function allSynMembers(s){
+  if(s.members)return s.members;
+  return [...(s.required||[]),...(s.anyOf||[])];
+}
+
 function getSuggestedPartners(c){
   if(!draft||!allChars.length)return[];
   const myName=c.name;
@@ -2169,8 +2491,9 @@ function getSuggestedPartners(c){
 
   const seen=new Map(); // partnerName → best entry
   for(const syn of SYNERGIES){
-    if(!syn.members.includes(myName))continue;
-    for(const partnerName of syn.members){
+    const members=allSynMembers(syn);
+    if(!members.includes(myName))continue;
+    for(const partnerName of members){
       if(partnerName===myName)continue;
       const inMyTeam=myTeamNames.has(partnerName);
       const available=poolNames.has(partnerName)&&!allDraftedNames.has(partnerName);
@@ -2333,19 +2656,49 @@ let allChars=[],poolChars=[],draft=null,gameMode=null,budgetMode=false,refreshGr
 let isBlindScenario=false;
 let legendsMode=false; // Legends characters hidden until mode is fully built out
 let selectedOpponent=null;
+let numPlayers=2; // 2=1v1, 3=1vAI+AI, 4=1vAI+AI+AI
+
+// Per-player display config (name, css color var, hex for inline styles)
+const PLAYER_CONFIG=[
+  {name:'Player 1',  aiName:null,          cls:'p1', hex:'#3b82f6'},
+  {name:'AI 1',      aiName:'AI 1',        cls:'p2', hex:'#ef4444'},
+  {name:'AI 2',      aiName:'AI 2',        cls:'p3', hex:'#22c55e'},
+  {name:'AI 3',      aiName:'AI 3',        cls:'p4', hex:'#a78bfa'},
+];
+function playerName(pid){
+  if(pid===0)return'Player 1';
+  if(gameMode==='vs-ai')return numPlayers===2?'AI Opponent':`AI ${pid}`;
+  return`Player ${pid+1}`;
+}
+function isAiPlayer(pid){return gameMode==='vs-ai'&&pid>=1;}
 
 // ─ Home: Step 1 — Opponent ───────────────────────────────────────────────────
 document.getElementById('btn-vs-ai').addEventListener('click',()=>{
   selectedOpponent='vs-ai';
   document.querySelectorAll('#step-opponent .btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('btn-vs-ai').classList.add('active');
-  document.getElementById('step-mode').style.display='block';
-  document.getElementById('step-mode').scrollIntoView({behavior:'smooth',block:'nearest'});
+  // Show AI count step; hide mode until count is chosen
+  document.getElementById('step-ai-count').style.display='block';
+  document.getElementById('step-mode').style.display='none';
+  document.getElementById('step-ai-count').scrollIntoView({behavior:'smooth',block:'nearest'});
 });
 document.getElementById('btn-vs-player').addEventListener('click',()=>{
   selectedOpponent='vs-player';
+  numPlayers=2;
   document.querySelectorAll('#step-opponent .btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('btn-vs-player').classList.add('active');
+  document.getElementById('step-ai-count').style.display='none';
+  document.getElementById('step-mode').style.display='block';
+  document.getElementById('step-mode').scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+// ─ Home: Step 1b — AI count ──────────────────────────────────────────────────
+document.getElementById('step-ai-count').addEventListener('click',e=>{
+  const btn=e.target.closest('.ai-count-btn');
+  if(!btn)return;
+  numPlayers=parseInt(btn.dataset.count)+1; // +1 for the human player
+  document.querySelectorAll('.ai-count-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
   document.getElementById('step-mode').style.display='block';
   document.getElementById('step-mode').scrollIntoView({behavior:'smooth',block:'nearest'});
 });
@@ -2403,7 +2756,7 @@ document.getElementById('btn-begin-draft').addEventListener('click',showCoinToss
 document.getElementById('btn-pass').addEventListener('click',()=>{
   if(!draft||!budgetMode)return;
   const pid=draftCurrentPlayer(draft);
-  if(gameMode==='vs-ai'&&pid===1)return;
+  if(isAiPlayer(pid))return;
   if(draftPass(draft,pid,poolChars)){
     afterPick();
   }
@@ -2411,17 +2764,17 @@ document.getElementById('btn-pass').addEventListener('click',()=>{
 
 // ─ Play again ─────────────────────────────────────────────────────────────────
 document.getElementById('btn-play-again').addEventListener('click',()=>{
-  // Reset home screen state
   document.querySelectorAll('#step-opponent .btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.ai-count-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('step-ai-count').style.display='none';
   document.getElementById('step-mode').style.display='none';
-  selectedOpponent=null;
+  selectedOpponent=null;numPlayers=2;
   showScreen('screen-home');
 });
 
 // ─ Setup flow ─────────────────────────────────────────────────────────────────
 function beginSetup(opp,mode){
   gameMode=opp;budgetMode=(mode==='budget');
-  document.getElementById('p2-label').textContent=opp==='vs-ai'?'AI Opponent':'Player 2';
   renderScenarioScreen();showScreen('screen-scenario');
 }
 
@@ -2429,7 +2782,7 @@ function beginSetup(opp,mode){
 function showCoinToss(){
   if(!selectedScenario)return;
   coinTossWinner=0; // reset
-  const p2Name=gameMode==='vs-ai'?'AI Opponent':'Player 2';
+  const p2Name=gameMode==='vs-ai'?(numPlayers===2?'AI Opponent':'AI Team'):'Player 2';
   document.getElementById('ct-p2-label').textContent=p2Name;
   // Reset UI
   const coin=document.getElementById('ct-coin');
@@ -2475,6 +2828,38 @@ document.getElementById('btn-flip-coin').addEventListener('click',()=>{
 
 document.getElementById('btn-start-after-toss').addEventListener('click',startDraft);
 
+// Builds the HTML for one AI side panel (full vertical column)
+function buildAiPanelHtml(pid){
+  const cfg=PLAYER_CONFIG[pid]||PLAYER_CONFIG[1];
+  const label=playerName(pid);
+  return`<div class="side-panel" id="ai-panel-p${pid+1}">
+    <div class="panel-hdr ${cfg.cls}-hdr"><span>${label}</span><span class="panel-pwr" id="p${pid+1}-power">— PWR</span></div>
+    <div class="budget-display" id="p${pid+1}-budget-display" style="display:none">
+      <div class="budget-label"><span>💰 Berri Budget</span><strong id="p${pid+1}-budget-left">10,000</strong></div>
+      <div class="budget-bar-wrap"><div class="budget-bar-fill ${cfg.cls}-budget-fill" id="p${pid+1}-budget-bar" style="width:100%"></div></div>
+    </div>
+    <div class="crew-manifest" id="p${pid+1}-manifest"></div>
+    <div id="p${pid+1}-picks" class="pick-slots"></div>
+    <div id="p${pid+1}-synergies"></div>
+  </div>`;
+}
+
+// Builds the HTML for a compact horizontal watch-bar panel (used in 4-player mode)
+function buildAiWatchPanelHtml(pid){
+  const cfg=PLAYER_CONFIG[pid]||PLAYER_CONFIG[1];
+  const label=playerName(pid);
+  return`<div class="ai-watch-panel" id="ai-watch-p${pid+1}">
+    <div class="awp-hdr ${cfg.cls}-hdr"><span>${label}</span><span id="p${pid+1}-power">— PWR</span></div>
+    <div id="p${pid+1}-picks" class="pick-slots awp-picks"></div>
+    <div class="crew-manifest" id="p${pid+1}-manifest" style="display:none"></div>
+    <div id="p${pid+1}-budget-display" style="display:none">
+      <div class="budget-label"><span>💰</span><strong id="p${pid+1}-budget-left">10,000</strong></div>
+      <div class="budget-bar-wrap"><div class="budget-bar-fill ${cfg.cls}-budget-fill" id="p${pid+1}-budget-bar" style="width:100%"></div></div>
+    </div>
+    <div id="p${pid+1}-synergies" class="awp-synergies"></div>
+  </div>`;
+}
+
 async function startDraft(){
   if(!selectedScenario)return;
   document.getElementById('cointoss-overlay').classList.remove('open');
@@ -2488,13 +2873,45 @@ async function startDraft(){
   draft=createDraft(budgetMode?'budget':'unlimited');
   showScreen('screen-draft');
 
-  renderPickSlots(0,[],budgetMode,BUDGET_AMOUNT);
-  renderPickSlots(1,[],budgetMode,BUDGET_AMOUNT);
-  document.getElementById('p1-power').textContent='— PWR';
-  document.getElementById('p2-power').textContent='— PWR';
-  setTurnStatus();renderScenarioBanner(selectedScenario,budgetMode);
+  // Build AI panels dynamically
+  const rightCol=document.getElementById('draft-right');
+  const leftCol=document.getElementById('draft-left');
+  const watchBar=document.getElementById('ai-watch-bar');
+  rightCol.innerHTML='';
+  watchBar.innerHTML='';
+  watchBar.classList.remove('active');
+  // Clear any previously injected AI panel from left column
+  const oldAiLeft=leftCol.querySelector('.ai-left-panel');
+  if(oldAiLeft)oldAiLeft.remove();
+  const grid=document.getElementById('draft-grid');
+  if(numPlayers===4){
+    // 4-player: Player 1 left, AI 1 right, AI 2+AI 3 in horizontal watch bar above grid
+    grid.classList.add('multi-ai');
+    rightCol.insertAdjacentHTML('beforeend',buildAiPanelHtml(1));
+    watchBar.insertAdjacentHTML('beforeend',buildAiWatchPanelHtml(2));
+    watchBar.insertAdjacentHTML('beforeend',buildAiWatchPanelHtml(3));
+    watchBar.classList.add('active');
+  }else if(numPlayers===3){
+    // 3-player: AI 1 + AI 2 stacked in right column
+    grid.classList.add('multi-ai');
+    for(let p=1;p<numPlayers;p++) rightCol.insertAdjacentHTML('beforeend',buildAiPanelHtml(p));
+  }else{
+    // 2-player: single AI on right
+    grid.classList.remove('multi-ai');
+    rightCol.insertAdjacentHTML('beforeend',buildAiPanelHtml(1));
+  }
 
-  // Pass button: only in budget mode, only on human turn
+  // Init all panels
+  for(let p=0;p<numPlayers;p++){
+    renderPickSlots(p,[],budgetMode,BUDGET_AMOUNT);
+    const pwEl=document.getElementById(`p${p+1}-power`);
+    if(pwEl)pwEl.textContent='— PWR';
+  }
+
+  // Build mobile tab strip
+  renderMobileTabs();
+
+  setTurnStatus();renderScenarioBanner(selectedScenario,budgetMode);
   syncPassButton();
 
   if(!allChars.length){
@@ -2503,7 +2920,8 @@ async function startDraft(){
     allChars=raw.filter(c=>c.name).map(c=>({...c,stats:computeStats(c)})).sort((a,b)=>b.stats.overall-a.stats.overall);
   }
   const bossNames=new Set(BOSSES[selectedScenario?.id]||[]);
-  const poolSize=budgetMode?20:20;
+  // Pool scales with player count
+  const poolSize=numPlayers>=4?36:numPlayers===3?30:20;
   poolChars=generatePool(allChars.filter(c=>!bossNames.has(c.name)&&(legendsMode||!c.legends)),poolSize);
   updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
   document.getElementById('char-search').value='';
@@ -2513,9 +2931,10 @@ async function startDraft(){
   document.getElementById('char-search').oninput=refreshGrid;
   refreshGrid();
 
-  // If AI won the coin toss and goes first, trigger its opening pick
-  if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1&&!draft.complete){
-    setTimeout(doAiPick,600); // brief pause so screen renders before overlay appears
+  // If an AI won the coin toss and goes first, trigger its opening pick
+  const firstPid=draftCurrentPlayer(draft);
+  if(gameMode==='vs-ai'&&isAiPlayer(firstPid)&&!draft.complete){
+    setTimeout(()=>doAiPick(firstPid),600);
   }
 }
 
@@ -2523,7 +2942,7 @@ function syncPassButton(){
   const btn=document.getElementById('btn-pass');
   if(!budgetMode){btn.style.display='none';return}
   const curPid=draftCurrentPlayer(draft);
-  const isHumanTurn=!(gameMode==='vs-ai'&&curPid===1);
+  const isHumanTurn=!isAiPlayer(curPid);
   btn.style.display=(budgetMode&&isHumanTurn&&!draft.complete)?'block':'none';
 }
 
@@ -2533,14 +2952,14 @@ function setTurnStatus(){
     document.getElementById('draft-pick-num').textContent='Calculating results...';
     syncPassButton();return;
   }
-  const names=['Player 1',gameMode==='vs-ai'?'AI Opponent':'Player 2'];
   const curPid=draftCurrentPlayer(draft);
-  document.getElementById('draft-turn-text').textContent=`${names[curPid]}'s Pick`;
+  document.getElementById('draft-turn-text').textContent=`${playerName(curPid)}'s Pick`;
   if(budgetMode){
     const budget=draft.budgets[curPid];
     document.getElementById('draft-pick-num').textContent=`Budget remaining: ${budget.toLocaleString()} Berri · ${draft.teams[curPid].length}/6 characters`;
   }else{
-    document.getElementById('draft-pick-num').textContent=`Pick ${draft.pickIndex+1} of ${SNAKE_BASE.length}`;
+    const snakeLen=getSnakeOrder().length;
+    document.getElementById('draft-pick-num').textContent=`Pick ${draft.pickIndex+1} of ${snakeLen}`;
   }
   syncPassButton();
 }
@@ -2565,11 +2984,12 @@ function showTurnOverlay(html,durationMs){
   });
 }
 
-function showAiThinking(){
+function showAiThinking(pid=1){
+  const label=numPlayers===2?'Opponent':playerName(pid);
   return showTurnOverlay(`
-    <div class="turn-ov-eyebrow">Opponent</div>
+    <div class="turn-ov-eyebrow">${label}</div>
     <div class="turn-ov-title">Choosing...</div>
-    <div class="turn-ov-sub">The AI is analyzing the battlefield</div>
+    <div class="turn-ov-sub">Analyzing the battlefield</div>
     <div class="turn-ov-dots">
       <div class="turn-ov-dot"></div>
       <div class="turn-ov-dot"></div>
@@ -2577,16 +2997,17 @@ function showAiThinking(){
     </div>`,1800);
 }
 
-function showAiPicked(char){
+function showAiPicked(char,pid=1){
   const imgUrl=getImgUrl(char);
   const[bg]=ROLE_COLORS[char.stats.roleType]||['#1e2f48','#94a3b8'];
   const icon=ROLE_ICON[char.stats.roleType]||'•';
+  const label=numPlayers===2?'Opponent drafted':playerName(pid)+' drafted';
   const portraitHtml=imgUrl
     ?`<img class="turn-ov-portrait" src="${imgUrl}" alt="${char.name}">`
     :`<div class="turn-ov-portrait-fb" style="background:${bg}">${icon}</div>`;
   return showTurnOverlay(`
     ${portraitHtml}
-    <div class="turn-ov-eyebrow">Opponent drafted</div>
+    <div class="turn-ov-eyebrow">${label}</div>
     <div class="turn-ov-charname">${char.name}</div>
     <div class="turn-ov-sub">${char.stats.roleType} · ${char.tier} Tier</div>`,2400);
 }
@@ -2600,51 +3021,50 @@ function showPlayerTurn(){
 function handlePick(c){
   if(!draft||draft.complete||draftLocked)return;
   const curPid=draftCurrentPlayer(draft);
-  if(gameMode==='vs-ai'&&curPid===1)return;
+  if(isAiPlayer(curPid))return;
   if(draftPick(draft,c,curPid,poolChars))afterPick();
 }
 
-function afterPick(){
-  renderPickSlots(0,draft.teams[0],budgetMode,draft.budgets[0]);
-  renderPickSlots(1,draft.teams[1],budgetMode,draft.budgets[1]);
-  const p0=draftTeamPower(draft,0),p1=draftTeamPower(draft,1);
-  document.getElementById('p1-power').textContent=p0>0?`${p0} PWR`:'— PWR';
-  document.getElementById('p2-power').textContent=p1>0?`${p1} PWR`:'— PWR';
+function updateAllPanels(){
+  for(let p=0;p<numPlayers;p++){
+    renderPickSlots(p,draft.teams[p],budgetMode,draft.budgets[p]);
+    const pwr=draftTeamPower(draft,p);
+    const el=document.getElementById(`p${p+1}-power`);
+    if(el)el.textContent=pwr>0?`${pwr} PWR`:'— PWR';
+  }
   updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
-
-  if(draft.complete){setTurnStatus();refreshGrid();setTimeout(isBlindScenario?showReveal:showResults,700);return}
-
-  setTurnStatus();refreshGrid();
-  if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1&&!draft.complete)doAiPick();
 }
 
-async function doAiPick(){
-  if(!draft||draft.complete||draftCurrentPlayer(draft)!==1)return;
+function afterPick(){
+  updateAllPanels();
+  if(draft.complete){setTurnStatus();refreshGrid();setTimeout(isBlindScenario?showReveal:showResults,700);return}
+  setTurnStatus();refreshGrid();
+  const nextPid=draftCurrentPlayer(draft);
+  if(isAiPlayer(nextPid)&&!draft.complete)doAiPick(nextPid);
+}
+
+async function doAiPick(pid=1){
+  if(!draft||draft.complete||draftCurrentPlayer(draft)!==pid)return;
   draftLocked=true;
   try{
-    await showAiThinking();
-    const pick=aiPick(poolChars,draft,selectedScenario);
+    await showAiThinking(pid);
+    const pick=aiPick(poolChars,draft,selectedScenario,pid);
     if(pick){
-      draftPick(draft,pick,1,poolChars);
-      renderPickSlots(0,draft.teams[0],budgetMode,draft.budgets[0]);
-      renderPickSlots(1,draft.teams[1],budgetMode,draft.budgets[1]);
-      const p0=draftTeamPower(draft,0),p1=draftTeamPower(draft,1);
-      document.getElementById('p1-power').textContent=p0>0?`${p0} PWR`:'— PWR';
-      document.getElementById('p2-power').textContent=p1>0?`${p1} PWR`:'— PWR';
-      updatePoolCounter(poolChars,draft.pickedIds,budgetMode);
+      draftPick(draft,pick,pid,poolChars);
+      updateAllPanels();
       setTurnStatus();refreshGrid();
-      await showAiPicked(pick);
+      await showAiPicked(pick,pid);
     }else if(budgetMode){
-      draftPass(draft,1,poolChars);
+      draftPass(draft,pid,poolChars);
       setTurnStatus();refreshGrid();
     }
   }finally{
     draftLocked=false;
   }
   if(draft.complete){setTimeout(isBlindScenario?showReveal:showResults,700);return}
-  if(gameMode==='vs-ai'&&draftCurrentPlayer(draft)===1){
-    // AI picks again (budget mode back-to-back)
-    await doAiPick();
+  const nextPid=draftCurrentPlayer(draft);
+  if(isAiPlayer(nextPid)){
+    await doAiPick(nextPid);
   }else{
     await showPlayerTurn();
   }
@@ -2751,35 +3171,48 @@ function generateVerdict(team,result,sc,isWinner,opponentPct){
 }
 
 function showResults(){
-  const p1=scoreTeam(draft.teams[0],selectedScenario);
-  const p2=scoreTeam(draft.teams[1],selectedScenario);
-  const p2Name=gameMode==='vs-ai'?'AI Opponent':'Player 2';
+  // Score all teams and apply MVP bonuses
+  const baseResults=draft.teams.map((t,p)=>scoreTeam(t,selectedScenario));
+  const mvpBonuses=baseResults.map((r,p)=>getMvpBonus(draft.teams[p],selectedScenario,r));
+  const results=baseResults.map((r,p)=>({...r,percentage:mvpBonuses[p]?mvpBonuses[p].newPercentage:r.percentage}));
+  const p2Name=playerName(1); // Used for 2-player legacy label
 
   document.getElementById('results-arc-name').textContent=selectedScenario.shortName;
 
-  // Winner text — set but keep invisible until animation completes
+  // Winner: highest scoring team
   const bannerEl=document.getElementById('winner-banner');
   bannerEl.style.opacity='0';
-  if(p1.percentage>p2.percentage)bannerEl.textContent='🏆 Player 1 Wins!';
-  else if(p2.percentage>p1.percentage)bannerEl.textContent=`🏆 ${p2Name} Wins!`;
-  else bannerEl.textContent="⚓ It's a Tie!";
+  const maxPct=Math.max(...results.map(r=>r.percentage));
+  const winners=results.map((r,p)=>r.percentage===maxPct?p:-1).filter(p=>p>=0);
+  if(winners.length===numPlayers){
+    bannerEl.textContent="⚓ It's a Tie!";
+  }else if(winners.length===1){
+    bannerEl.textContent=`🏆 ${playerName(winners[0])} Wins!`;
+  }else{
+    bannerEl.textContent=`🏆 Tie: ${winners.map(p=>playerName(p)).join(' & ')}!`;
+  }
 
   function teamSummary(d,pid){
     if(!budgetMode)return`${d.teams[pid].length} characters`;
     const spent=draftBudgetSpent(d,pid);return`${d.teams[pid].length} chars · ${spent}₿ spent`;
   }
 
-  function buildPanel(name,result,team,pid,prefix,isWinner){
+  function buildPanel(name,result,baseResult,team,pid,prefix,isWinner,mvpBonus){
     const color=`var(--${prefix})`;
-    if(!team.length)return`<div class="result-panel ${isWinner?'is-winner':''}"><div class="rp-hdr"><span class="rp-player" style="color:${color}">${name}</span><span class="rp-score" style="color:${color}">—%</span></div><p style="color:var(--muted);font-size:.8rem;padding:.5rem 0">No characters drafted.</p></div>`;
+    if(!team.length)return`<div class="result-panel" id="panel-${prefix}"><div class="rp-hdr"><span class="rp-player" style="color:${color}">${name}</span><span class="rp-score" style="color:${color}">—%</span></div><p style="color:var(--muted);font-size:.8rem;padding:.5rem 0">No characters drafted.</p></div>`;
+
+    const mvpNames=mvpBonus?new Set(mvpBonus.mvp.trigger):new Set();
 
     // ── Stage 1: character list ───────────────────────────────────────────────
-    const chars=result.breakdown.map(item=>`
-      <div class="rp-char">
+    const chars=result.breakdown.map(item=>{
+      const isMvpChar=!!(mvpBonus&&item.character.name===(mvpBonus.mvp.charName||mvpBonus.mvp.mvpName));
+      return`
+      <div class="rp-char${isMvpChar?' is-mvp':''}">
         <div class="rp-char-img">${avatarHtml(item.character,28,28,true)}</div>
         <div class="rp-char-info"><div class="rp-char-name">${item.character.name}</div><div class="rp-char-role">${item.character.stats.roleType}${budgetMode?' · '+getCharCost(item.character)+'₿':''}</div></div>
         <div class="rp-char-score">+${item.score}</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     // ── Stage 2: bonus chips ──────────────────────────────────────────────────
     const bonusChips=[];
@@ -2787,7 +3220,6 @@ function showResults(){
     if(result.bonuses.leader>0)bonusChips.push(`👑 Captain Bonus +${result.bonuses.leader}%`);
     if(result.bonuses.fruit>0)bonusChips.push(`🍎 Devil Fruits +${result.bonuses.fruit}%`);
     if(result.bonuses.haki>0)bonusChips.push(`🔥 Conquerors +${result.bonuses.haki}%`);
-    if(result.bonuses.crew<0)bonusChips.push(`👥 Small Crew ${result.bonuses.crew}%`);
     const synChips=(result.synergies||[]).map(s=>{
       const delta=synDelta([s],selectedScenario?.weights||{});
       const sign=delta>=0?'+':'';
@@ -2819,7 +3251,7 @@ function showResults(){
     }).join('');
 
     // ── Stage 4: boss threat ──────────────────────────────────────────────────
-    const bossDelta=result.percentage-result.afterDifficulty;
+    const bossDelta=baseResult.percentage-baseResult.afterDifficulty;
     const bossDeltaCls=bossDelta>=0?'pos':'neg';
     const bossDeltaStr=bossDelta>=0?`+${bossDelta} pts`:`${bossDelta} pts`;
     const bossDebuffHtml=result.bossDebuffs&&result.bossDebuffs.length
@@ -2846,10 +3278,43 @@ function showResults(){
         </div>`).join('')
       : `<div class="stage-detail-txt" style="margin-top:.3rem">No boss penalties for this battleground</div>`;
 
-    // ── Verdict ───────────────────────────────────────────────────────────────
-    const verdict=generateVerdict(team,result,selectedScenario,isWinner,isWinner?Math.min(p1.percentage,p2.percentage):Math.max(p1.percentage,p2.percentage));
+    // ── MVP Stage (optional) ──────────────────────────────────────────────────
+    const mvpDeltaCls=mvpBonus&&mvpBonus.delta>0?'pos':'neu';
+    const mvpDeltaStr=mvpBonus?`+${mvpBonus.delta} pts`:'—';
+    const mvpStageHtml=mvpBonus?`
+      <div class="score-stage" id="st5-${prefix}">
+        <div class="stage-connector">✦ scenario MVP activated</div>
+        <div class="stage-block stage-mvp">
+          <div class="stage-row">
+            <span class="stage-label-txt">${mvpBonus.mvp.icon} MVP Effect</span>
+            <span style="display:flex;align-items:center;gap:.4rem">
+              <span class="stage-delta ${mvpDeltaCls}">${mvpDeltaStr}</span>
+              <span class="stage-score" id="mvp-score-${prefix}" style="color:var(--gold-light)">—</span>
+            </span>
+          </div>
+          <div class="mvp-hdr" style="margin-top:.35rem">
+            <span class="mvp-icon">${mvpBonus.mvp.icon}</span>
+            <div class="mvp-title">
+              <span class="mvp-eyebrow">Scenario MVP</span>
+              <span class="mvp-name">${mvpBonus.mvp.mvpName}</span>
+            </div>
+          </div>
+          <div class="mvp-effect-label">${mvpBonus.mvp.effectLabel}</div>
+          <div class="mvp-effect-desc">${mvpBonus.mvp.effectDesc}</div>
+          <div class="mvp-delta-row">
+            <span class="mvp-delta-badge">+${mvpBonus.delta} pts</span>
+            <span class="mvp-delta-label">applied to final score</span>
+          </div>
+        </div>
+      </div>`:'' ;
 
-    return`<div class="result-panel ${isWinner?'is-winner':''}">
+    // ── Verdict ───────────────────────────────────────────────────────────────
+    const allPcts=results.map(r=>r.percentage);
+    const rivalPct=isWinner?Math.min(...allPcts):Math.max(...allPcts);
+    const verdict=generateVerdict(team,result,selectedScenario,isWinner,rivalPct);
+    const finalStageId=mvpBonus?'st6':'st5';
+
+    return`<div class="result-panel" id="panel-${prefix}">
       <div class="rp-hdr">
         <span class="rp-player" style="color:${color}">${name}</span>
         <span class="rp-score" style="color:${color}"><span class="rp-score-num" id="score-${prefix}">0</span>%</span>
@@ -2917,8 +3382,10 @@ function showResults(){
         </div>
       </div>
 
-      <!-- Stage 5: Final Score + Verdict -->
-      <div class="score-stage" id="st5-${prefix}">
+      ${mvpStageHtml}
+
+      <!-- Final Score + Verdict -->
+      <div class="score-stage" id="${finalStageId}-${prefix}">
         <div class="stage-block stage-final">
           <div class="stage-row">
             <span class="stage-label-txt" style="font-size:.78rem">⚡ Final Score</span>
@@ -2933,10 +3400,13 @@ function showResults(){
     </div>`;
   }
 
-  const p1Win=p1.percentage>=p2.percentage;
-  document.getElementById('results-panels').innerHTML=
-    buildPanel('Player 1',p1,draft.teams[0],0,'p1',p1Win)+
-    buildPanel(p2Name,    p2,draft.teams[1],1,'p2',!p1Win||(p2.percentage===p1.percentage));
+  // Build all panels
+  const prefixes=Array.from({length:numPlayers},(_,p)=>PLAYER_CONFIG[p]?.cls||`p${p+1}`);
+  document.getElementById('results-panels').innerHTML=draft.teams.map((team,p)=>{
+    const pfx=prefixes[p];
+    const isWinner=results[p].percentage===maxPct;
+    return buildPanel(playerName(p),results[p],baseResults[p],team,p,pfx,isWinner,mvpBonuses[p]);
+  }).join('');
   showScreen('screen-results');
 
   // Helper: reveal a stage element and animate its sub-bar
@@ -2946,76 +3416,95 @@ function showResults(){
     const b=document.getElementById(barId);
     if(b)setTimeout(()=>{b.style.width=Math.min(100,pct)+'%';},60);
   }
-
-  // Master bar transitions through each intermediate value
-  function setBar(prefix,pct){
-    const b=document.getElementById('bar-'+prefix);
+  function setBar(pfx,pct){
+    const b=document.getElementById('bar-'+pfx);
     if(b)b.style.width=Math.min(100,pct)+'%';
   }
   function setScoreNum(id,val){
-    const el=document.getElementById(id);
-    if(el)el.textContent=val;
+    const el=document.getElementById(id);if(el)el.textContent=val;
   }
+  function forAllPanels(fn){prefixes.forEach((pfx,p)=>fn(pfx,p));}
 
-  // Staggered 5-stage reveal
-  const STAGE_GAP=1300; // ms between stages
+  // Staggered reveal — up to 6 stages when MVP fires, 5 otherwise
+  const STAGE_GAP=1300;
+  const hasMvp=mvpBonuses.some(Boolean);
 
-  // Stage 1 — Crew Power (300ms initial delay)
+  // Stage 1 — Crew Power
   setTimeout(()=>{
-    revealStage('st1-p1','crew-bar-p1',p1.crewScore);
-    revealStage('st1-p2','crew-bar-p2',p2.crewScore);
-    setBar('p1',p1.crewScore); setBar('p2',p2.crewScore);
-    animateCount(document.getElementById('score-p1'),p1.crewScore,900,null);
-    animateCount(document.getElementById('score-p2'),p2.crewScore,900,null);
-    setScoreNum('crew-score-p1',p1.crewScore+'%');
-    setScoreNum('crew-score-p2',p2.crewScore+'%');
+    forAllPanels((pfx,p)=>{
+      revealStage(`st1-${pfx}`,`crew-bar-${pfx}`,results[p].crewScore);
+      setBar(pfx,results[p].crewScore);
+      animateCount(document.getElementById(`score-${pfx}`),results[p].crewScore,900,null);
+      setScoreNum(`crew-score-${pfx}`,results[p].crewScore+'%');
+    });
   },300);
 
   // Stage 2 — After Bonuses
   setTimeout(()=>{
-    revealStage('st2-p1','bonus-bar-p1',p1.afterBonuses);
-    revealStage('st2-p2','bonus-bar-p2',p2.afterBonuses);
-    setBar('p1',p1.afterBonuses); setBar('p2',p2.afterBonuses);
-    animateCount(document.getElementById('score-p1'),p1.afterBonuses,800,null);
-    animateCount(document.getElementById('score-p2'),p2.afterBonuses,800,null);
-    setScoreNum('bonus-score-p1',p1.afterBonuses+'%');
-    setScoreNum('bonus-score-p2',p2.afterBonuses+'%');
+    forAllPanels((pfx,p)=>{
+      revealStage(`st2-${pfx}`,`bonus-bar-${pfx}`,results[p].afterBonuses);
+      setBar(pfx,results[p].afterBonuses);
+      animateCount(document.getElementById(`score-${pfx}`),results[p].afterBonuses,800,null);
+      setScoreNum(`bonus-score-${pfx}`,results[p].afterBonuses+'%');
+    });
   },300+STAGE_GAP);
 
-  // Stage 3 — Battleground Difficulty
+  // Stage 3 — Battleground
   setTimeout(()=>{
-    revealStage('st3-p1','bg-bar-p1',p1.afterDifficulty);
-    revealStage('st3-p2','bg-bar-p2',p2.afterDifficulty);
-    setBar('p1',p1.afterDifficulty); setBar('p2',p2.afterDifficulty);
-    animateCount(document.getElementById('score-p1'),p1.afterDifficulty,800,null);
-    animateCount(document.getElementById('score-p2'),p2.afterDifficulty,800,null);
-    setScoreNum('bg-score-p1',p1.afterDifficulty+'%');
-    setScoreNum('bg-score-p2',p2.afterDifficulty+'%');
+    forAllPanels((pfx,p)=>{
+      revealStage(`st3-${pfx}`,`bg-bar-${pfx}`,results[p].afterDifficulty);
+      setBar(pfx,results[p].afterDifficulty);
+      animateCount(document.getElementById(`score-${pfx}`),results[p].afterDifficulty,800,null);
+      setScoreNum(`bg-score-${pfx}`,results[p].afterDifficulty+'%');
+    });
   },300+STAGE_GAP*2);
 
-  // Stage 4 — Boss Threat
+  // Stage 4 — Boss Threat (pre-MVP)
   setTimeout(()=>{
-    revealStage('st4-p1','boss-bar-p1',p1.percentage);
-    revealStage('st4-p2','boss-bar-p2',p2.percentage);
-    setBar('p1',p1.percentage); setBar('p2',p2.percentage);
-    animateCount(document.getElementById('score-p1'),p1.percentage,800,null);
-    animateCount(document.getElementById('score-p2'),p2.percentage,800,null);
-    setScoreNum('boss-score-p1',p1.percentage+'%');
-    setScoreNum('boss-score-p2',p2.percentage+'%');
+    forAllPanels((pfx,p)=>{
+      revealStage(`st4-${pfx}`,`boss-bar-${pfx}`,baseResults[p].percentage);
+      setBar(pfx,baseResults[p].percentage);
+      animateCount(document.getElementById(`score-${pfx}`),baseResults[p].percentage,800,null);
+      setScoreNum(`boss-score-${pfx}`,baseResults[p].percentage+'%');
+    });
   },300+STAGE_GAP*3);
 
-  // Stage 5 — Final Score + winner banner + verdict
-  setTimeout(()=>{
-    revealStage('st5-p1',null,0);
-    revealStage('st5-p2',null,0);
-    setScoreNum('final-score-p1',p1.percentage+'%');
-    setScoreNum('final-score-p2',p2.percentage+'%');
-    bannerEl.style.opacity='1';
+  // Stage 5 — MVP Effect (only panels with an active MVP bonus)
+  if(hasMvp){
     setTimeout(()=>{
-      document.getElementById('verdict-p1')?.classList.add('visible');
-      document.getElementById('verdict-p2')?.classList.add('visible');
+      forAllPanels((pfx,p)=>{
+        if(mvpBonuses[p]){
+          revealStage(`st5-${pfx}`,null,0);
+          setScoreNum(`mvp-score-${pfx}`,results[p].percentage+'%');
+          animateCount(document.getElementById(`score-${pfx}`),results[p].percentage,700,null);
+          setBar(pfx,results[p].percentage);
+        }
+      });
+    },300+STAGE_GAP*4);
+  }
+
+  // Final Stage — scores, then winner highlight + banner after score animation settles
+  const finalDelay=300+STAGE_GAP*(hasMvp?5:4);
+  setTimeout(()=>{
+    const finalId=hasMvp?'st6':'st5';
+    forAllPanels((pfx,p)=>{
+      revealStage(`${finalId}-${pfx}`,null,0);
+      setScoreNum(`final-score-${pfx}`,results[p].percentage+'%');
+    });
+    // Delay winner reveal so it lands after the count-up animation (~700ms)
+    setTimeout(()=>{
+      // Highlight winning panels
+      prefixes.forEach((pfx,p)=>{
+        if(results[p].percentage===maxPct){
+          document.getElementById(`panel-${pfx}`)?.classList.add('is-winner');
+        }
+      });
+      bannerEl.style.opacity='1';
+    },750);
+    setTimeout(()=>{
+      prefixes.forEach(pfx=>document.getElementById(`verdict-${pfx}`)?.classList.add('visible'));
     },500);
-  },300+STAGE_GAP*4);
+  },finalDelay);
 }
 
 // ═══ GLOSSARY ════════════════════════════════════════════════════════════════
@@ -3223,19 +3712,53 @@ function renderGlossaryBosses(){
 
 // ─── Synergies glossary ───────────────────────────────────────────────────────
 const SYNERGY_GROUPS=[
-  {label:'🏴‍☠️ Straw Hat Crew',   ids:['monster_trio','straw_hat_core','straw_hat_full','navigator_duo','ship_doctors','jinbe_luffy','zoro_mihawk','sanji_nami']},
-  {label:'🏛️ Marine Forces',      ids:['marine_legends','smoker_tashigi','garp_koby','admiral_pair','triple_admiral']},
-  {label:'🤝 Alliances & Bonds',  ids:['flsmp_alliance','shanks_beckman','revolutionary_duo','whitebeard_sons','shanks_luffy']},
-  {label:'💀 Factions & Rivals',  ids:['blackbeard_core','blackbeard_full','warlords_gambit','big_mom_vanguard','kaido_king','kid_killer','law_bepo','cross_guild','sea_dominance','supernovas']},
+  {label:'🏴‍☠️ Straw Hat Crew',   ids:['monster_trio','straw_hat_core','straw_hat_crew','navigator_duo','ship_doctors','jinbe_luffy','zoro_mihawk','sanji_nami']},
+  {label:'🏛️ Marine Forces',      ids:['marine_legends','smoker_tashigi','garp_koby','admiral_conflict','triple_admiral']},
+  {label:'🤝 Alliances & Bonds',  ids:['pirate_alliance','shanks_beckman','revolutionary_duo','whitebeard_sons','shanks_luffy']},
+  {label:'💀 Blackbeard Crew',    ids:['blackbeard_command','blackbeard_extended']},
+  {label:'🎭 Warlords & Yonko',   ids:['warlords_gambit','big_mom_vanguard','kaido_king']},
+  {label:'🩸 Rival Crews',        ids:['kid_killer','law_bepo']},
+  {label:'🐟 Fishmen',            ids:['fishman_core','fishman_contrast']},
+  {label:'🌟 Worst Generation',   ids:['wg_3','wg_4','wg_5']},
 ];
 
 function renderGlossarySynergies(){
   const container=document.getElementById('glos-syn-content');
   const synMap=Object.fromEntries(SYNERGIES.map(s=>[s.id,s]));
+
+  function memberBlock(s){
+    let html='';
+    if(s.members&&!s.required&&!s.anyOf){
+      // Classic: all members required
+      const chips=s.members.map(m=>`<span class="glos-syn-member">${m}</span>`).join('');
+      html=`<div class="glos-syn-members-label">Requires all</div><div class="glos-syn-members">${chips}</div>`;
+    } else if(!s.required&&s.anyOf){
+      // Pure anyOf (e.g. Worst Generation — pick any N)
+      const min=s.minAnyOf||s.anyOf.length;
+      const chips=s.anyOf.map(m=>`<span class="glos-syn-member glos-syn-member-any">${m}</span>`).join('');
+      html=`<div class="glos-syn-members-label">Any ${min} of</div><div class="glos-syn-members">${chips}</div>`;
+    } else {
+      // Flexible: required core + choose N from anyOf pool
+      if(s.required&&s.required.length){
+        const chips=s.required.map(m=>`<span class="glos-syn-member">${m}</span>`).join('');
+        html+=`<div class="glos-syn-members-label">Requires</div><div class="glos-syn-members">${chips}</div>`;
+      }
+      if(s.anyOf&&s.anyOf.length){
+        const min=s.minAnyOf||s.anyOf.length;
+        const chips=s.anyOf.map(m=>`<span class="glos-syn-member glos-syn-member-any">${m}</span>`).join('');
+        const lbl=min>=s.anyOf.length?'Plus any of':`Plus any ${min} of`;
+        html+=`<div class="glos-syn-members-label" style="margin-top:.3rem">${lbl}</div><div class="glos-syn-members">${chips}</div>`;
+      }
+    }
+    if(s.group&&s.tier){
+      html+=`<div class="glos-syn-tier-badge">Tier ${s.tier} — only highest tier fires</div>`;
+    }
+    return html;
+  }
+
   container.innerHTML=SYNERGY_GROUPS.map(group=>{
     const cards=group.ids.map(id=>{
       const s=synMap[id];if(!s)return'';
-      const members=s.members.map(m=>`<span class="glos-syn-member">${m}</span>`).join('');
       const bonuses=Object.entries(s.bonus).map(([k,v])=>{
         const info=STAT_INFO[k];
         const cls=v>0?'glos-syn-bonus-pos':'glos-syn-bonus-neg';
@@ -3247,8 +3770,7 @@ function renderGlossarySynergies(){
           <span class="glos-syn-name">${s.name}</span>
         </div>
         <div class="glos-syn-desc">${s.desc}</div>
-        <div class="glos-syn-members-label">Requires</div>
-        <div class="glos-syn-members">${members}</div>
+        ${memberBlock(s)}
         <div class="glos-syn-bonuses">${bonuses}</div>
       </div>`;
     }).join('');
@@ -3293,7 +3815,89 @@ document.getElementById('btn-how-to-play').addEventListener('click',openHtp);
 document.getElementById('htp-close').addEventListener('click',closeHtp);
 document.getElementById('htp-got-it').addEventListener('click',closeHtp);
 document.getElementById('htp-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeHtp();});
+
+// ═══ MOBILE PANEL SYSTEM ═════════════════════════════════════════════════════
+let mobilePanelPid=null,mobilePanelEl=null,mobilePanelOrigParent=null,mobilePanelOrigSibling=null;
+
+function getPlayerPanelEl(pid){
+  if(pid===0)return document.getElementById('p1-panel');
+  if(numPlayers===4&&pid>=2)return document.getElementById(`ai-watch-p${pid+1}`);
+  return document.getElementById(`ai-panel-p${pid+1}`);
+}
+
+function renderMobileTabs(){
+  const bar=document.getElementById('mobile-tabs');
+  if(!bar)return;
+  if(window.innerWidth>767){bar.innerHTML='';return;}
+  const shortName=p=>{
+    if(p===0)return'You';
+    if(numPlayers===2)return'AI';
+    return`AI ${p}`;
+  };
+  let html='';
+  for(let p=0;p<numPlayers;p++){
+    const picks=draft?draft.teams[p].length:0;
+    const max=picksPerPlayer();
+    const isCurrent=draft&&draft.currentPlayer===p&&!draft.complete;
+    const isActive=mobilePanelPid===p;
+    const cls=isActive?` mt-p${p+1}`:'';
+    const pulse=isCurrent&&!isActive?' style="outline:2px solid var(--p'+(p+1)+');outline-offset:1px"':'';
+    html+=`<button class="mobile-tab${cls}"${pulse} onclick="toggleMobilePanel(${p})"><span class="mob-tab-name">${shortName(p)}</span><span class="mob-tab-count">${picks}/${max}</span></button>`;
+  }
+  bar.innerHTML=html;
+}
+
+function toggleMobilePanel(pid){
+  if(mobilePanelPid===pid)closeMobilePanel();
+  else openMobilePanel(pid);
+}
+
+function openMobilePanel(pid){
+  if(mobilePanelEl)closeMobilePanel(false);
+  const el=getPlayerPanelEl(pid);
+  if(!el)return;
+  mobilePanelPid=pid;
+  mobilePanelEl=el;
+  mobilePanelOrigParent=el.parentNode;
+  mobilePanelOrigSibling=el.nextSibling;
+  // Set overlay title
+  const titleEl=document.getElementById('mpo-title');
+  if(titleEl)titleEl.textContent=pid===0?'Player 1':playerName(pid);
+  // Teleport panel element into overlay body
+  const body=document.getElementById('mpo-body');
+  if(body)body.appendChild(el);
+  document.getElementById('mobile-panel-overlay').classList.add('active');
+  renderMobileTabs();
+}
+
+function closeMobilePanel(rerender=true){
+  if(mobilePanelEl&&mobilePanelOrigParent){
+    if(mobilePanelOrigSibling)mobilePanelOrigParent.insertBefore(mobilePanelEl,mobilePanelOrigSibling);
+    else mobilePanelOrigParent.appendChild(mobilePanelEl);
+  }
+  mobilePanelEl=null;mobilePanelOrigParent=null;mobilePanelOrigSibling=null;mobilePanelPid=null;
+  const ov=document.getElementById('mobile-panel-overlay');
+  if(ov)ov.classList.remove('active');
+  if(rerender)renderMobileTabs();
+}
+
+document.getElementById('mpo-close').addEventListener('click',()=>closeMobilePanel());
+document.getElementById('mpo-backdrop').addEventListener('click',()=>closeMobilePanel());
+window.addEventListener('resize',()=>{if(window.innerWidth>767&&mobilePanelPid!==null)closeMobilePanel();renderMobileTabs();});
 </script>
+
+<!-- ═══ MOBILE PANEL OVERLAY ═══════════════════════════════════════════════ -->
+<div id="mobile-panel-overlay" class="mobile-panel-overlay">
+  <div class="mpo-backdrop" id="mpo-backdrop"></div>
+  <div class="mpo-sheet">
+    <div class="mpo-dragbar"></div>
+    <div class="mpo-header">
+      <span class="mpo-title" id="mpo-title">Crew</span>
+      <button class="mpo-close" id="mpo-close" aria-label="Close">✕</button>
+    </div>
+    <div class="mpo-body" id="mpo-body"></div>
+  </div>
+</div>
 
 </body>
 </html>

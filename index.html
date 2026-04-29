@@ -3881,8 +3881,10 @@ function closeMobilePanel(rerender=true){
   if(rerender)renderMobileTabs();
 }
 
-document.getElementById('mpo-close').addEventListener('click',()=>closeMobilePanel());
-document.getElementById('mpo-backdrop').addEventListener('click',()=>closeMobilePanel());
+// Use delegation — overlay HTML lives after this script block so IDs aren't in DOM yet
+document.addEventListener('click',e=>{
+  if(e.target.id==='mpo-close'||e.target.id==='mpo-backdrop')closeMobilePanel();
+});
 window.addEventListener('resize',()=>{if(window.innerWidth>767&&mobilePanelPid!==null)closeMobilePanel();renderMobileTabs();});
 </script>
 

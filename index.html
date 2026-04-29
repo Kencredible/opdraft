@@ -1349,6 +1349,11 @@ const SYNERGIES=[
    members:['Chopper','Robin'],
    bonus:{support:14,strategy:10},
    desc:'The historian and the doctor — support and strategy in equal measure'},
+  {id:'weakling_trio',
+   icon:'🌿', name:'Weakling Trio',
+   members:['Nami','Usopp','Chopper'],
+   bonus:{strategy:12,support:14,navigation:10},
+   desc:"Nami's maps, Usopp's tricks, Chopper's medicine — the crew's unsung backbone"},
   {id:'jinbe_luffy',
    icon:'🌊', name:'Captain & Helmsman',
    members:['Luffy','Jinbe'],
@@ -1406,6 +1411,11 @@ const SYNERGIES=[
    members:['Dragon','Sabo'],
    bonus:{leadership:12,strategy:10,combat:8},
    desc:"Father and son-in-arms — the revolution's finest warriors"},
+  {id:'asl_brothers',
+   icon:'🍶', name:'ASL Brothers',
+   members:['Ace','Sabo','Luffy'],
+   bonus:{combat:14,haki:10,leadership:14,support:8},
+   desc:"Three cups of sake, one unbreakable bond — Ace, Sabo and Luffy fight as one"},
   {id:'whitebeard_sons',
    icon:'🐋', name:'Sons of Whitebeard',
    members:['Marco','Ace'],
@@ -1729,7 +1739,7 @@ function getCharTier(c){
 }
 function getCharCost(c){ return getCharTier(c).cost }
 
-// ═══ ROSTER — 80 characters, tier+power from fighting-game scale ═════════════
+// ═══ ROSTER — 81 characters, tier+power from fighting-game scale ═════════════
 // tier: S+=Yonko, S=Commander, A=Supernova, B=Officer, C=Crew
 const FALLBACK=[
   // ── S+ Tier ──────────────────────────────────────────────────────────────
@@ -1779,6 +1789,7 @@ const FALLBACK=[
   {id:39, name:"Lafitte",        job:"Fighter",             power:885, tier:"A",  crew:"Blackbeard Pirates",  fruit:null,                                        attrs:{combat:65,strategy:75,haki:52,leadership:58,navigation:62,support:42}},
   {id:40, name:"Oven",           job:"Pirate Commander",    power:880, tier:"A",  crew:"Big Mom Pirates",     fruit:{name:"Netsu Netsu no Mi"},                  attrs:{combat:74,strategy:55,haki:65,leadership:55,navigation:32,support:28}},
   {id:41, name:"Daifuku",        job:"Pirate Commander",    power:880, tier:"A",  crew:"Big Mom Pirates",     fruit:{name:"Hoya Hoya no Mi"},                    attrs:{combat:72,strategy:58,haki:62,leadership:52,navigation:32,support:32}},
+  {id:81, name:"Moria",          job:"Pirate Captain",      power:885, tier:"A",  crew:"Thriller Bark",       fruit:{name:"Kage Kage no Mi"},                    attrs:{combat:72,strategy:82,haki:58,leadership:68,navigation:42,support:72}},
   // ── B Tier ───────────────────────────────────────────────────────────────
   {id:42, name:"Magellan",       job:"Marine",              power:930, tier:"B",  crew:"Impel Down",          fruit:{name:"Doku Doku no Mi"},                    attrs:{combat:75,strategy:72,haki:52,leadership:70,navigation:38,support:48}},
   {id:43, name:"Killer",         job:"Fighter",             power:890, tier:"B",  crew:"Kid Pirates",         fruit:null,                                        attrs:{combat:75,strategy:62,haki:58,leadership:45,navigation:32,support:28}},
@@ -2276,6 +2287,7 @@ const PORTRAITS={
   'Koby':            'assets/Characters/Koby_Portrait.webp',
   'Lucci':           'assets/Characters/Rob_Lucci_Portrait.webp',
   // ── Villains ────────────────────────────────────────
+  'Moria':           'assets/Characters/Gecko_Moria_Portrait.webp',
   'Enel':            'assets/Characters/Enel_Portrait.webp',
   'Magellan':        'assets/Characters/Magellan_Portrait.webp',
   'Caesar Clown':    'assets/Characters/Caesar_Clown_Portrait.webp',
@@ -3771,9 +3783,9 @@ function renderGlossaryBosses(){
 
 // ─── Synergies glossary ───────────────────────────────────────────────────────
 const SYNERGY_GROUPS=[
-  {label:'🏴‍☠️ Straw Hat Crew',   ids:['monster_trio','straw_hat_core','straw_hat_crew','navigator_duo','ship_doctors','jinbe_luffy','zoro_mihawk','sanji_nami']},
+  {label:'🏴‍☠️ Straw Hat Crew',   ids:['monster_trio','straw_hat_core','straw_hat_crew','navigator_duo','ship_doctors','weakling_trio','jinbe_luffy','zoro_mihawk','sanji_nami']},
   {label:'🏛️ Marine Forces',      ids:['marine_legends','smoker_tashigi','garp_koby','admiral_conflict','triple_admiral']},
-  {label:'🤝 Alliances & Bonds',  ids:['pirate_alliance','shanks_beckman','revolutionary_duo','whitebeard_sons','shanks_luffy']},
+  {label:'🤝 Alliances & Bonds',  ids:['pirate_alliance','shanks_beckman','revolutionary_duo','asl_brothers','whitebeard_sons','shanks_luffy']},
   {label:'💀 Blackbeard Crew',    ids:['blackbeard_command','blackbeard_extended']},
   {label:'🎭 Warlords & Yonko',   ids:['warlords_gambit','big_mom_vanguard','kaido_king']},
   {label:'🩸 Rival Crews',        ids:['kid_killer','law_bepo']},

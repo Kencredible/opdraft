@@ -52,12 +52,29 @@
     .btn-danger:hover{background:rgba(239,68,68,.25)}
 
     /* ─── HOME ───────────────────────────────────────── */
-    #screen-home{justify-content:center;background:var(--home-grad)}
-    .home-content{display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem;gap:.75rem;max-width:700px;width:100%}
-    .skull{font-size:4.5rem;filter:drop-shadow(0 0 20px rgba(201,162,39,.4))}
-    .title{font-family:'Cinzel',serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;color:var(--gold);line-height:1.05;letter-spacing:.05em;text-shadow:0 0 40px rgba(201,162,39,.25)}
-    .title span{display:block;font-size:.65em;letter-spacing:.4em;color:var(--gold-light)}
-    .subtitle{color:var(--muted);font-size:1rem;margin-bottom:.5rem}
+    #screen-home{
+      position:relative;
+      justify-content:flex-end;
+      background:url('assets/Landing page Background.png') center center / cover no-repeat;
+      background-color:var(--bg);
+    }
+    /* Bottom gradient so controls stay readable over the image */
+    #screen-home::after{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(to bottom,transparent 35%,rgba(8,13,26,.72) 62%,rgba(8,13,26,.94) 100%);
+    }
+    body.light #screen-home::after{
+      background:linear-gradient(to bottom,transparent 35%,rgba(241,245,249,.72) 62%,rgba(241,245,249,.94) 100%);
+    }
+    .home-content{
+      position:relative;z-index:1;
+      display:flex;flex-direction:column;align-items:center;text-align:center;
+      padding:1.75rem 2rem 2.25rem;gap:.75rem;
+      width:100%;max-width:680px;
+      margin-bottom:1.5rem;
+    }
+    /* Title/skull live in the image — hide the HTML duplicates */
+    .skull,.title,.subtitle{display:none}
     /* Step labels */
     .step-section{width:100%;margin-top:.75rem}
     .step-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.6rem}
@@ -707,7 +724,8 @@
     /* ─── MOBILE RESPONSIVE (≤ 767px) ─── */
     @media(max-width:767px){
       /* === HOME === */
-      .home-content{padding:1.25rem 1rem;gap:.55rem}
+      #screen-home{background-position:center top}
+      .home-content{padding:1.25rem 1rem 1.75rem;gap:.55rem;margin-bottom:.75rem}
       .home-title{font-size:1.5rem}
       .page-sub{font-size:.76rem}
       .mode-cards{grid-template-columns:1fr!important;gap:.6rem}

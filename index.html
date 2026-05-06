@@ -10,7 +10,7 @@
     :root{
       --bg:#080d1a;--bg-card:#0f1829;--bg-hover:#17243a;
       --gold:#c9a227;--gold-light:#e8c547;--gold-dim:rgba(201,162,39,.15);
-      --muted:#6b7fa0;--border:#1e2f48;--text:#e2e8f0;
+      --muted:#7b8fb5;--border:#1e2f48;--text:#e2e8f0;
       --p1:#3b82f6;--p1-dim:rgba(59,130,246,.15);
       --p2:#ef4444;--p2-dim:rgba(239,68,68,.15);
       --fruit:#a78bfa;
@@ -22,10 +22,10 @@
     }
     body.light{
       --bg:#f1f5f9;--bg-card:#ffffff;--bg-hover:#e8eef5;
-      --gold:#b45309;--gold-light:#d97706;--gold-dim:rgba(180,83,9,.1);
-      --muted:#64748b;--border:#cbd5e1;--text:#0f172a;
+      --gold:#b45309;--gold-light:#a85200;--gold-dim:rgba(180,83,9,.1);
+      --muted:#475569;--border:#cbd5e1;--text:#0f172a;
       --p1:#2563eb;--p1-dim:rgba(37,99,235,.1);
-      --p2:#dc2626;--p2-dim:rgba(220,38,38,.1);
+      --p2:#b91c1c;--p2-dim:rgba(185,28,28,.1);
       --fruit:#7c3aed;
       --overlay:rgba(15,23,42,.72);--overlay-cta:rgba(241,245,249,.97);
       --home-grad:radial-gradient(ellipse at 50% 40%,#dbeafe 0%,#f1f5f9 65%);
@@ -33,6 +33,65 @@
       --btn-primary-fg:#ffffff;
       --scrollbar:#cbd5e1;
     }
+    /* ─── WCAG Light Mode Color Overrides ──────────────────────────
+       All hardcoded pastel/bright colors used in dark mode are replaced
+       with accessible dark equivalents (4.5:1+ on white/near-white).
+       Semantic palette:
+         red-800 #991b1b · orange-800 #9a3412 · amber-800 #92400e
+         emerald-800 #065f46 · green-800 #166534 · blue-700 #1d4ed8
+         violet-800 #5b21b6 · slate-600 #475569
+    ───────────────────────────────────────────────────────────── */
+    /* Red / danger */
+    body.light .sc-boss-lbl,body.light .dsb-boss-name,body.light .boss-debuff-label,
+    body.light .glos-boss-label,body.light .glos-boss-sev-high,
+    body.light .badge-full,body.light .badge-emperor,
+    body.light .cost-badge.unaffordable,body.light .mismatch-gap.gap-bad,
+    body.light .synergy-chip.syn-neg,body.light .rp-syn-chip.syn-neg,
+    body.light .bgv-fail,body.light .glos-syn-bonus-neg,
+    body.light .stage-delta.neg,body.light .stage-score.boss-col,
+    body.light .boss-stat-verdict.exploited,
+    body.light .sc-boss-tag,body.light .dsb-boss-label,
+    body.light .dsb-boss-req.req-critical{color:#991b1b}
+    /* Orange / warning */
+    body.light .dsb-boss-req.req-major,body.light .bgv-warn,
+    body.light .glos-boss-sev-med,body.light .badge-captain{color:#9a3412}
+    /* Amber / caution */
+    body.light .dsb-boss-req.req-minor,
+    body.light .synergy-chip.syn-mix,body.light .rp-syn-chip.syn-mix,
+    body.light .glos-tier-s,body.light .glos-tier-sp,
+    body.light .glos-boss-sev-low,body.light .stage-score.bground-col,
+    body.light .ct-heads-label{color:#92400e}
+    /* Green / success */
+    body.light .mismatch-gap.gap-0,body.light .bgv-met,
+    body.light .synergy-chip.syn-pos,body.light .rp-syn-chip.syn-pos,
+    body.light .stage-delta.pos,body.light .stage-bonus-chip,
+    body.light .boss-stat-verdict.matched,body.light .stage-score.bonus-col,
+    body.light .glos-tier-a,body.light .cd-partner-status.st-team,
+    body.light .glos-syn-bonus-pos{color:#065f46}
+    body.light .badge-swordsman{color:#166534}
+    /* Blue / info */
+    body.light .chip-unlimited,body.light .badge-marine,
+    body.light .stage-score.crew-col,body.light .glos-tier-b,
+    body.light .glos-syn-member-any,body.light .htp-chip-blue,
+    body.light .ct-tails-label{color:#1d4ed8}
+    /* Purple / special */
+    body.light .badge-revolutionary,body.light .badge-haki,
+    body.light .glos-fruit-badge{color:#5b21b6}
+    /* Slate */
+    body.light .glos-tier-c{color:#475569}
+    /* Separators — use muted instead of near-invisible --border */
+    body.light .ct-legend-sep,body.light .htp-stage-sep{color:var(--muted)}
+    /* btn-gold gradient — lighter stop must pass 4.5:1 with white text */
+    body.light .btn-gold{background:linear-gradient(135deg,#a85200,#7c2d00)}
+    /* Affiliation badges — reset to neutral readable style in light mode */
+    body.light .cc-affil{color:var(--text)!important;background:var(--bg-hover)!important;border-color:var(--border)!important}
+    /* Tier chips — CSS overrides for JS-injected inline styles */
+    body.light .cd-tier-chip{color:#475569!important;border-color:rgba(71,85,105,.4)!important;background:rgba(71,85,105,.08)!important}
+    body.light .cd-tier-chip[data-tier="S+"]{color:#92400e!important;border-color:rgba(146,64,14,.4)!important;background:rgba(146,64,14,.08)!important}
+    body.light .cd-tier-chip[data-tier="S"]{color:#1d4ed8!important;border-color:rgba(29,78,216,.4)!important;background:rgba(29,78,216,.08)!important}
+    body.light .cd-tier-chip[data-tier="A"]{color:#065f46!important;border-color:rgba(6,95,70,.4)!important;background:rgba(6,95,70,.08)!important}
+    body.light .cd-tier-chip[data-tier="B"]{color:#475569!important;border-color:rgba(71,85,105,.35)!important;background:rgba(71,85,105,.07)!important}
+    body.light .cd-tier-chip[data-tier="C"]{color:#64748b!important;border-color:rgba(100,116,139,.3)!important;background:rgba(100,116,139,.06)!important}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;min-height:100vh;overflow-x:hidden}
     .screen{display:none;min-height:100vh}
@@ -2631,7 +2690,7 @@ function openCharDetail(c,onPick,canPick){
   const tierStyle=TIER_CHIP_STYLE[c.tier]||TIER_CHIP_STYLE['C'];
   document.getElementById('cd-panel-badges').innerHTML=
     affiliationBadge(c)+
-    `<span class="cd-tier-chip" style="${tierStyle}">${c.tier} Tier</span>`;
+    `<span class="cd-tier-chip" data-tier="${c.tier}" style="${tierStyle}">${c.tier} Tier</span>`;
   // Scenario fit bar hidden
   document.getElementById('cd-panel-fit').innerHTML='';
   // Stat rows

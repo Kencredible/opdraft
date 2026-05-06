@@ -22,7 +22,7 @@
     }
     body.light{
       --bg:#f1f5f9;--bg-card:#ffffff;--bg-hover:#e8eef5;
-      --gold:#b45309;--gold-light:#a85200;--gold-dim:rgba(180,83,9,.1);
+      --gold:#92400e;--gold-light:#a85200;--gold-dim:rgba(146,64,14,.1);
       --muted:#475569;--border:#cbd5e1;--text:#0f172a;
       --p1:#2563eb;--p1-dim:rgba(37,99,235,.1);
       --p2:#b91c1c;--p2-dim:rgba(185,28,28,.1);
@@ -92,6 +92,12 @@
     body.light .cd-tier-chip[data-tier="A"]{color:#065f46!important;border-color:rgba(6,95,70,.4)!important;background:rgba(6,95,70,.08)!important}
     body.light .cd-tier-chip[data-tier="B"]{color:#475569!important;border-color:rgba(71,85,105,.35)!important;background:rgba(71,85,105,.07)!important}
     body.light .cd-tier-chip[data-tier="C"]{color:#64748b!important;border-color:rgba(100,116,139,.3)!important;background:rgba(100,116,139,.06)!important}
+    /* Demand level chips — override JS-injected inline colors for light mode */
+    body.light .demand-chip[data-level="Very Low"]{color:#475569!important;background:rgba(71,85,105,.08)!important;border-color:rgba(71,85,105,.3)!important}
+    body.light .demand-chip[data-level="Low"]{color:#1d4ed8!important;background:rgba(29,78,216,.08)!important;border-color:rgba(29,78,216,.3)!important}
+    body.light .demand-chip[data-level="Normal"]{color:#92400e!important;background:rgba(146,64,14,.08)!important;border-color:rgba(146,64,14,.3)!important}
+    body.light .demand-chip[data-level="High"]{color:#9a3412!important;background:rgba(154,52,18,.08)!important;border-color:rgba(154,52,18,.3)!important}
+    body.light .demand-chip[data-level="Very High"]{color:#991b1b!important;background:rgba(153,27,27,.08)!important;border-color:rgba(153,27,27,.3)!important}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--text);font-family:'Open Sans',sans-serif;min-height:100vh;overflow-x:hidden}
     .screen{display:none;min-height:100vh}
@@ -1342,14 +1348,14 @@ function demandStatsHtml(sc,compact=false){
       return`<div class="demand-row">` +
         `<span class="demand-icon">${info.icon}</span>` +
         `<span class="demand-name">${info.label}</span>` +
-        `<span class="demand-chip" style="color:${step.color};background:${step.bg};border-color:${step.color}40">${step.label}</span>` +
+        `<span class="demand-chip" data-level="${step.label}" style="color:${step.color};background:${step.bg};border-color:${step.color}40">${step.label}</span>` +
         `</div>`;
     }
     return`<div class="demand-row">` +
       `<span class="demand-icon">${info.icon}</span>` +
       `<span class="demand-name">${info.label}</span>` +
       `<div class="demand-bar-wrap"><div class="demand-bar-fill" style="width:${Math.round((sc.weights[k]||0)*250)}%;background:${step.color}"></div></div>` +
-      `<span class="demand-chip" style="color:${step.color};background:${step.bg};border-color:${step.color}40">${step.label}</span>` +
+      `<span class="demand-chip" data-level="${step.label}" style="color:${step.color};background:${step.bg};border-color:${step.color}40">${step.label}</span>` +
       `</div>`;
   }).join('');
 }
@@ -3787,7 +3793,7 @@ function renderBGDetail(sc){
       <span class="demand-icon">${info.icon}</span>
       <span class="demand-name">${info.label}</span>
       <div class="demand-bar-wrap"><div class="demand-bar-fill" style="width:${pct}%;background:${step.color}"></div></div>
-      <span class="demand-chip" style="color:${step.color};border-color:${step.color};background:${step.bg}">${step.label}</span>
+      <span class="demand-chip" data-level="${step.label}" style="color:${step.color};border-color:${step.color};background:${step.bg}">${step.label}</span>
     </div>`;
   }).join('');
 

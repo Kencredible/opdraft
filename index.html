@@ -194,9 +194,11 @@
     .page-title{font-family:'Cinzel',serif;font-size:clamp(1.3rem,3vw,1.75rem);color:var(--gold)}
     .page-sub{color:var(--muted);font-size:.82rem;margin-top:.2rem}
     .scenario-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.875rem;width:100%;max-width:860px;margin:.75rem 0}
-    .scenario-card{background:var(--bg-card);border:2px solid var(--border);border-radius:12px;padding:1rem;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;gap:.35rem}
-    .scenario-card:hover{border-color:rgba(201,162,39,.5);transform:translateY(-2px)}
+    .scenario-card{background:var(--bg-card);border:2px solid var(--border);border-radius:12px;padding:1rem;cursor:pointer;transition:transform .45s ease,box-shadow .45s ease,border-color .15s,background .15s;display:flex;flex-direction:column;gap:.35rem;transform-style:preserve-3d;will-change:transform;position:relative;overflow:hidden}
+    .scenario-card:hover{border-color:rgba(201,162,39,.5)}
     .scenario-card.selected{border-color:var(--gold);background:var(--bg-hover);box-shadow:0 0 20px rgba(201,162,39,.15)}
+    .scenario-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.14) 0%,transparent 65%);opacity:0;transition:opacity .25s;pointer-events:none;z-index:5}
+    .scenario-card.tilt-active::after{opacity:1}
     .scenario-card.dimmed{opacity:.42}
     .sc-banner{display:block;width:calc(100% + 2rem);margin:-1rem -1rem .75rem;height:auto;border-radius:10px 10px 0 0}
     .sc-arc{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
@@ -2935,7 +2937,9 @@ function renderScenarioScreen(){
       :'';
     card.innerHTML=`${sc.banner?`<img class="sc-banner" src="${sc.banner}" alt="${sc.shortName}" loading="lazy">`:''}` +
       `<div class="sc-arc">${sc.arc}</div><div class="sc-name">${sc.name}</div><div class="sc-desc">${sc.desc}</div><div class="sc-tags">${sc.tags.map(t=>`<span class="sc-tag">${t}</span>`).join('')}</div><div class="sc-diff">Difficulty: <span>${sc.difficulty}</span></div>${bossHtml}<div class="sc-weights">${wHtml}</div>`;
-    card.addEventListener('click',()=>selectScenario(sc));grid.appendChild(card);
+    card.addEventListener('click',()=>selectScenario(sc));
+    attachCardTilt(card);
+    grid.appendChild(card);
   }
 }
 function selectScenario(sc){

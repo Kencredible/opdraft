@@ -345,8 +345,11 @@
     .tier-hdr-line{flex:1;height:1px;background:var(--border)}
 
     /* Character cards */
-    .char-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;overflow:hidden;position:relative}
-    .char-card:hover{background:var(--bg-hover);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 14px rgba(201,162,39,.12)}
+    .char-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:transform .45s ease,box-shadow .45s ease,border-color .15s,background .15s;display:flex;flex-direction:column;overflow:hidden;position:relative;transform-style:preserve-3d;will-change:transform}
+    .char-card:hover{background:var(--bg-hover);border-color:var(--gold)}
+    /* 3-D glare overlay — tracks mouse via --mx / --my */
+    .char-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.18) 0%,transparent 62%);opacity:0;transition:opacity .25s;pointer-events:none;z-index:5}
+    .char-card.tilt-active::after{opacity:1}
     .char-card.taken-p1{border-color:var(--p1);opacity:.28;pointer-events:none}
     .char-card.taken-p2{border-color:var(--p2);opacity:.28;pointer-events:none}
     .char-card.taken-p3{border-color:var(--p3);opacity:.28;pointer-events:none}
@@ -2618,7 +2621,43 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
     const canPick=tb===null&&!cantAfford;
     openCharDetail(c,onPick,canPick);
   });
+  // 3D tilt effect — only on interactive cards
+  if(tb===null&&!card.classList.contains('role-capped')){
+    attachCardTilt(card);
+  }
   grid.appendChild(card);
+}
+
+function attachCardTilt(card){
+  const MAX_TILT=13; // degrees
+  let rafId=null;
+  card.addEventListener('mousemove',e=>{
+    if(rafId)cancelAnimationFrame(rafId);
+    rafId=requestAnimationFrame(()=>{
+      const r=card.getBoundingClientRect();
+      const x=e.clientX-r.left, y=e.clientY-r.top;
+      const cx=r.width/2, cy=r.height/2;
+      const rx=((y-cy)/cy)*-MAX_TILT;
+      const ry=((x-cx)/cx)*MAX_TILT;
+      const mxP=Math.round(x/r.width*100);
+      const myP=Math.round(y/r.height*100);
+      card.style.setProperty('--mx',mxP+'%');
+      card.style.setProperty('--my',myP+'%');
+      card.style.transition='transform .08s ease,box-shadow .08s ease,border-color .15s,background .15s';
+      card.style.transform=`perspective(520px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.04) translateY(-3px)`;
+      card.style.boxShadow=`0 10px 28px rgba(0,0,0,.35),0 2px 8px rgba(201,162,39,.18),inset 0 0 0 1px rgba(255,255,255,.06)`;
+      card.style.zIndex='20';
+      card.classList.add('tilt-active');
+    });
+  });
+  card.addEventListener('mouseleave',()=>{
+    if(rafId)cancelAnimationFrame(rafId);
+    card.style.transition='transform .45s ease,box-shadow .45s ease,border-color .15s,background .15s';
+    card.style.transform='';
+    card.style.boxShadow='';
+    card.style.zIndex='';
+    card.classList.remove('tilt-active');
+  });
 }
 
 function pickedBy(d,id){for(let p=0;p<d.teams.length;p++)if(d.teams[p].some(c=>c.id===id))return p;return null}

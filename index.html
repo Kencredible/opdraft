@@ -323,7 +323,7 @@
     .slot-cost{font-size:.58rem;color:var(--gold-light);opacity:.7}
 
     /* Draft center */
-    .draft-center{display:flex;flex-direction:column;padding:.65rem;overflow:hidden}
+    .draft-center{display:flex;flex-direction:column;padding:.65rem;overflow:hidden;background-size:cover;background-position:center;border-radius:0}
     .turn-bar{display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;margin-bottom:.55rem;background:var(--bg-card);border-radius:8px;border:1px solid var(--border);gap:.5rem}
     .turn-bar-left{display:flex;flex-direction:column;align-items:flex-start}
     .turn-text{font-family:'Cinzel',serif;font-size:.9rem;color:var(--gold)}
@@ -374,7 +374,7 @@
     .cm-pill{font-size:.56rem;padding:.1rem .32rem;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);white-space:nowrap;transition:all .15s}
     .cm-pill.at-cap{background:rgba(201,162,39,.1);border-color:rgba(201,162,39,.35);color:var(--gold)}
     /* Card image */
-    .cc-img{width:100%;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;flex-shrink:0;position:relative;background:transparent}
+    .cc-img{width:100%;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;flex-shrink:0;position:relative;background:var(--bg)}
     .cc-img img{width:100%;height:auto;display:block;object-fit:contain;object-position:top center}
     .cc-img-fb{width:100%;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
     .cc-initials{font-family:'Cinzel',serif;font-size:1rem;font-weight:900;line-height:1}
@@ -2618,15 +2618,6 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
   if(tb!==null)cls+=` taken-p${tb+1}`;
   else if(cantAfford)cls+=' cant-afford';
   card.className=cls;
-  // Location banner as card background
-  if(selectedScenario?.banner){
-    const isLt=document.body.classList.contains('light');
-    const ov1=isLt?'rgba(241,245,249,.52)':'rgba(8,13,26,.48)';
-    const ov2=isLt?'rgba(241,245,249,.88)':'rgba(8,13,26,.86)';
-    card.style.backgroundImage=`linear-gradient(to bottom,${ov1} 0%,${ov2} 58%),url('${selectedScenario.banner}')`;
-    card.style.backgroundSize='cover';
-    card.style.backgroundPosition='center';
-  }
   const bf=fmtBounty(c.stats.bounty);
   const costBadgeClass=cantAfford?'cost-badge unaffordable':'cost-badge';
   const costBadgeHtml=budgetMode?`<div class="${costBadgeClass}">${cost}₿</div>`:'';
@@ -3235,6 +3226,19 @@ async function startDraft(){
   setActivePill('');
   refreshGrid=()=>renderCharGrid(poolChars,draft,handlePick,budgetMode);
   document.getElementById('char-search').oninput=refreshGrid;
+
+  // Apply scenario location image as draft pool background
+  if(selectedScenario?.banner){
+    const dc=document.querySelector('.draft-center');
+    if(dc){
+      const isLt=document.body.classList.contains('light');
+      const ov=isLt?'rgba(241,245,249,.78)':'rgba(8,13,26,.72)';
+      dc.style.backgroundImage=`linear-gradient(${ov},${ov}),url('${selectedScenario.banner}')`;
+      dc.style.backgroundSize='cover';
+      dc.style.backgroundPosition='center';
+    }
+  }
+
   isFirstDeal=true;
   refreshGrid();
 

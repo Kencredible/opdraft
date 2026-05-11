@@ -350,6 +350,15 @@
     /* 3-D glare overlay — tracks mouse via --mx / --my */
     .char-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.18) 0%,transparent 62%);opacity:0;transition:opacity .25s;pointer-events:none;z-index:5}
     .char-card.tilt-active::after{opacity:1}
+    /* ── Deal-in animation ── */
+    @keyframes cardDeal{
+      0%  {transform:translateY(48px) scale(.82) rotate(var(--deal-rot,0deg));opacity:0;filter:blur(2px)}
+      60% {transform:translateY(-5px) scale(1.04) rotate(.2deg);opacity:1;filter:blur(0)}
+      100%{transform:translateY(0) scale(1) rotate(0deg);opacity:1;filter:blur(0)}
+    }
+    .char-card.dealing{animation:cardDeal .4s cubic-bezier(.22,.68,0,1.22) both;animation-delay:var(--deal-delay,0ms)}
+    /* ── Flying clone (pick animation) ── */
+    .card-fly-clone{position:fixed;pointer-events:none;z-index:9999;border-radius:10px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.55),0 0 0 2px rgba(201,162,39,.6)}
     .char-card.taken-p1{border-color:var(--p1);opacity:.28;pointer-events:none}
     .char-card.taken-p2{border-color:var(--p2);opacity:.28;pointer-events:none}
     .char-card.taken-p3{border-color:var(--p3);opacity:.28;pointer-events:none}
@@ -2582,6 +2591,19 @@ function renderCharGrid(pool,draft,onPick,budgetMode){
     grid.appendChild(hdr);
     chars.forEach(c=>appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam));
   }
+  // Initial deal animation — only fires once when the draft opens
+  if(isFirstDeal){
+    isFirstDeal=false;
+    let idx=0;
+    grid.querySelectorAll('.char-card').forEach(card=>{
+      const rot=((Math.random()*10)-5).toFixed(1)+'deg';
+      card.style.setProperty('--deal-rot',rot);
+      card.style.setProperty('--deal-delay',(idx*13)+'ms');
+      card.classList.add('dealing');
+      card.addEventListener('animationend',()=>card.classList.remove('dealing'),{once:true});
+      idx++;
+    });
+  }
 }
 
 function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
@@ -2614,7 +2636,10 @@ function appendCharCard(c,draft,onPick,grid,budgetMode,humanBudget,humanTeam){
       ${affiliationBadge(c)}
       ${bf?`<div class="cc-meta">💰 ${bf}</div>`:''}
     </div>`;
-  card.addEventListener('click',()=>{if(tb===null&&!cantAfford&&!draftLocked)onPick(c)});
+  card.addEventListener('click',()=>{
+    if(tb!==null||cantAfford||draftLocked)return;
+    animateCardToSlot(card,c,()=>onPick(c));
+  });
   // Info button — opens detail overlay, does not trigger pick
   card.querySelector('.cc-info-btn').addEventListener('click',e=>{
     e.stopPropagation();
@@ -2661,6 +2686,58 @@ function attachCardTilt(card){
 }
 
 function pickedBy(d,id){for(let p=0;p<d.teams.length;p++)if(d.teams[p].some(c=>c.id===id))return p;return null}
+
+// ─── Pick-flight animation ────────────────────────────────────────────────────
+function getPickDestRect(pid){
+  const isMob=window.innerWidth<=780;
+  if(isMob){
+    // Mobile: fly to the player's tab button
+    const tab=document.querySelector(`.mobile-tab[data-pid="${pid}"]`);
+    return tab?tab.getBoundingClientRect():null;
+  }
+  // Desktop: fly to the next empty pick slot in the player's panel
+  const slotIdx=draft?draft.teams[pid].length:0;
+  const panel=document.getElementById(`p${pid+1}-picks`);
+  if(!panel)return null;
+  const slots=panel.querySelectorAll('.pick-slot');
+  const target=slots[slotIdx];
+  return target?target.getBoundingClientRect():null;
+}
+
+function animateCardToSlot(card,c,onComplete){
+  if(!draft){onComplete();return;}
+  const curPid=draftCurrentPlayer(draft);
+  const srcRect=card.getBoundingClientRect();
+  const destRect=getPickDestRect(curPid);
+  if(!destRect){onComplete();return;}
+
+  // Freeze the original in place visually
+  card.style.opacity='0.15';
+  card.style.pointerEvents='none';
+  card.style.transition='opacity .12s';
+
+  // Create a pixel-perfect clone that flies
+  const clone=card.cloneNode(true);
+  clone.className='card-fly-clone';
+  Object.assign(clone.style,{
+    left:srcRect.left+'px', top:srcRect.top+'px',
+    width:srcRect.width+'px', height:srcRect.height+'px',
+    transition:'none', transform:'none', opacity:'1',
+  });
+  document.body.appendChild(clone);
+  clone.getBoundingClientRect(); // force reflow
+
+  // How far & how small does it need to travel?
+  const dx=destRect.left+destRect.width/2-(srcRect.left+srcRect.width/2);
+  const dy=destRect.top+destRect.height/2-(srcRect.top+srcRect.height/2);
+  const sc=Math.min(destRect.height/srcRect.height,destRect.width/srcRect.width,0.55);
+
+  clone.style.transition='transform .38s cubic-bezier(.4,.05,.15,1),opacity .22s ease .2s';
+  clone.style.transform=`translate(${dx}px,${dy}px) scale(${sc})`;
+  clone.style.opacity='0';
+
+  setTimeout(()=>{clone.remove();onComplete();},420);
+}
 
 // ─── Character detail overlay ─────────────────────────────────────────────────
 const CD_STATS=[
@@ -2869,6 +2946,7 @@ function selectScenario(sc){
 
 // ═══ GAME STATE ═══════════════════════════════════════════════════════════════
 let allChars=[],poolChars=[],draft=null,gameMode=null,budgetMode=false,refreshGrid=null,activeFilter='';
+let isFirstDeal=false; // true only for the opening card deal
 let isBlindScenario=false;
 let legendsMode=false; // Legends characters hidden until mode is fully built out
 let selectedOpponent=null;
@@ -3145,6 +3223,7 @@ async function startDraft(){
   setActivePill('');
   refreshGrid=()=>renderCharGrid(poolChars,draft,handlePick,budgetMode);
   document.getElementById('char-search').oninput=refreshGrid;
+  isFirstDeal=true;
   refreshGrid();
 
   // If an AI won the coin toss and goes first, trigger its opening pick
@@ -4069,7 +4148,7 @@ function renderMobileTabs(){
     const isActive=mobilePanelPid===p;
     const cls=isActive?` mt-p${p+1}`:'';
     const pulse=isCurrent&&!isActive?' style="outline:2px solid var(--p'+(p+1)+');outline-offset:1px"':'';
-    html+=`<button class="mobile-tab${cls}"${pulse} onclick="toggleMobilePanel(${p})"><span class="mob-tab-name">${shortName(p)}</span><span class="mob-tab-count">${picks}/${max}</span></button>`;
+    html+=`<button class="mobile-tab${cls}" data-pid="${p}"${pulse} onclick="toggleMobilePanel(${p})"><span class="mob-tab-name">${shortName(p)}</span><span class="mob-tab-count">${picks}/${max}</span></button>`;
   }
   bar.innerHTML=html;
 }

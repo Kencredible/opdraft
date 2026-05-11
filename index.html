@@ -3229,10 +3229,12 @@ async function startDraft(){
   isFirstDeal=true;
   refreshGrid();
 
-  // If an AI won the coin toss and goes first, trigger its opening pick
+  // If an AI won the coin toss and goes first, wait for the deal animation to finish first
   const firstPid=draftCurrentPlayer(draft);
   if(gameMode==='vs-ai'&&isAiPlayer(firstPid)&&!draft.complete){
-    setTimeout(()=>doAiPick(firstPid),600);
+    const cardCount=document.getElementById('char-grid').querySelectorAll('.char-card').length;
+    const dealMs=(cardCount>0?(cardCount-1)*55+550:0)+350; // stagger + anim + buffer
+    setTimeout(()=>doAiPick(firstPid),dealMs);
   }
 }
 

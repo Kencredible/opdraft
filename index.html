@@ -352,11 +352,12 @@
     .char-card.tilt-active::after{opacity:1}
     /* ── Deal-in animation ── */
     @keyframes cardDeal{
-      0%  {transform:translateY(48px) scale(.82) rotate(var(--deal-rot,0deg));opacity:0;filter:blur(2px)}
-      60% {transform:translateY(-5px) scale(1.04) rotate(.2deg);opacity:1;filter:blur(0)}
+      0%  {transform:translateY(90px) translateX(var(--deal-x,0px)) scale(.72) rotate(var(--deal-rot,0deg));opacity:0;filter:blur(3px)}
+      55% {transform:translateY(-8px) translateX(0) scale(1.05) rotate(calc(var(--deal-rot,0deg)*.08));opacity:1;filter:blur(0)}
+      75% {transform:translateY(3px) scale(.98) rotate(0deg)}
       100%{transform:translateY(0) scale(1) rotate(0deg);opacity:1;filter:blur(0)}
     }
-    .char-card.dealing{animation:cardDeal .4s cubic-bezier(.22,.68,0,1.22) both;animation-delay:var(--deal-delay,0ms)}
+    .char-card.dealing{animation:cardDeal .55s cubic-bezier(.18,.72,0,1.18) both;animation-delay:var(--deal-delay,0ms)}
     /* ── Flying clone (pick animation) ── */
     .card-fly-clone{position:fixed;pointer-events:none;z-index:9999;border-radius:10px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.55),0 0 0 2px rgba(201,162,39,.6)}
     .char-card.taken-p1{border-color:var(--p1);opacity:.28;pointer-events:none}
@@ -2596,9 +2597,11 @@ function renderCharGrid(pool,draft,onPick,budgetMode){
     isFirstDeal=false;
     let idx=0;
     grid.querySelectorAll('.char-card').forEach(card=>{
-      const rot=((Math.random()*10)-5).toFixed(1)+'deg';
+      const rot=((Math.random()*22)-11).toFixed(1)+'deg';       // ±11° tilt
+      const xOff=((Math.random()*16)-8).toFixed(1)+'px';        // slight x drift
       card.style.setProperty('--deal-rot',rot);
-      card.style.setProperty('--deal-delay',(idx*13)+'ms');
+      card.style.setProperty('--deal-x',xOff);
+      card.style.setProperty('--deal-delay',(idx*55)+'ms');      // 55ms between each card
       card.classList.add('dealing');
       card.addEventListener('animationend',()=>card.classList.remove('dealing'),{once:true});
       idx++;
